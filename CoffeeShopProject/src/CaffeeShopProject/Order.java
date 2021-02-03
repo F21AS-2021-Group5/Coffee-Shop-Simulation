@@ -10,35 +10,34 @@ public class Order {
 	private float cost;
 	
 	
-	public Order(String name, String description, String category, float cost, String identifier) {
-        this.name = name;
-        this.description = description;
+	public Order(String identifier, String name, String category, float cost, String description) {
+		this.identifier = identifier;
+		this.name = name;
         this.category = category;
         this.cost = cost;
-        this.identifier = identifier;
+        this.description = description;
     }
 	
 	// Generic get methods 
-	public String getName() {
-        return name;
+	public String getIdentifier() {
+        return identifier;
     }
 	
-	public String getDescription() {
-        return description;
+	public String getName() {
+        return name;
     }
 	
 	public String getCategory() {
         return category;
     }
 	
-	public String getIdentifier() {
-        return identifier;
-    }
-	
 	public float getCost() {
 		return cost;
 	}
 	
+	public String getDescription() {
+        return description;
+    }
 	
 	
 	

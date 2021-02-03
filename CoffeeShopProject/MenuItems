@@ -1,9 +1,9 @@
-DRINK001, Latte, Dink, 2.85, Espresso with steamed milk and topped with layer of foam.
-DRINK002, Mocha, Dink, 2.95, Espresso with mocha sauce and steamed milk. Topped with whipped cream.
-DRINK003, Cappuccino, Dink, 2.60, Dark espresso with steamed milk and topped with layer of foam.
-DRINK004, Americano, Dink, 2.25, Espresso shots topped with hot water.
-DRINK005, Espresso, Dink, 1.90, A shot of espresso.
-DRINK006, Tea, Dink, 2.10, Chamonile, Mint, English or Chai brewed tea. 
+DRINK001, Latte, Drink, 2.85, Espresso with steamed milk and topped with layer of foam.
+DRINK002, Mocha, Drink, 2.95, Espresso with mocha sauce and steamed milk. Topped with whipped cream.
+DRINK003, Cappuccino, Drink, 2.60, Dark espresso with steamed milk and topped with layer of foam.
+DRINK004, Americano, Drink, 2.25, Espresso shots topped with hot water.
+DRINK005, Espresso, Drink, 1.90, A shot of espresso.
+DRINK006, Tea, Drink, 2.10, Chamonile, Mint, English or Chai brewed tea. 
 
 FOOD001, Panini, Food, 3.25, Grilled sandwich made of a small loaf of bread, cut horizontally, filled with meat and cheese.
 FOOD002, Toastie, Food, 2.85, Hot sandwich made with one or more varieties of cheese on bread.

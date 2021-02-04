@@ -125,8 +125,10 @@ public class Customer {
 		name = name.replaceAll("\\s","");
 		
 		// convert string of chars to string of integer values 
-		for(int i = 0, n = name.length() ; i < n ; i++) 
-		    generatedID += String.valueOf(Integer.parseInt(String.valueOf(name.charAt(i))));
+		for(int i = 0, n = name.length() ; i < n ; i++) {
+			char c = name.charAt(i);
+			generatedID += String.valueOf((int)c);
+		}
 		
 		// add time stamp and return ID		
 		return generatedID += timestampString;

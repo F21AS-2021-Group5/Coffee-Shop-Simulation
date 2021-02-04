@@ -8,6 +8,7 @@ public class Order {
 	private String category;
 	private String identifier;
 	private float cost;
+	private int quantity;
 	
 	
 	public Order(String identifier, String name, String category, float cost, String description) {
@@ -38,6 +39,14 @@ public class Order {
 	public String getDescription() {
         return description;
     }
+	
+	public int getQuantity() {
+		return quantity;
+	}
+	
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
 	
 	
 	

@@ -13,13 +13,16 @@
 
 package CaffeeShopProject;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Hashtable;
+import java.util.Set;
 
 public class Customer {
 	
 	String id;
-	LocalDate timestamp;
+	String name;
+	LocalDateTime timestamp;
 	float orderTotalPrice;
 	Hashtable<String, Order> cart;
 	
@@ -28,12 +31,13 @@ public class Customer {
 	 * @param id Customer ID 
 	 * @param timestamp Time at which customer placed orders 
 	 */
-	public Customer(String name, LocalDate timestamp)
+	public Customer(String name, LocalDateTime timestamp)
 	{
 		// name needs to be provided
 		if (name.trim().length() == 0) {
 			throw new IllegalStateException("Name of customer can't be blank.");
 		}
+		this.name = name.trim();
 		this.timestamp = timestamp;
 		
 		// generate the ID based on customer name and time stamp
@@ -61,7 +65,7 @@ public class Customer {
 	/**
 	 * @return Time at which customer placed orders 
 	 */
-	public LocalDate getTimestamp() {
+	public LocalDateTime getTimestamp() {
 		return timestamp;
 	}
 	
@@ -69,7 +73,7 @@ public class Customer {
 	 * Sets the time stamp at which customer placed orders
 	 * @param timestamp Time at which customer placed orders 
 	 */
-	public void setTimestamp(LocalDate timestamp) {
+	public void setTimestamp(LocalDateTime timestamp) {
 		this.timestamp = timestamp;
 	}
 	
@@ -109,11 +113,23 @@ public class Customer {
 	 * @param timestamp Time at which customer placed orders 
 	 * @return Customer ID
 	 */
-	private String generateID(String name, LocalDate timestamp)
+	private String generateID(String name, LocalDateTime timestamp)
 	{
-		//TODO:
+		String generatedID ="";
 		
-		return "blablabla";
+		// date time formatter and convert time stamp to string
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyyHHmmss");
+		String timestampString = timestamp.format(formatter);
+		
+		// removes white spaces inside string
+		name = name.replaceAll("\\s","");
+		
+		// convert string of chars to string of integer values 
+		for(int i = 0, n = name.length() ; i < n ; i++) 
+		    generatedID += String.valueOf(Integer.parseInt(String.valueOf(name.charAt(i))));
+		
+		// add time stamp and return ID		
+		return generatedID += timestampString;
 	}
 	
 	/**
@@ -130,35 +146,88 @@ public class Customer {
 	 * Add the order to the customer's cart
 	 * @param order The order
 	 */
-	private void addOrder(Order order) {
-		//TODO:
-		
-		// check if order exists already
-		// if exists already then add only the quantity to Order object
-		// if not create a new one 
-		// think about possible exceptions 
+	private void addOrder(Order order) {		
+		// if Order is null, throw exception
+		if (order == null)
+				throw new IllegalArgumentException();
+		else {
+			// if it already exists, add quantity to Order
+			String id = order.getIdentifier();
+			if (cart.contains(id)) {
+				Order updated = cart.get(id);
+				updated.setQuantity(updated.getQuantity()+1);
+				cart.put(id, updated);
+				
+				// add price to total cost
+				orderTotalPrice += updated.getCost();
+			}
+			// if order does not exist, add <K,V> to hash table
+			else {
+				cart.put(order.getIdentifier(), order);
+				
+				// add price to total cost
+				orderTotalPrice += order.getCost();
+			}		
+		}
 	}
 	
 	/**
-	 * Remove the order from the customer's cart 
-	 * @param order The order
+	 * Remove the order corresponding to the ID from the customer's cart 
+	 * @param order Order identification string 
+	 * @throws NoMatchingOrderIDException No matching order ID
+	 * @throws InvalidOrderQuantityException Invalid order ID
 	 */
-	private void removeOrder(Order order) {
-		//TODO:
+	private void removeOrder(String id) throws NoMatchingOrderIDException, InvalidOrderQuantityException {	
+		// if order exists inside cart
+		if (cart.contains(id))
+			// if quantity is more than 1, remove one from quantity
+			if (cart.get(id).getQuantity() > 1) {
+				Order updated = cart.get(id);
+				updated.setQuantity(updated.getQuantity()-1);
+				cart.put(id, updated);
+				
+				// remove price from total cost
+				orderTotalPrice -= updated.getCost();
+			} 
+			// if quantity is 1, remove entire order
+			else if (cart.get(id).getQuantity() == 1) {
+				cart.remove(id);
+				
+				// remove price from total cost
+				orderTotalPrice -= cart.get(id).getCost();
+			}
+			// invalid quantity for order 
+			else 
+				throw new InvalidOrderQuantityException(); 
 		
-		// check if order exists 
-		// if exists then remove it 
-		// if does not exist do nothing 
-		// think about possible exceptions 
+		// if order does not exist inside cart	
+		else
+			throw new NoMatchingOrderIDException();
 	}
 	
 	/**
 	 * String containing all Customer object details 
 	 */
-	public String toString()
+	public String receipt()
 	{
-		//TODO:
+		// date time formatter 
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+		 
+		// initial customer information
+		String output = String.format("Name: %10s\n", name) + String.format("ID: %10s\n", id)
+			+ String.format("Timestamp: %10s\n\n", timestamp.format(formatter)) 
+			+ String.format("Orders:");
 		
-		return "blablabla";
+		// print all cart orders with quantities 
+		Set<String> cartSet = cart.keySet();
+		for (String orderID: cartSet) {
+			output += String.format("%-10s", cart.get(orderID).getName()) + 
+					String.format("%-20s", "x" + String.valueOf(cart.get(orderID).getQuantity()));
+		}
+		
+		// final price
+		output += String.format("\n\nTotal price: %-20s", String.valueOf(orderTotalPrice));
+		
+		return output;
 	}
 }

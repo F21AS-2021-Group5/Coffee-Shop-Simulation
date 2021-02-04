@@ -28,10 +28,16 @@ public class Customer {
 	 * @param id Customer ID 
 	 * @param timestamp Time at which customer placed orders 
 	 */
-	public Customer(String id, LocalDate timestamp)
+	public Customer(String name, LocalDate timestamp)
 	{
-		this.id = id;
+		// name needs to be provided
+		if (name.trim().length() == 0) {
+			throw new IllegalStateException("Name of customer can't be blank.");
+		}
 		this.timestamp = timestamp;
+		
+		// generate the ID based on customer name and time stamp
+		this.id = generateID(name, timestamp).trim();
 		
 		orderTotalPrice = 0;
 		cart = new Hashtable<String, Order>();
@@ -98,10 +104,35 @@ public class Customer {
 	}
 	
 	/**
+	 * Generates a Customer ID for the current customer 
+	 * @param name Name of customer
+	 * @param timestamp Time at which customer placed orders 
+	 * @return Customer ID
+	 */
+	private String generateID(String name, LocalDate timestamp)
+	{
+		//TODO:
+		
+		return "blablabla";
+	}
+	
+	/**
+	 * Compares this Customer object to another Customer object using the 'id' field
+	 * @param otherCustomer
+	 * @return false if they do not match, true if they match 
+	 */
+	private boolean equals(Customer otherCustomer)
+	{
+		return id.equals(otherCustomer.id);
+	}
+	
+	/**
 	 * Add the order to the customer's cart
 	 * @param order The order
 	 */
 	private void addOrder(Order order) {
+		//TODO:
+		
 		// check if order exists already
 		// if exists already then add only the quantity to Order object
 		// if not create a new one 
@@ -113,9 +144,21 @@ public class Customer {
 	 * @param order The order
 	 */
 	private void removeOrder(Order order) {
+		//TODO:
+		
 		// check if order exists 
 		// if exists then remove it 
 		// if does not exist do nothing 
 		// think about possible exceptions 
+	}
+	
+	/**
+	 * String containing all Customer object details 
+	 */
+	public String toString()
+	{
+		//TODO:
+		
+		return "blablabla";
 	}
 }

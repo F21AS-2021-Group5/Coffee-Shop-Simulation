@@ -17,6 +17,7 @@ public class Order {
         this.category = category;
         this.cost = cost;
         this.description = description;
+        this.quantity = 1;
     }
 	
 	// Generic get methods 

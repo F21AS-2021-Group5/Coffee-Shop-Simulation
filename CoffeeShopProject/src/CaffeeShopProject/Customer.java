@@ -23,6 +23,7 @@ import java.util.Hashtable;
 import java.util.Set;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Random;
 
 public class Customer {
 	
@@ -70,6 +71,21 @@ public class Customer {
 	 */
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	/**
+	 * @return Customer name
+	 */
+	public String getName() {
+		return name;
+	}
+	
+	/**
+	 * Sets name for the customer
+	 * @param name Customer name
+	 */
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	/**
@@ -144,16 +160,16 @@ public class Customer {
 		String time = ldt.toLocalTime().toString();
 		
 		// split date and time into individual elements
-		int[] dateVals = Arrays.stream(date.split(",")).mapToInt(Integer::parseInt).toArray();
-		int[] timeVals =  Arrays.stream(time.split(",")).mapToInt(Integer::parseInt).toArray();
-		int seconds = Integer.valueOf(String.valueOf(timeVals[2]).split(".")[0]);
+		int[] dateVals = Arrays.stream(date.split("-")).mapToInt(Integer::parseInt).toArray();
+		int[] timeVals =  Arrays.stream(time.split("\\.")[0].split(":")).mapToInt(Integer::parseInt).toArray();
+		
 		
 		// conditions 
 		return dateVals.length == 3 && String.valueOf(dateVals[0]).length() == 4 && 
 				dateVals[1] >= 1 && dateVals[1] <= 12 && dateVals[2] >= 1 && 
 				dateVals[2] <= getMaxDays(dateVals[0], dateVals[1]) && 
 				timeVals[0] >= 0 && timeVals[0] <= 23 && timeVals[1] >= 0 && 
-				timeVals[1] <= 59 && seconds >= 0 && seconds <= 59;
+				timeVals[1] <= 59 && timeVals[2] >= 0 && timeVals[2] <= 59;
 	}
 	
 	/**
@@ -164,19 +180,38 @@ public class Customer {
 	 */
 	public String generateID(String name, LocalDateTime timestamp)
 	{
+		// initialize random object and seed it 
 		String generatedID ="";
+		Random random = new Random();
+		random.setSeed(3);
+		
+		// generate random numbers 
+		final int[] randIndices = new int[]{random.nextInt(20), random.nextInt(20), 
+				random.nextInt(20), random.nextInt(20), random.nextInt(20), random.nextInt(20)};
 		
 		// date time formatter and convert time stamp to string
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyyHHmmss");
-		String timestampString = timestamp.format(formatter);
+		String timestampString = timestamp.format(formatter).substring(9);
 		
 		// removes white spaces inside string
-		name = name.replaceAll("\\s","");
+		name = name.replaceAll("\\s","").toLowerCase();
 		
 		// convert string of chars to string of integer values 
-		for(int i = 0, n = name.length() ; i < n ; i++) {
-			char c = name.charAt(i);
-			generatedID += String.valueOf((int)c);
+		for(int i: randIndices) {
+			// retrieve character inside name using random indices generated before
+			int index = i % name.length();
+			char c = name.charAt(index);
+			
+			// transform char to int and sum ints that make it up
+			int num = (int)c;
+			int sum = 0;
+	        while (num > 0) {
+	            sum = sum + num % 10;
+	            num = num / 10;
+	        }
+	        
+	        // add together 
+			generatedID += String.valueOf((int)sum);
 		}
 		
 		// add time stamp and return ID		
@@ -203,19 +238,26 @@ public class Customer {
 		if (order == null)
 				throw new IllegalArgumentException();
 		else {
+			// if quantity is invalid, throw exception 
+			if (order.getQuantity() <= 0) 
+				throw new InvalidOrderQuantityException(); 
+			
 			// if it already exists, add quantity to Order
 			String id = order.getIdentifier();
-			if (cart.contains(id)) {
+			if (cart.containsKey(id)) {
 				Order updated = cart.get(id);
-				if (updated.getQuantity() > 0) {
-					updated.setQuantity(updated.getQuantity()+1);
-					cart.put(id, updated);
-					
-					// add price to total cost
-					orderTotalPrice += updated.getCost();
-				} else 
+				
+				// if quantity is invalid, throw exception 
+				if ((order.getQuantity() <= 0) || (updated.getQuantity() <= 0))
 					throw new InvalidOrderQuantityException(); 
-			}
+				
+				updated.setQuantity(updated.getQuantity()+1);
+				cart.put(id, updated);
+				
+				// add price to total cost
+				orderTotalPrice += order.getCost();
+				} 
+
 			// if order does not exist, add <K,V> to hash table
 			else {
 				cart.put(order.getIdentifier(), order);
@@ -234,7 +276,12 @@ public class Customer {
 	 */
 	public void removeOrder(String id) throws NoMatchingOrderIDException, InvalidOrderQuantityException {	
 		// if order exists inside cart
-		if (cart.contains(id))
+		if (cart.containsKey(id)) {
+			
+			// if Order is null, throw exception
+			if (cart.get(id) == null)
+					throw new IllegalArgumentException();
+			
 			// if quantity is more than 1, remove one from quantity
 			if (cart.get(id).getQuantity() > 1) {
 				Order updated = cart.get(id);
@@ -246,15 +293,16 @@ public class Customer {
 			} 
 			// if quantity is 1, remove entire order
 			else if (cart.get(id).getQuantity() == 1) {
-				cart.remove(id);
-				
 				// remove price from total cost
 				orderTotalPrice -= cart.get(id).getCost();
+				
+				// remove order 
+				cart.remove(id);
 			}
 			// invalid quantity for order 
 			else 
 				throw new InvalidOrderQuantityException(); 
-		
+		}
 		// if order does not exist inside cart	
 		else
 			throw new NoMatchingOrderIDException();

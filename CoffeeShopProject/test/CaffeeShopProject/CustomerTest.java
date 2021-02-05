@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import java.time.DateTimeException;
@@ -26,16 +27,9 @@ class CustomerTest {
 
 	@AfterEach
 	void tearDown() throws Exception {
-		// clear customer's cart
+		// clear customer's cart and total amount
 		customer.getCart().clear();
-	}
-
-	@Test
-	void testCustomer() {
-		
-		// test customer constructor, a way to recognize if ID is okay ??
-		
-		fail("Not yet implemented");
+		customer.setOrderTotalPrice(0.0f);
 	}
 	
 	@Test
@@ -96,13 +90,21 @@ class CustomerTest {
 				 );
 	}
 	
+	@RepeatedTest(10)
 	@Test
 	void testIDGeneration() {		
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyyHHmmss");
-		// find Valerio Franchi in ASCII values and put it instead of the bunch of integers
-		String expectedID = "238293293274358545" + customer.getTimestamp().format(formatter);
-
-		assertEquals(expectedID, customer.getId());
+		// same customer, IDs should match
+		Customer customer2 = new Customer(customer.getName(), customer.getTimestamp());
+		assertTrue(customer.equals(customer2));
+		
+		// different name, same time stamp, IDs should not match
+		Customer customer3 = new Customer("Valerio F", customer.getTimestamp());
+		assertFalse(customer.equals(customer3));
+		
+		// same name, different time stamp, IDs should not match
+		Customer customer4 = new Customer(customer.getName(), LocalDateTime.of(2015, 
+                Month.JULY, 29, 19, 30, 40));
+		assertFalse(customer.equals(customer4));
 	}
 	
 	@Test
@@ -149,26 +151,29 @@ class CustomerTest {
 	}
 	
 	@Test 
-	void testInvalidOrderQuantity() {
+	void testInvalidOrderQuantity() throws InvalidOrderQuantityException {
 		// checks that exception is thrown when order quantity is 0 or smaller
 		String orderId = "Espresso123";
 		Order order = new Order(orderId, "Espresso", "Drinks", 1.50f, "Authentic Italian coffee");
 		
+		// check if order to be added has incorrect quantity
 		order.setQuantity(0);
 		assertThrows(InvalidOrderQuantityException.class,
 				() -> {customer.addOrder(order); }
 				);
-		assertThrows(InvalidOrderQuantityException.class,
-				() -> {customer.removeOrder(orderId); }
-				);
 		
-		order.setQuantity(-1);
+		// check if order already inside cart has incorrect quantity when adding to it
+		order.setQuantity(1);
+		customer.addOrder(order);
+		customer.getCart().get(orderId).setQuantity(-1);
 		assertThrows(InvalidOrderQuantityException.class,
 				() -> {customer.addOrder(order); }
 				);
+		
+		// check if order already inside cart has incorrect quantity when removing it
 		assertThrows(InvalidOrderQuantityException.class,
 				() -> {customer.removeOrder(orderId); }
-				);		
+				);
 	}
 	
 	@Test 
@@ -178,12 +183,13 @@ class CustomerTest {
 		Order order = new Order(orderId, "Espresso", "Drinks", 1.50f, "Authentic Italian coffee");
 		customer.addOrder(order);
 		
-		assertThrows(InvalidOrderQuantityException.class,
+		assertThrows(NoMatchingOrderIDException.class,
 				() -> {customer.removeOrder("123"); }
 				);
 	}
 	
 	@Test
+	@RepeatedTest(10)
 	void testSameCustomer() {
 		// test if 2 customers are the same 
 		Customer customer2 = new Customer("Valerio Franchi", customer.getTimestamp());
@@ -209,12 +215,14 @@ class CustomerTest {
 		customer.addOrder(order1);
 		customer.addOrder(order2);
 		customer.addOrder(order2);
+
 		float expectedAmount = price1*2 + price2*2;
 		assertEquals(expectedAmount, customer.getOrderTotalPrice());
 		
 		// remove orders and check price 
 		customer.removeOrder(orderId1);
 		customer.removeOrder(orderId2);
+		
 		expectedAmount -= (price1 + price2);
 		assertEquals(expectedAmount, customer.getOrderTotalPrice());
 	}

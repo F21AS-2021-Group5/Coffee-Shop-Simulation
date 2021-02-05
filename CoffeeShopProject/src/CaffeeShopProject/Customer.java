@@ -13,8 +13,11 @@
 
 package CaffeeShopProject;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Set;
 
@@ -38,6 +41,9 @@ public class Customer {
 			throw new IllegalStateException("Name of customer can't be blank.");
 		}
 		this.name = name.trim();
+		
+		//TODO: find a way of checking if valid time stamp input 
+		
 		this.timestamp = timestamp;
 		
 		// generate the ID based on customer name and time stamp
@@ -108,12 +114,34 @@ public class Customer {
 	}
 	
 	/**
+	 * Checks if the date and time input is valid
+	 * @param ldt The local date/time
+	 * @return true if local date/time is valid, false if not valid 
+	 */
+	private boolean isDateTimeValid(LocalDateTime ldt) {
+		//TODO: still 
+		
+		// convert to date and time
+		String date = ldt.toLocalDate().toString();
+		String time = ldt.toLocalTime().toString();
+		
+		// split date and time into individual elements
+		int[] dateVals = Arrays.stream(date.split(",")).mapToInt(Integer::parseInt).toArray();
+		int[] timeVals =  Arrays.stream(time.split(",")).mapToInt(Integer::parseInt).toArray();
+		
+		// conditions 
+		return dateVals.length == 3 && String.valueOf(dateVals[0]).length() == 4 && 
+				dateVals[1] >= 1 && dateVals[1] <= 12 && dateVals[2] >= 1; 
+		//TODO: add other conditions	
+	}
+	
+	/**
 	 * Generates a Customer ID for the current customer 
 	 * @param name Name of customer
 	 * @param timestamp Time at which customer placed orders 
 	 * @return Customer ID
 	 */
-	private String generateID(String name, LocalDateTime timestamp)
+	public String generateID(String name, LocalDateTime timestamp)
 	{
 		String generatedID ="";
 		
@@ -139,7 +167,7 @@ public class Customer {
 	 * @param otherCustomer
 	 * @return false if they do not match, true if they match 
 	 */
-	private boolean equals(Customer otherCustomer)
+	public boolean equals(Customer otherCustomer)
 	{
 		return id.equals(otherCustomer.id);
 	}
@@ -147,8 +175,9 @@ public class Customer {
 	/**
 	 * Add the order to the customer's cart
 	 * @param order The order
+	 * @throws InvalidOrderQuantityException Invalid order quantity
 	 */
-	private void addOrder(Order order) {		
+	public void addOrder(Order order) throws InvalidOrderQuantityException {		
 		// if Order is null, throw exception
 		if (order == null)
 				throw new IllegalArgumentException();
@@ -157,11 +186,14 @@ public class Customer {
 			String id = order.getIdentifier();
 			if (cart.contains(id)) {
 				Order updated = cart.get(id);
-				updated.setQuantity(updated.getQuantity()+1);
-				cart.put(id, updated);
-				
-				// add price to total cost
-				orderTotalPrice += updated.getCost();
+				if (updated.getQuantity() > 0) {
+					updated.setQuantity(updated.getQuantity()+1);
+					cart.put(id, updated);
+					
+					// add price to total cost
+					orderTotalPrice += updated.getCost();
+				} else 
+					throw new InvalidOrderQuantityException(); 
 			}
 			// if order does not exist, add <K,V> to hash table
 			else {
@@ -176,10 +208,10 @@ public class Customer {
 	/**
 	 * Remove the order corresponding to the ID from the customer's cart 
 	 * @param order Order identification string 
-	 * @throws NoMatchingOrderIDException No matching order ID
+	 * @throws NoMatchingOrderIDException No matching order quantity
 	 * @throws InvalidOrderQuantityException Invalid order ID
 	 */
-	private void removeOrder(String id) throws NoMatchingOrderIDException, InvalidOrderQuantityException {	
+	public void removeOrder(String id) throws NoMatchingOrderIDException, InvalidOrderQuantityException {	
 		// if order exists inside cart
 		if (cart.contains(id))
 			// if quantity is more than 1, remove one from quantity
@@ -231,5 +263,21 @@ public class Customer {
 		output += String.format("\n\nTotal price: %-20s", String.valueOf(orderTotalPrice));
 		
 		return output;
+	}
+	
+	
+	// MAIN
+	public static void main(String[] args) {
+		LocalDateTime now = LocalDateTime.now();
+		System.out.println(now);
+		
+		LocalDate localDate = now.toLocalDate();
+		LocalTime localTime = now.toLocalTime();
+		
+		System.out.println(localDate.toString());
+		System.out.println(localTime.toString());
+		
+		System.out.println(localDate.toString().split("-")[0]);
+		System.out.println(localTime.toString().split(":")[0]);
 	}
 }

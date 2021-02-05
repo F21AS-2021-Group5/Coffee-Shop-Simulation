@@ -8,7 +8,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 
 class CustomerTest {
@@ -41,6 +43,56 @@ class CustomerTest {
 		// checks that exception is thrown when empty name is input 
 		assertThrows(IllegalStateException.class,
 				 () -> { new Customer("", LocalDateTime.now()); }
+				 );
+	}
+	
+	@Test
+	void testInvalidDateTime() {
+		// check that exception is thrown when date and/or time is invalid
+		
+		// invalid year  
+		assertThrows(DateTimeException.class,
+				 () -> { new Customer("Valerio Franchi", LocalDateTime.of(20154, 6, 29, 19, 30, 40)); }
+				 );
+		
+		// invalid month  
+		assertThrows(DateTimeException.class,
+				 () -> { new Customer("Valerio Franchi", LocalDateTime.of(2015, 13, 29, 19, 30, 40)); }
+				 );
+		assertThrows(DateTimeException.class,
+				 () -> { new Customer("Valerio Franchi", LocalDateTime.of(2015, -1, 29, 19, 30, 40)); }
+				 );
+		
+		// invalid day
+		assertThrows(DateTimeException.class,
+				 () -> { new Customer("Valerio Franchi", LocalDateTime.of(2015, 2, 30, 19, 30, 40)); }
+				 );
+		assertThrows(DateTimeException.class,
+				 () -> { new Customer("Valerio Franchi", LocalDateTime.of(2015, 2, -1, 19, 30, 40)); }
+				 );
+		
+		// invalid hour 
+		assertThrows(DateTimeException.class,
+				 () -> { new Customer("Valerio Franchi", LocalDateTime.of(2015, 5, 12, -1, 30, 40)); }
+				 );
+		assertThrows(DateTimeException.class,
+				 () -> { new Customer("Valerio Franchi", LocalDateTime.of(2015, 5, 12, 27, 30, 40)); }
+				 );
+		
+		// invalid minute
+		assertThrows(DateTimeException.class,
+				 () -> { new Customer("Valerio Franchi", LocalDateTime.of(2015, 5, 12, 3, -2, 40)); }
+				 );
+		assertThrows(DateTimeException.class,
+				 () -> { new Customer("Valerio Franchi", LocalDateTime.of(2015, 5, 12, 3, 80, 40)); }
+				 );
+		
+		// invalid second 
+		assertThrows(DateTimeException.class,
+				 () -> { new Customer("Valerio Franchi", LocalDateTime.of(2015, 5, 12, 3, 30, 70)); }
+				 );
+		assertThrows(DateTimeException.class,
+				 () -> { new Customer("Valerio Franchi", LocalDateTime.of(2015, 5, 12, 3, 30, -3)); }
 				 );
 	}
 	

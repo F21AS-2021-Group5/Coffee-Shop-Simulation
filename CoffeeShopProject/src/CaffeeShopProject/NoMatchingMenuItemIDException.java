@@ -1,5 +1,5 @@
 /**
- * NoMatchingOrderIDException.java - class to implement an exception for no matching order IDs
+ * NoMatchingOrderIDException.java - class to implement an exception for no matching item IDs
  * 
  * @author Esther Rayssiguie 
  * @author Jake Marrocco
@@ -13,12 +13,12 @@
 
 package CaffeeShopProject;
 
-public class NoMatchingOrderIDException extends Exception{
+public class NoMatchingMenuItemIDException extends Exception{
 	
 	/**
 	 * Constructor of NoMatchingOrderIDException class
 	 */
-	public NoMatchingOrderIDException() {
-		super("No matching order ID.");
+	public NoMatchingMenuItemIDException() {
+		super("No matching item ID.");
 	}
 }

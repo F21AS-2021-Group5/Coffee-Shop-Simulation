@@ -23,6 +23,7 @@ import java.util.Hashtable;
 import java.util.Set;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Random;
 
 public class Customer {
@@ -30,8 +31,8 @@ public class Customer {
 	String id;
 	String name;
 	LocalDateTime timestamp;
-	float orderTotalPrice;
-	Hashtable<String, Order> cart;
+	float cartTotalPrice;
+	HashMap<String, Integer> cart;
 
 	/**
 	 * Constructor for Customer class
@@ -54,8 +55,8 @@ public class Customer {
 		this.id = generateID(name, timestamp).trim();
 		
 		// initialize total price and cart 
-		orderTotalPrice = 0;
-		cart = new Hashtable<String, Order>();
+		cartTotalPrice = 0;
+		cart = new HashMap<String, Integer>();
 	}
 	
 	/**
@@ -106,30 +107,30 @@ public class Customer {
 	/**
 	 * @return Total money owed by customer 
 	 */
-	public float getOrderTotalPrice() {
-		return orderTotalPrice;
+	public float getCartTotalPrice() {
+		return cartTotalPrice;
 	}
 	
 	/**
 	 * Sets the total amount the customer needs to pay 
-	 * @param orderTotalPrice Total money owed by customer 
+	 * @param cartTotalPrice Total money owed by customer 
 	 */
-	public void setOrderTotalPrice(float orderTotalPrice) {
-		this.orderTotalPrice = orderTotalPrice;
+	public void setCartTotalPrice(float cartTotalPrice) {
+		this.cartTotalPrice = cartTotalPrice;
 	}
 	
 	/**
-	 * @return Hash table filled with the customer's orders and the orders' IDs  
+	 * @return Hash table filled with the customer's item IDs and their respective quantities
 	 */
-	public Hashtable<String, Order> getCart() {
+	public HashMap<String, Integer> getCart() {
 		return cart;
 	}
 	
 	/**
-	 * Sets the customer's cart filled with the orders and the orders' IDs  
+	 * Sets the customer's cart filled with the item IDs and their respective quantities 
 	 * @param cart Customer orders 
 	 */
-	public void setCart(Hashtable<String, Order> cart) {
+	public void setCart(HashMap<String, Integer> cart) {
 		this.cart = cart;
 	}
 	
@@ -229,83 +230,93 @@ public class Customer {
 	}
 	
 	/**
-	 * Add the order to the customer's cart
-	 * @param order The order
-	 * @throws InvalidOrderQuantityException Invalid order quantity
+	 * Add an item to the customer's cart
+	 * @param itemId The item identifier 
+	 * @param quantity Number of items to add 
+	 * @throws InvalidMenuItemQuantityException Invalid item quantity
+	 * @throws InvalidMenuItemDataException Invalid item ID
 	 */
-	public void addOrder(Order order) throws InvalidOrderQuantityException {		
-		// if Order is null, throw exception
-		if (order == null)
-				throw new IllegalArgumentException();
-		else {
-			// if quantity is invalid, throw exception 
-			if (order.getQuantity() <= 0) 
-				throw new InvalidOrderQuantityException(); 
-			
-			// if it already exists, add quantity to Order
-			String id = order.getIdentifier();
-			if (cart.containsKey(id)) {
-				Order updated = cart.get(id);
-				
-				// if quantity is invalid, throw exception 
-				if ((order.getQuantity() <= 0) || (updated.getQuantity() <= 0))
-					throw new InvalidOrderQuantityException(); 
-				
-				updated.setQuantity(updated.getQuantity()+1);
-				cart.put(id, updated);
-				
-				// add price to total cost
-				orderTotalPrice += order.getCost();
-				} 
+	public void addItem(String itemId, int quantity) throws InvalidMenuItemQuantityException, InvalidMenuItemDataException {		
+		// if item ID is empty, throw exception
+		if (itemId.length() == 0) 
+			throw new IllegalStateException("Item ID can't be blank.");
 
-			// if order does not exist, add <K,V> to hash table
-			else {
-				cart.put(order.getIdentifier(), order);
-				
-				// add price to total cost
-				orderTotalPrice += order.getCost();
-			}		
-		}
+		// check that item ID exists inside the menu 
+		if (!CoffeeShop.menu.containsKey(itemId))
+			throw new InvalidMenuItemDataException();
+		
+		// if quantity is invalid, throw exception 
+		if (quantity <= 0) 
+			throw new InvalidMenuItemQuantityException(); 
+		
+		// if it already exists, add quantity to item in cart 
+		itemId = itemId.trim();
+		if (cart.containsKey(itemId)) {
+			int currentQuantity = cart.get(itemId);
+			
+			// if quantity is invalid, throw exception 
+			if (currentQuantity <= 0)
+				throw new InvalidMenuItemQuantityException(); 
+			
+			// add quantity 
+			cart.put(itemId, currentQuantity + quantity);
+			
+			// add price to total cost
+			cartTotalPrice += quantity * CoffeeShop.menu.get(itemId).getCost();
+		} 
+
+		// if order does not exist, add <K,V> to hash table
+		else {
+			cart.put(itemId, quantity);
+			
+			// add price to total cost
+			cartTotalPrice += quantity * CoffeeShop.menu.get(itemId).getCost();
+		}		
 	}
 	
 	/**
-	 * Remove the order corresponding to the ID from the customer's cart 
-	 * @param order Order identification string 
-	 * @throws NoMatchingOrderIDException No matching order quantity
-	 * @throws InvalidOrderQuantityException Invalid order ID
+	 * Remove the item from the customer's cart and with the relevant quantity (-1 for all)
+	 * @param itemId The item identifier 
+	 * @param quantity Number of items to remove  
+	 * @throws NoMatchingMenuItemIDException No matching item ID
+	 * @throws InvalidMenuItemQuantityException Invalid item quantity
+	 * @throws InvalidMenuItemDataException Invalid item ID
 	 */
-	public void removeOrder(String id) throws NoMatchingOrderIDException, InvalidOrderQuantityException {	
+	public void removeItem(String itemId, int quantity) throws NoMatchingMenuItemIDException, InvalidMenuItemQuantityException, InvalidMenuItemDataException {	
+		// item ID cannot be empty string
+		if (itemId.length() == 0) 
+			throw new IllegalStateException("Item ID can't be blank.");
+		
+		// check that item ID exists inside the menu 
+		if (!CoffeeShop.menu.containsKey(itemId))
+			throw new InvalidMenuItemDataException();
+				
 		// if order exists inside cart
-		if (cart.containsKey(id)) {
+		if (cart.containsKey(itemId)) {
 			
-			// if Order is null, throw exception
-			if (cart.get(id) == null)
-					throw new IllegalArgumentException();
+			// check if quantity is -1 or a valid number 
+			if ((quantity == 0)  || (quantity < -1) || ((cart.get(itemId) - quantity) < 0))
+				throw new InvalidMenuItemQuantityException(); 
 			
-			// if quantity is more than 1, remove one from quantity
-			if (cart.get(id).getQuantity() > 1) {
-				Order updated = cart.get(id);
-				updated.setQuantity(updated.getQuantity()-1);
-				cart.put(id, updated);
+			// if removing all items, remove the <K,V> pair
+			if ((quantity == -1) || ((cart.get(itemId) - quantity) == 0))
+			{
+				// remove price from total cost
+				cartTotalPrice -= cart.get(itemId) * CoffeeShop.menu.get(itemId).getCost();
+				
+				// remove pair from hash map 
+				cart.remove(itemId);
+			} else {
+				int currentQuantity = cart.get(itemId);
+				cart.put(itemId, currentQuantity - quantity);
 				
 				// remove price from total cost
-				orderTotalPrice -= updated.getCost();
+				cartTotalPrice -= quantity * CoffeeShop.menu.get(itemId).getCost();
 			} 
-			// if quantity is 1, remove entire order
-			else if (cart.get(id).getQuantity() == 1) {
-				// remove price from total cost
-				orderTotalPrice -= cart.get(id).getCost();
-				
-				// remove order 
-				cart.remove(id);
-			}
-			// invalid quantity for order 
-			else 
-				throw new InvalidOrderQuantityException(); 
 		}
 		// if order does not exist inside cart	
 		else
-			throw new NoMatchingOrderIDException();
+			throw new NoMatchingMenuItemIDException();
 	}
 	
 	/**
@@ -315,21 +326,26 @@ public class Customer {
 	{
 		// date time formatter 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+		String datetime = timestamp.format(formatter);
+		String[] datetimeSplit = datetime.split(" ");
 		 
 		// initial customer information
-		String output = String.format("Name: %10s\n", name) + String.format("ID: %10s\n", id)
-			+ String.format("Timestamp: %10s\n\n", timestamp.format(formatter)) 
-			+ String.format("Orders:");
+		String output = String.format("%-10s %-10s\n", "Name:", name) + 
+						String.format("%-10s %-10s\n", "ID:",id) +
+						String.format("%-10s %-10s\n", "Date:", datetimeSplit[0]) +
+						String.format("%-10s %-10s\n\n", "Time:",datetimeSplit[1]) +
+						String.format("Orders:\n");
 		
 		// print all cart orders with quantities 
 		Set<String> cartSet = cart.keySet();
 		for (String orderID: cartSet) {
-			output += String.format("%-10s", cart.get(orderID).getName()) + 
-					String.format("%-20s", "x" + String.valueOf(cart.get(orderID).getQuantity()));
+			output += String.format("%-10s %-20s %-20s\n", " ",CoffeeShop.menu.get(orderID).getName(), 
+					String.valueOf(cart.get(orderID) + "x"));
 		}
 		
 		// final price
-		output += String.format("\n\nTotal price: %-20s", String.valueOf(orderTotalPrice));
+		String finalPrice = String.format("%.2f", cartTotalPrice) + "£";
+		output += String.format("\n%-31s %-10s", "Total Price:", finalPrice );
 		
 		return output;
 	}
@@ -337,6 +353,6 @@ public class Customer {
 	
 	// MAIN METHOD 
 	public static void main(String[] args) {
-		
+	
 	}
 }

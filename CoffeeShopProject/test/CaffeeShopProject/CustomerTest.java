@@ -31,9 +31,13 @@ import java.time.format.DateTimeFormatter;
 class CustomerTest {
 	
 	private static Customer customer;
+	private static CoffeeShop shop;
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
+		//initialize main class
+		shop = new CoffeeShop("MenuItems");
+		
 		// initialize customer 
 		LocalDateTime ldt = LocalDateTime.now();
 		customer = new Customer("Valerio Franchi", ldt);
@@ -43,7 +47,7 @@ class CustomerTest {
 	void tearDown() throws Exception {
 		// clear customer's cart and total amount
 		customer.getCart().clear();
-		customer.setOrderTotalPrice(0.0f);
+		customer.setCartTotalPrice(0.0f);
 	}
 	
 	@Test
@@ -122,83 +126,129 @@ class CustomerTest {
 	}
 	
 	@Test
-	void testAddOrder() throws InvalidOrderQuantityException {
-		String orderId = "Espresso123";
-		Order order = new Order(orderId, "Espresso", "Drinks", 1.50f, "Authentic Italian coffee");
+	void testaddItem() throws InvalidMenuItemQuantityException, InvalidMenuItemDataException {
+		String itemId = "Cappuccino";
 		
-		// add normal order to cart 
-		customer.addOrder(order);
-		assertEquals(orderId, customer.getCart().get(orderId).getIdentifier());
+		// add normal item to cart 
+		customer.addItem(itemId, 1);
+		assertEquals(1, customer.getCart().get(itemId));
 		
-		// add same order to cart
-		int previousQuantity = customer.getCart().get(orderId).getQuantity();
-		customer.addOrder(order);
-		assertEquals(previousQuantity+1, customer.getCart().get(orderId).getQuantity());
-	}
-	
-	@Test
-	void testRemoveOrder() throws InvalidOrderQuantityException, NoMatchingOrderIDException {
-		String orderId = "Espresso123";
-		Order order = new Order(orderId, "Espresso", "Drinks", 1.50f, "Authentic Italian coffee");
+		// add multiple items to cart 
+		customer.addItem(itemId, 3);
+		assertEquals(4, customer.getCart().get(itemId));
 		
-		// remove order to cart 
-		customer.addOrder(order);
-		int previousSize = customer.getCart().size();
-		customer.removeOrder(orderId);
-		assertEquals(previousSize-1, customer.getCart().size());
-		
-		// remove order with quantity > 1 from to cart
-		customer.addOrder(order);
-		customer.addOrder(order);
-		customer.addOrder(order);
-		int previousQuantity = customer.getCart().get(orderId).getQuantity();
-		customer.removeOrder(orderId);
-		assertEquals(previousQuantity-1, customer.getCart().get(orderId).getQuantity());
-	}
-	
-	@Test
-	void testInvalidOrder() {
-		// checks that exception is thrown when Order is null
-		assertThrows(IllegalArgumentException.class,
-				() -> {customer.addOrder(null); }
-				);
+		// check that key value pair exists
+		assertTrue(customer.cart.containsKey(itemId));
 	}
 	
 	@Test 
-	void testInvalidOrderQuantity() throws InvalidOrderQuantityException {
-		// checks that exception is thrown when order quantity is 0 or smaller
-		String orderId = "Espresso123";
-		Order order = new Order(orderId, "Espresso", "Drinks", 1.50f, "Authentic Italian coffee");
-		
-		// check if order to be added has incorrect quantity
-		order.setQuantity(0);
-		assertThrows(InvalidOrderQuantityException.class,
-				() -> {customer.addOrder(order); }
+	void testaddItemExceptions() throws InvalidMenuItemQuantityException, InvalidMenuItemDataException  {
+		// checks that exception is thrown when item ID is empty string 
+		assertThrows(IllegalStateException.class,
+				() -> {customer.addItem("",1); }
 				);
 		
-		// check if order already inside cart has incorrect quantity when adding to it
-		order.setQuantity(1);
-		customer.addOrder(order);
-		customer.getCart().get(orderId).setQuantity(-1);
-		assertThrows(InvalidOrderQuantityException.class,
-				() -> {customer.addOrder(order); }
+		// checks that exception is thrown when invalid item ID is added
+		assertThrows(InvalidMenuItemDataException.class,
+				() -> {customer.addItem("nothing",1); }
 				);
 		
-		// check if order already inside cart has incorrect quantity when removing it
-		assertThrows(InvalidOrderQuantityException.class,
-				() -> {customer.removeOrder(orderId); }
+		// checks that exception is thrown when item quantity is 0 or smaller
+		String itemId = "Cappuccino";
+		assertThrows(InvalidMenuItemQuantityException.class,
+				() -> {customer.addItem(itemId, 0); }
+				);
+		assertThrows(InvalidMenuItemQuantityException.class,
+				() -> {customer.addItem(itemId, -1); }
+				);
+		assertThrows(InvalidMenuItemQuantityException.class,
+				() -> {customer.addItem(itemId, -2); }
+				);
+		
+		// check if item already inside cart has incorrect quantity when adding to it;
+		customer.addItem(itemId, 1);
+		customer.cart.put(itemId, customer.cart.get(itemId) - 20);
+		assertThrows(InvalidMenuItemQuantityException.class,
+				() -> {customer.addItem(itemId, 1); }
 				);
 	}
 	
-	@Test 
-	void testNotMatchingOrderIDs() throws InvalidOrderQuantityException {
-		// checks that exception is thrown when order quantity is 0 or smaller
-		String orderId = "Espresso123";
-		Order order = new Order(orderId, "Espresso", "Drinks", 1.50f, "Authentic Italian coffee");
-		customer.addOrder(order);
+	@Test
+	void testRemoveItem() throws InvalidMenuItemQuantityException, NoMatchingMenuItemIDException, InvalidMenuItemDataException {
+		String itemId1 = "Cappuccino";
+		String itemId2 = "Latte";
 		
-		assertThrows(NoMatchingOrderIDException.class,
-				() -> {customer.removeOrder("123"); }
+		// remove item from cart 
+		customer.addItem(itemId1,1);
+		customer.removeItem(itemId1,1);
+		assertEquals(0, customer.getCart().size());
+		
+		// remove item from cart that has more than one initial item 
+		customer.cart.clear();
+		customer.addItem(itemId1, 1);
+		customer.addItem(itemId2, 1);
+		customer.removeItem(itemId1,1);
+		assertEquals(1, customer.getCart().size());
+		
+		// remove item from cart with -1 quantity
+		customer.cart.clear();
+		customer.addItem(itemId1,4);
+		customer.removeItem(itemId1,-1);
+		assertEquals(0, customer.getCart().size());
+		
+		// remove item with quantity > 1 from to cart
+		customer.cart.clear();
+		customer.addItem(itemId1,4);
+		customer.removeItem(itemId1,2);
+		assertEquals(2, customer.getCart().get(itemId1));
+	}
+	
+	@Test 
+	void testRemoveExceptions() throws InvalidMenuItemQuantityException, InvalidMenuItemDataException {
+		// checks that exception is thrown when item ID is empty string 
+		assertThrows(IllegalStateException.class,
+				() -> {customer.addItem("",1); }
+				);
+		
+		// check that exception is thrown when input quantity is 0, or less than -1
+		customer.addItem("Cappuccino",4);
+		assertThrows(InvalidMenuItemQuantityException.class,
+				() -> {customer.removeItem("Cappuccino", 0); }
+				);
+		assertThrows(InvalidMenuItemQuantityException.class,
+				() -> {customer.removeItem("Cappuccino", -2); }
+				);
+		assertThrows(InvalidMenuItemQuantityException.class,
+				() -> {customer.removeItem("Cappuccino", -3); }
+				);
+		
+		// check that exception is thrown when input quantity is greater than current quantity
+		customer.cart.clear();
+		customer.addItem("Cappuccino",4);
+		assertThrows(InvalidMenuItemQuantityException.class,
+				() -> {customer.removeItem("Cappuccino", 5); }
+				);
+		assertThrows(InvalidMenuItemQuantityException.class,
+				() -> {customer.removeItem("Cappuccino", 6); }
+				);
+		
+		// check that exception is thrown when item already inside cart has incorrect quantity
+		customer.cart.put("Cappuccino", -5);
+		assertThrows(InvalidMenuItemQuantityException.class,
+				() -> {customer.removeItem("Cappuccino", 2); }
+				);
+		
+		// checks that exception is thrown when invalid item ID is added
+		assertThrows(InvalidMenuItemDataException.class,
+				() -> {customer.removeItem("nothing",1); }
+				);
+		
+		
+		// check that exception is thrown when item ID to remove is not in cart 
+		customer.cart.clear();
+		customer.addItem("Cappuccino",4);
+		assertThrows(NoMatchingMenuItemIDException.class,
+				() -> {customer.removeItem("Croissant", 2); }
 				);
 	}
 	
@@ -215,29 +265,27 @@ class CustomerTest {
 	}
 
 	@Test
-	void testTotalCartPrice() throws InvalidOrderQuantityException, NoMatchingOrderIDException {
-		// add orders to cart and then check final price 
-		float price1 = 1.50f;
-		float price2 = 0.50f;
-		String orderId1 = "Espresso123";
-		String orderId2 = "WaterS123";
-		Order order1 = new Order(orderId1, "Espresso", "Drinks", price1, "Authentic Italian coffee");
-		Order order2 = new Order(orderId2, "Sparkling Water", "Drinks", price2, "Bottled sparking water");
+	void testTotalCartPrice() throws InvalidMenuItemQuantityException, NoMatchingMenuItemIDException, InvalidMenuItemDataException {
+		// add items to cart and then check final price 
+		String itemId1 = "Cappuccino";
+		String itemId2 = "Croissant";
 		
-		// add orders and check price
-		customer.addOrder(order1);
-		customer.addOrder(order1);
-		customer.addOrder(order2);
-		customer.addOrder(order2);
+		// add items and check price
+		customer.addItem(itemId1, 1);
+		customer.addItem(itemId1, 1);
+		customer.addItem(itemId2, 1);
+		customer.addItem(itemId2, 1);
 
-		float expectedAmount = price1*2 + price2*2;
-		assertEquals(expectedAmount, customer.getOrderTotalPrice());
+		float expectedAmount = shop.menu.get(itemId1).getCost()*2 + 
+				shop.menu.get(itemId2).getCost()*2;
+		assertEquals(expectedAmount, customer.getCartTotalPrice());
 		
-		// remove orders and check price 
-		customer.removeOrder(orderId1);
-		customer.removeOrder(orderId2);
+		// remove items and check price 
+		customer.removeItem(itemId1, 1);
+		customer.removeItem(itemId2, 1);
 		
-		expectedAmount -= (price1 + price2);
-		assertEquals(expectedAmount, customer.getOrderTotalPrice());
+		expectedAmount -= (shop.menu.get(itemId1).getCost() + 
+				shop.menu.get(itemId2).getCost());
+		assertEquals(expectedAmount, customer.getCartTotalPrice());
 	}
 }

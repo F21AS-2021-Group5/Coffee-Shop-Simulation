@@ -18,8 +18,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
 import java.util.Set;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -32,11 +32,12 @@ public class Customer {
 	String name;
 	LocalDateTime timestamp;
 	float cartTotalPrice;
-	HashMap<String, Integer> cart;
+	
+	HashMap<String, ArrayList<LocalDateTime>> cart;
 
 	/**
-	 * Constructor for Customer class
-	 * @param id Customer ID 
+	 * Constructor for Customer class taking only a name and time stamp
+	 * @param name Customer name 
 	 * @param timestamp Time at which customer placed orders 
 	 */
 	public Customer(String name, LocalDateTime timestamp)
@@ -56,7 +57,31 @@ public class Customer {
 		
 		// initialize total price and cart 
 		cartTotalPrice = 0;
-		cart = new HashMap<String, Integer>();
+		cart = new HashMap<String, ArrayList<LocalDateTime>>();
+	}
+	
+	/**
+	 * Constructor for Customer class taking a name, time stamp and ID number 
+	 * @param name Customer name 
+	 * @param id Customer ID 
+	 * @param timestamp Time at which customer placed orders 
+	 */
+	public Customer(String name, String id, LocalDateTime timestamp)
+	{
+		// id needs to be provided
+		if ((id.trim().length() == 0) || (name.trim().length() == 0))
+			throw new IllegalStateException("Name or ID of customer can't be blank.");
+		this.name = name.trim();
+		this.id = id.trim();
+		
+		// time stamp needs to have valid date
+		if (!isDateTimeValid(timestamp))
+			throw new DateTimeException("Date and/or time is invalid.");
+		this.timestamp = timestamp;
+		
+		// initialize total price and cart 
+		cartTotalPrice = 0;
+		cart = new HashMap<String, ArrayList<LocalDateTime>>();
 	}
 	
 	/**
@@ -120,17 +145,17 @@ public class Customer {
 	}
 	
 	/**
-	 * @return Hash table filled with the customer's item IDs and their respective quantities
+	 * @return Hash table filled with the customer's item IDs and their respective time stamps
 	 */
-	public HashMap<String, Integer> getCart() {
+	public HashMap<String, ArrayList<LocalDateTime>> getCart() {
 		return cart;
 	}
 	
 	/**
-	 * Sets the customer's cart filled with the item IDs and their respective quantities 
+	 * Sets the customer's cart filled with the item IDs and their respective time stamps
 	 * @param cart Customer orders 
 	 */
-	public void setCart(HashMap<String, Integer> cart) {
+	public void setCart(HashMap<String, ArrayList<LocalDateTime>> cart) {
 		this.cart = cart;
 	}
 	
@@ -233,13 +258,18 @@ public class Customer {
 	 * Add an item to the customer's cart
 	 * @param itemId The item identifier 
 	 * @param quantity Number of items to add 
+	 * @param timestamp Time at which customer placed orders 
 	 * @throws InvalidMenuItemQuantityException Invalid item quantity
 	 * @throws InvalidMenuItemDataException Invalid item ID
 	 */
-	public void addItem(String itemId, int quantity) throws InvalidMenuItemQuantityException, InvalidMenuItemDataException {		
+	public void addItem(String itemId, int quantity, LocalDateTime timestamp) throws InvalidMenuItemQuantityException, InvalidMenuItemDataException {		
 		// if item ID is empty, throw exception
 		if (itemId.length() == 0) 
 			throw new IllegalStateException("Item ID can't be blank.");
+		
+		// time stamp needs to have valid date
+		if (!isDateTimeValid(timestamp))
+			throw new DateTimeException("Date and/or time is invalid.");
 
 		// check that item ID exists inside the menu 
 		if (!CoffeeShop.menu.containsKey(itemId))
@@ -252,14 +282,17 @@ public class Customer {
 		// if it already exists, add quantity to item in cart 
 		itemId = itemId.trim();
 		if (cart.containsKey(itemId)) {
-			int currentQuantity = cart.get(itemId);
+			//int currentQuantity = cart.get(itemId);
 			
 			// if quantity is invalid, throw exception 
-			if (currentQuantity <= 0)
-				throw new InvalidMenuItemQuantityException(); 
+			//if (currentQuantity <= 0)
+			//	throw new InvalidMenuItemQuantityException(); 
 			
 			// add quantity 
-			cart.put(itemId, currentQuantity + quantity);
+			//cart.put(itemId, currentQuantity + quantity);
+			
+			for (int i = 0; i < quantity; i++)
+				cart.get(itemId).add(timestamp);
 			
 			// add price to total cost
 			cartTotalPrice += quantity * CoffeeShop.menu.get(itemId).getCost();
@@ -267,7 +300,11 @@ public class Customer {
 
 		// if order does not exist, add <K,V> to hash table
 		else {
-			cart.put(itemId, quantity);
+			ArrayList<LocalDateTime> orders = new ArrayList<LocalDateTime>();
+			for (int i = 0; i < quantity; i++)
+				orders.add(timestamp);
+			//cart.put(itemId, quantity);
+			cart.put(itemId, orders);
 			
 			// add price to total cost
 			cartTotalPrice += quantity * CoffeeShop.menu.get(itemId).getCost();
@@ -281,8 +318,9 @@ public class Customer {
 	 * @throws NoMatchingMenuItemIDException No matching item ID
 	 * @throws InvalidMenuItemQuantityException Invalid item quantity
 	 * @throws InvalidMenuItemDataException Invalid item ID
+	 * @throws InvalidCartItemException 
 	 */
-	public void removeItem(String itemId, int quantity) throws NoMatchingMenuItemIDException, InvalidMenuItemQuantityException, InvalidMenuItemDataException {	
+	public void removeItem(String itemId, int quantity) throws NoMatchingMenuItemIDException, InvalidMenuItemQuantityException, InvalidMenuItemDataException, InvalidCartItemException {	
 		// item ID cannot be empty string
 		if (itemId.length() == 0) 
 			throw new IllegalStateException("Item ID can't be blank.");
@@ -295,20 +333,25 @@ public class Customer {
 		if (cart.containsKey(itemId)) {
 			
 			// check if quantity is -1 or a valid number 
-			if ((quantity == 0)  || (quantity < -1) || ((cart.get(itemId) - quantity) < 0))
+			if ((quantity == 0)  || (quantity < -1) || ((cart.get(itemId).size() - quantity) < 0))
 				throw new InvalidMenuItemQuantityException(); 
 			
 			// if removing all items, remove the <K,V> pair
-			if ((quantity == -1) || ((cart.get(itemId) - quantity) == 0))
+			if ((quantity == -1) || ((cart.get(itemId).size() - quantity) == 0))
 			{
 				// remove price from total cost
-				cartTotalPrice -= cart.get(itemId) * CoffeeShop.menu.get(itemId).getCost();
+				cartTotalPrice -= cart.get(itemId).size() * CoffeeShop.menu.get(itemId).getCost();
 				
 				// remove pair from hash map 
 				cart.remove(itemId);
+			// if instead removing only part of them
 			} else {
-				int currentQuantity = cart.get(itemId);
-				cart.put(itemId, currentQuantity - quantity);
+				int currentQuantity = 0;
+				// remove last element, so last item added to cart by customer, making it a O(1) operation
+				for (int i = 0; i < quantity; i++) {
+					currentQuantity = cart.get(itemId).size() - 1;
+					cart.get(itemId).remove(currentQuantity);
+				}
 				
 				// remove price from total cost
 				cartTotalPrice -= quantity * CoffeeShop.menu.get(itemId).getCost();
@@ -316,7 +359,7 @@ public class Customer {
 		}
 		// if order does not exist inside cart	
 		else
-			throw new NoMatchingMenuItemIDException();
+			throw new InvalidCartItemException();
 	}
 	
 	/**
@@ -340,7 +383,7 @@ public class Customer {
 		Set<String> cartSet = cart.keySet();
 		for (String orderID: cartSet) {
 			output += String.format("%-10s %-20s %-20s\n", " ",CoffeeShop.menu.get(orderID).getName(), 
-					String.valueOf(cart.get(orderID) + "x"));
+					String.valueOf(cart.get(orderID).size() + "x"));
 		}
 		
 		// final price

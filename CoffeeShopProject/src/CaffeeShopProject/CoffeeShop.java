@@ -63,9 +63,9 @@ public class CoffeeShop {
 		// test receipt (sorry, could only test it here, need the Menu for Customer)
 		Customer c1 = new Customer("Vale", LocalDateTime.now());
 		try {
-			c1.addItem("Cappuccino", 3);
-			c1.addItem("Toastie", 2);
-			c1.addItem("Croissant", 4);
+			c1.addItem("Cappuccino", 3, LocalDateTime.now());
+			c1.addItem("Toastie", 2, LocalDateTime.now());
+			c1.addItem("Croissant", 4, LocalDateTime.now());
 		} catch (InvalidMenuItemQuantityException e) {
 			e.printStackTrace();
 		} catch (InvalidMenuItemDataException e) {

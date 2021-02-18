@@ -10,21 +10,28 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import javax.swing.*;
-import javax.swing.JFrame;
-import javax.swing.JButton;
 
-public class CoffeeGUI {
+
+public class CoffeeGUI{
 
 	//Size of window
 	int width = 600;
 	int height = 400;
 	
-	private JFrame frame;
+	private JFrame frame = new JFrame();
+	
 	Customer currentCustomer;
 	MenuItem menuItem;
-	JTextArea menuList = new JTextArea();
-    JTextArea categories = new JButton();
-    JPanel desksHolder = new JPanel();
+	
+	//First panel
+	JPanel menu = new JPanel();
+	JButton newCustomer = new JButton();
+	JTextArea customer = new JTextArea();
+	JScrollPane menuList = new JScrollPane();
+	JButton categories = new JButton();
+	JTextArea description = new JTextArea();
+	JTextArea price = new JTextArea();
+    
 
 	/**
 	 * Launch the application.
@@ -55,7 +62,6 @@ public class CoffeeGUI {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
 private void DisplayCustomer() {

@@ -19,10 +19,13 @@ public class GUI {
 	protected Shell shell;
 	private Text txtMenu;
 	private Text text;
-	private Text text_1;
-	private Text text_2;
-	private Text text_3;
-	private Text text_4;
+	private Text txt_tax;
+	private Text txt_subt;
+	private Text txt_discnt;
+	private Text txt_total;
+	private Text txtCustomerId;
+	
+	Customer customer_id;
 
 	/**
 	 * Launch the application.
@@ -57,19 +60,16 @@ public class GUI {
 	 */
 	protected void createContents() {
 		shell = new Shell();
-		shell.setSize(800, 600);
+		shell.setSize(800, 700);
 		shell.setText("SWT Application");
 		
-		Button btnNewCustomer = new Button(shell, SWT.NONE);
-		btnNewCustomer.setBounds(198, 10, 109, 26);
-		btnNewCustomer.setText("New Customer");
 		
 		txtMenu = new Text(shell, SWT.BORDER);
 		txtMenu.setText("Menu");
 		txtMenu.setBounds(10, 10, 51, 26);
 		
 		ScrolledComposite scrolledComposite = new ScrolledComposite(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		scrolledComposite.setBounds(9, 75, 298, 196);
+		scrolledComposite.setBounds(10, 122, 298, 206);
 		scrolledComposite.setExpandHorizontal(true);
 		scrolledComposite.setExpandVertical(true);
 		
@@ -78,42 +78,47 @@ public class GUI {
 		scrolledComposite.setMinSize(list.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		
 		Button btnRemove = new Button(shell, SWT.NONE);
-		btnRemove.setBounds(10, 277, 66, 30);
+		btnRemove.setBounds(10, 334, 66, 30);
 		btnRemove.setText("Remove");
 		
 		Spinner spinner = new Spinner(shell, SWT.BORDER);
-		spinner.setBounds(91, 277, 59, 26);
+		spinner.setBounds(91, 336, 59, 26);
 		
 		Button btnAdd = new Button(shell, SWT.NONE);
-		btnAdd.setBounds(168, 277, 51, 30);
+		btnAdd.setBounds(168, 334, 51, 30);
 		btnAdd.setText("Add");
 		
 		Button btnPurchase = new Button(shell, SWT.NONE);
-		btnPurchase.setBounds(237, 277, 70, 30);
+		btnPurchase.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+			}
+		});
+		btnPurchase.setBounds(237, 334, 70, 30);
 		btnPurchase.setText("Purchase");
 		
 		ScrolledComposite scrolledComposite_1 = new ScrolledComposite(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		scrolledComposite_1.setBounds(360, 10, 177, 196);
+		scrolledComposite_1.setBounds(360, 10, 177, 245);
 		scrolledComposite_1.setExpandHorizontal(true);
 		scrolledComposite_1.setExpandVertical(true);
 		
-		List list_1 = new List(scrolledComposite_1, SWT.BORDER);
-		scrolledComposite_1.setContent(list_1);
-		scrolledComposite_1.setMinSize(list_1.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		List list_2 = new List(scrolledComposite_1, SWT.BORDER);
+		scrolledComposite_1.setContent(list_2);
+		scrolledComposite_1.setMinSize(list_2.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		
 		ScrolledComposite scrolledComposite_1_1 = new ScrolledComposite(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		scrolledComposite_1_1.setExpandVertical(true);
 		scrolledComposite_1_1.setExpandHorizontal(true);
-		scrolledComposite_1_1.setBounds(360, 222, 177, 321);
+		scrolledComposite_1_1.setBounds(360, 277, 177, 366);
 		
-		List list_2 = new List(scrolledComposite_1_1, SWT.BORDER);
-		scrolledComposite_1_1.setContent(list_2);
-		scrolledComposite_1_1.setMinSize(list_2.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		List list_1 = new List(scrolledComposite_1_1, SWT.BORDER);
+		scrolledComposite_1_1.setContent(list_1);
+		scrolledComposite_1_1.setMinSize(list_1.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		
 		ScrolledComposite scrolledComposite_1_2 = new ScrolledComposite(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		scrolledComposite_1_2.setExpandVertical(true);
 		scrolledComposite_1_2.setExpandHorizontal(true);
-		scrolledComposite_1_2.setBounds(559, 10, 213, 533);
+		scrolledComposite_1_2.setBounds(559, 10, 213, 633);
 		
 		List list_3 = new List(scrolledComposite_1_2, SWT.BORDER);
 		scrolledComposite_1_2.setContent(list_3);
@@ -121,61 +126,62 @@ public class GUI {
 		
 		text = new Text(shell, SWT.BORDER);
 		text.setText("Item Description");
-		text.setBounds(10, 326, 297, 60);
+		text.setBounds(10, 378, 297, 60);
 		
-		text_1 = new Text(shell, SWT.BORDER);
-		text_1.setText("Tax");
-		text_1.setBounds(10, 405, 190, 30);
+		txt_tax = new Text(shell, SWT.BORDER);
+		txt_tax.setText("Tax");
+		txt_tax.setBounds(10, 458, 190, 30);
 		
-		text_2 = new Text(shell, SWT.BORDER);
-		text_2.setText("Subtotal");
-		text_2.setBounds(10, 441, 190, 30);
+		txt_subt = new Text(shell, SWT.BORDER);
+		txt_subt.setText("Subtotal");
+		txt_subt.setBounds(10, 513, 190, 30);
 		
-		text_3 = new Text(shell, SWT.BORDER);
-		text_3.setText("Discount");
-		text_3.setBounds(10, 513, 190, 30);
+		txt_discnt = new Text(shell, SWT.BORDER);
+		txt_discnt.setText("Discount");
+		txt_discnt.setBounds(10, 566, 190, 30);
 		
-		text_4 = new Text(shell, SWT.BORDER);
-		text_4.setText("Total");
-		text_4.setBounds(10, 477, 190, 30);
+		txt_total = new Text(shell, SWT.BORDER);
+		txt_total.setText("Total");
+		txt_total.setBounds(10, 613, 190, 30);
 		
 		Button btnMeal = new Button(shell, SWT.NONE);
-		btnMeal.setBounds(9, 42, 66, 26);
+		btnMeal.setBounds(10, 90, 66, 26);
 		btnMeal.setText("Meal");
 		
-		Button btnMeal_1 = new Button(shell, SWT.NONE);
-		btnMeal_1.addSelectionListener(new SelectionAdapter() {
+		Button btnDessert = new Button(shell, SWT.NONE);
+		btnDessert.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 			}
 		});
-		btnMeal_1.setText("Desserts");
-		btnMeal_1.setBounds(168, 43, 66, 26);
+		btnDessert.setText("Desserts");
+		btnDessert.setBounds(168, 90, 66, 26);
 		
-		Button btnMeal_1_1 = new Button(shell, SWT.NONE);
-		btnMeal_1_1.addSelectionListener(new SelectionAdapter() {
+		Button btnDrink = new Button(shell, SWT.NONE);
+		btnDrink.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 			}
 		});
-		btnMeal_1_1.setText("Drinks");
-		btnMeal_1_1.setBounds(241, 43, 66, 26);
+		btnDrink.setText("Drinks");
+		btnDrink.setBounds(242, 90, 66, 26);
 		
-		Button btnMeal_1_2 = new Button(shell, SWT.NONE);
-		btnMeal_1_2.addSelectionListener(new SelectionAdapter() {
+		Button btnSide = new Button(shell, SWT.NONE);
+		btnSide.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
+				
 			}
 		});
-		btnMeal_1_2.setText("Sides");
-		btnMeal_1_2.setBounds(84, 43, 66, 26);
+		btnSide.setText("Sides");
+		btnSide.setBounds(82, 90, 66, 26);
 		
 		Button btnOrderList = new Button(shell, SWT.NONE);
-		btnOrderList.setBounds(217, 403, 90, 30);
+		btnOrderList.setBounds(217, 456, 90, 30);
 		btnOrderList.setText("Order List");
 		
 		Button btnReceipt = new Button(shell, SWT.NONE);
-		btnReceipt.setBounds(217, 456, 90, 30);
+		btnReceipt.setBounds(217, 511, 90, 30);
 		btnReceipt.setText("Receipt");
 		
 		Button btnFinalReportCoffee = new Button(shell, SWT.NONE);
@@ -184,9 +190,29 @@ public class GUI {
 			public void widgetSelected(SelectionEvent arg0) {
 			}
 		});
-		btnFinalReportCoffee.setBounds(217, 511, 90, 30);
+		btnFinalReportCoffee.setBounds(217, 613, 90, 30);
 		btnFinalReportCoffee.setText("Final Report");
+		DisplayCustomer();
 
 	}
+	
+	private void DisplayCustomer() {
+		Button btnNewCustomer = new Button(shell, SWT.NONE);	// Create New Customer button
+		btnNewCustomer.setBounds(198, 10, 109, 26);		// Button size
+		btnNewCustomer.setText("New Customer");		// Button text
+		// Action New Customer Button
+		btnNewCustomer.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				shell.close();		// CHANGE LATER, for now just close window
+			}
+		});
+		
+		// Display Current customer and their ID
+		txtCustomerId = new Text(shell, SWT.BORDER);
+		txtCustomerId.setText("Customer ID" ); //+ customer_id.getId()
+		txtCustomerId.setBounds(10, 55, 298, 26);
+	}
+	
 }
 

@@ -1,5 +1,8 @@
 package CaffeeShopProject;
 
+import java.util.HashMap;
+import java.util.Queue;
+import java.util.ArrayList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -15,7 +18,8 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 
 public class GUI {
-
+	
+	// For Shell display
 	protected Shell shell;
 	private Text txtMenu;
 	private Text txt_description;
@@ -24,9 +28,14 @@ public class GUI {
 	private Text txt_discnt;
 	private Text txt_total;
 	private Text txtCustomerId;
+	private List list_menu;
+	private ScrolledComposite scrolledComposite_Menu;
+	
+	ArrayList<String> customer_order = new ArrayList<String>();	//Order of current customer
 	
 	Customer customer;
 	MenuItem menu_item;
+	CoffeeShop coffee;
 
 	/**
 	 * Launch the application.
@@ -41,9 +50,7 @@ public class GUI {
 		}
 	}
 
-	/**
-	 * Open the window.
-	 */
+	// Open the window
 	public void open() {
 		Display display = Display.getDefault();
 		createContents();
@@ -56,9 +63,7 @@ public class GUI {
 		}
 	}
 
-	/**
-	 * Create contents of the window.
-	 */
+	// Create contents of the window
 	protected void createContents() {
 		// Start Shell
 		shell = new Shell();
@@ -99,15 +104,23 @@ public class GUI {
 		
 		// Display Current Customer and their ID
 		txtCustomerId = new Text(shell, SWT.BORDER);
-		txtCustomerId.setText("Customer ID" ); //+ customer.getId()
+		txtCustomerId.setText("Customer ID" + customer.getId());
 		txtCustomerId.setBounds(10, 55, 298, 26);
 	}
 	
+	// Select category and fill list of items from category chosen
 	private void SelectCategory() {
 		Button btnMeal = new Button(shell, SWT.NONE);
 		btnMeal.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
+				list_menu.removeAll();  // empty list
+				int iCount = coffee.menu.size(); // go through size of the menu
+				for (int i = 0; i < iCount; i++) {
+					if (menu_item.getCategory() == "Food") {
+						list_menu.add(menu_item.getName()); // add items to list
+					}
+				}
 			}
 		});
 		btnMeal.setText("Meal");
@@ -118,6 +131,13 @@ public class GUI {
 		btnDessert.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
+				list_menu.removeAll();	// empty list
+				int iCount = coffee.menu.size(); // go through size of the menu
+				for (int i = 0; i < iCount; i++) {
+					if (menu_item.getCategory() == "Pastry") {
+						list_menu.add(menu_item.getName()); // add item to list
+					}
+				}
 			}
 		});
 		btnDessert.setText("Desserts");
@@ -127,6 +147,13 @@ public class GUI {
 		btnDrink.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
+				list_menu.removeAll();	// empty list
+				int iCount = coffee.menu.size(); // go through size of the menu
+				for (int i = 0; i < iCount; i++) {
+					if (menu_item.getCategory() == "Drink") {
+						list_menu.add(menu_item.getName()); // add item to list
+					}
+				}
 			}
 		});
 		btnDrink.setText("Drinks");
@@ -136,7 +163,13 @@ public class GUI {
 		btnSide.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				
+				list_menu.removeAll();	// empty list
+				int iCount = coffee.menu.size(); // go through size of the menu
+				for (int i = 0; i < iCount; i++) {
+					if (menu_item.getCategory() == "Side") {
+						list_menu.add(menu_item.getName()); // add item to list
+					}
+				}			
 			}
 		});
 		btnSide.setText("Sides");
@@ -146,12 +179,12 @@ public class GUI {
 	
 	// Display Menu
 	private void DisplayMenu() {
-		ScrolledComposite scrolledComposite_Menu = new ScrolledComposite(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		scrolledComposite_Menu = new ScrolledComposite(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		scrolledComposite_Menu.setBounds(10, 122, 298, 206);
 		scrolledComposite_Menu.setExpandHorizontal(true);
 		scrolledComposite_Menu.setExpandVertical(true);
 		
-		List list_menu = new List(scrolledComposite_Menu, SWT.BORDER);
+		list_menu = new List(scrolledComposite_Menu, SWT.BORDER);
 		scrolledComposite_Menu.setContent(list_menu);
 		scrolledComposite_Menu.setMinSize(list_menu.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	}
@@ -184,9 +217,10 @@ public class GUI {
 		btnPurchase.setText("Purchase");
 	}
 	
+	// Display description of item chosen
 	private void DisplayItemDescription() {
 		txt_description = new Text(shell, SWT.BORDER);
-		txt_description.setText("Item Description" ); //+ menu_item.getDescription()
+		txt_description.setText("Item Description" + menu_item.getDescription());
 		txt_description.setBounds(10, 378, 297, 60);
 	}
 	

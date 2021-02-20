@@ -8,9 +8,14 @@ DRINK006;Tea;Drink;2.10;Chamonile, Mint, English or Chai brewed tea.
 FOOD001;Panini;Food;3.25;Grilled sandwich made of a small loaf of bread, cut horizontally, filled with meat and cheese.
 FOOD002;Toastie;Food;2.85;Hot sandwich made with one or more varieties of cheese on bread.
 FOOD003;Sandwich;Food;3.05;With vegetables, sliced cheese or meat, placed between slices of bread.
-FOOD003;Salad;Food;3.55;Romaine tossed with oven baked seasoned croutons, Parmesan cheese and rich Caesar dressing.
+FOOD004;Salad;Food;3.55;Romaine tossed with oven baked seasoned croutons, Parmesan cheese and rich Caesar dressing.
 
 PASTRY001;Croissant;Pastry;2.25;Golden pastry with soft, flaky layers and a rich buttery flavour.
 PASTRY002;Brownies;Pastry;2.65;Dark and milk chocolate brownie with chocolate buttons.
 PASTRY003;Muffin;Pastry;2.35;A classic muffin filled with a smooth blueberry filling.
 PASTRY004;Cinnamon Swirl;Pastry;3.25;Sweet dough with cinnamon filling, sultanas and topped with a cream cheese style icing.
+
+SIDE001;Fries;Side;1.95;French fried, baked in oven, with garlic seasoning.
+SIDE002;Vegetables;Food;3.85;Roasted vegetables with honey and thyme.
+SIDE003;Salad;Food;1.25;Mixed lead salad with balsamic dressing.
+SIDE004;Mash;Food;3.55;Creamy mash made from potato and carrot.

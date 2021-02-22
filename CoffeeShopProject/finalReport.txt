@@ -1,0 +1,12 @@
+End of the day report 
+Date:      22-02-2021
+Time:      21:01:19  
+
+Orders:
+           Toastie         2x        Cost:      5.70£      
+           Croissant       3x        Cost:      6.75£      
+           Mocha           1x        Cost:      2.95£      
+
+
+Number of customers:      2         
+Sum of the day:           15.4£     

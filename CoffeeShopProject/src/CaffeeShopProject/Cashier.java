@@ -8,7 +8,7 @@ public class Cashier {
 	public float tax;
 	public float discount;
 	public float total;
-	
+
 	
 	// Those methods need to be completed!!
 	public float getCartSubtotalPrice() {

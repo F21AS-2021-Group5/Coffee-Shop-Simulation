@@ -36,7 +36,7 @@ public class Cashier {
 		if (cart.containsKey("DRINK001") && cart.containsKey("FOOD001")) {
 			discount = getCartSubtotalPrice()/5;
 		}
-		// 2 drinks & 2 pastry = 25% off //
+		// 2 drinks = 25% off //
 		if (cart.containsKey("DRINK001") && cart.containsKey("PASTRY001")) {
 			discount = getCartSubtotalPrice()/4;
 		}

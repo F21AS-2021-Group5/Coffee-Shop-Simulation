@@ -22,7 +22,7 @@ public class Cashier {
 	public float getCartTax() {
 		// get  cart from Customer class
 		cart = customer.getCart();
-		// loop through items in cart 
+		// loop through items in cart
 		// if item is taxable, add 20% of item price to tax
 		if (cart.containsKey("DRINK001")) {
 			tax = getCartSubtotalPrice()/5;

@@ -25,7 +25,7 @@ public class Cashier {
 		// loop through items in cart 
 		// if item is taxable, add 20% of item price to tax
 		if (cart.containsKey("DRINK001")) {
-			
+			tax = getCartSubtotalPrice()/5;
 		} 
 		tax = getCartSubtotalPrice()/5;
 		return tax;

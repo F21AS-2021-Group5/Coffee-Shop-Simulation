@@ -1,0 +1,15 @@
+Name:      adsa      
+ID:        7167116705830
+Date:      24-02-2021
+Time:      20:58:30  
+
+Orders:
+           Sandwich             3x                  
+           Vegetables           1x                  
+           Croissant            1x                  
+           Mocha                1x                  
+           Mash                 1x                  
+           Brownies             1x                  
+           Cappuccino           1x                  
+
+Total Price:                    27.00£    

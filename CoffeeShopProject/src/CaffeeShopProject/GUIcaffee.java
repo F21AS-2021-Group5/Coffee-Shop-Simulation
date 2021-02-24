@@ -23,8 +23,21 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class GUIcaffee {
+	
+	private String CreateInitialText() {
+		String output = String.format("%-20s \n\n", "Discounts when buying") + 
+				String.format("%-10s %-20s\n", " ", "3 Drinks and 1 Food: ") +
+				String.format("%-30s %-20s\n\n", " ", "20% off for the combination")+
+				String.format("%-10s %-20s\n", " ", "3 Pastry: ") +
+				String.format("%-30s %-20s\n\n", " ", "25% off for the combination")+
+				String.format("%-10s %-20s\n", " ", "1 Drinks, 1 Food, 1 Pastry")+
+				String.format("%-30s %-20s\n\n", " ", "6£ for the combination");
+		return output;
+	}
 	
 	int width = 1200;
 	int height = 800;
@@ -37,44 +50,45 @@ public class GUIcaffee {
 	
 	JFrame frame = new JFrame("GUI");
 	JButton newCust = new JButton("New Customer");
-	JTextField nameCust = new JTextField(20);
 	JButton drink = new JButton("Drink");
 	JButton food = new JButton("Food");
 	JButton pastry = new JButton("Pastry");
-	JList menuItem = new JList(); //data
+	JTextField nameCust = new JTextField(20);
+	
+	DefaultListModel listModel=new DefaultListModel();
+	JList menuItem =new JList();
+	
 	JButton removeItem = new JButton("Remove");
 	JButton addItem = new JButton("Add");
 	JButton purchase = new JButton("Purchase");
 	SpinnerModel quantityModel  = new SpinnerNumberModel(1, 0,100,1);
 	JSpinner quantity = new JSpinner(quantityModel);
-	JTextArea description = new JTextArea();
-	JTextArea descriptionSum = new JTextArea();
+	
+	JTextArea description = new JTextArea("Product Description:");
+	JTextArea descriptionSum = new JTextArea(CreateInitialText());
+	
 	JButton receipt = new JButton("Generate Receipt");
 	JButton endOfDay = new JButton("End of day report");
 	
-	JList orderList = new JList(); //data
-	JList receipView = new JList(); //data
-	JList summaryView = new JList(); //new JList(); //data
+	JTextArea orderList = new JTextArea("Order list:"); 
+	JTextArea receipView = new JTextArea("Customer Receipt: "); 
+	JTextArea summaryView = new JTextArea("Caffee end of the day summary: "); 
 	
-	BufferedReader lector = null;
-    DefaultListModel lista = new DefaultListModel();
-    File finalReport = new File("finalReport.txt");
-    
-    BufferedReader lect = null;
-    DefaultListModel lis = new DefaultListModel();
-    File custReport = new File("customerReport.txt");
 	
-	Customer customer;
-	MenuItem menu_item;
-	CoffeeShop coffee;
-	Cashier cashier;
+	private static Customer currentCustomer;
+	
+	private DefaultListModel drinkCategory = new DefaultListModel();
+	private DefaultListModel foodCategory = new DefaultListModel(); 
+	private DefaultListModel pastryCategory = new DefaultListModel();
+	
+	CoffeeShop shop = new CoffeeShop("MenuItems");
 	
 	
 	public GUIcaffee() {
+		
 		//addWindowListener(this);
 		//newCust.addActionListener(this);
-		
-		
+
 	}
 	
 	public void initializeGUI(){
@@ -82,6 +96,8 @@ public class GUIcaffee {
 		frame.setLayout(null);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // makes program stop on exit
+		
+		setupListener();
 		
 		newCust.setBounds(250, 20, 150, 40);
 		nameCust.setBounds(450, 20, 150, 40);
@@ -94,9 +110,9 @@ public class GUIcaffee {
 		addItem.setBounds(250, 425, 150, 40);
 		quantity.setBounds(450, 425, 150, 40);
 		
-		description.setBounds(50, 490, 550, 30);
-		
+		description.setBounds(50, 490, 550, 33);
 		descriptionSum.setBounds(50, 545, 300, 200);
+		
 		purchase.setBounds(400, 545, 200, 47);
 		receipt.setBounds(400, 617, 200, 47);
 		endOfDay.setBounds(400, 689, 200, 47);
@@ -105,14 +121,20 @@ public class GUIcaffee {
 		receipView.setBounds(650, 370, 225, 350);
 		summaryView.setBounds(925, 20, 225, 700);
 		
+		orderList.setEditable(false);
+		receipView.setEditable(false);
+		summaryView.setEditable(false);
+		description.setEditable(false);
+		descriptionSum.setEditable(false);
+		
 		
 	}
 	
 	public void paintScreen() {
 		frame.getContentPane().add(newCust);
 		frame.getContentPane().add(nameCust);
-		frame.getContentPane().add(food);
 		frame.getContentPane().add(drink);
+		frame.getContentPane().add(food);
 		frame.getContentPane().add(pastry);
 		frame.getContentPane().add(menuItem);
 		frame.getContentPane().add(removeItem);
@@ -128,192 +150,138 @@ public class GUIcaffee {
 		frame.getContentPane().add(summaryView);
 	}
 	
-    public void main(String[] args) {  
-		
-    	GUIcaffee GUI = new GUIcaffee();
-		GUI.initializeGUI(); 
-		GUI.paintScreen();
-		
-		DisplayCustomer();
-		SelectCategory();
-		DisplayOrder();
-		AddItem();
-		RemoveItem();
-		DisplayItemDescription();
-		DisplayReceipt();
-		DisplayFinalReport();
-	}  
-    
-    // Display Current Customer and their ID
-    private void DisplayCustomer() {
-    	//Add action to button New Customer
-    	newCust.addActionListener(new ActionListener() {
-    		public void actionPerformed(ActionEvent e) {
-    			//Get ID from customer class
-    			nameCust.setText(customer.getId());
-    		}
-    	}); 
-    }
-    
-    // Select category and fill list of items from category chosen
-    private void SelectCategory() {
-    	
-		int iCount = coffee.menu.size(); // go through size of the menu
-		menuItem.removeAll();	//Empty list first
-
-		//Pressing Drink button fill menuItem list
-    	drink.addActionListener(new ActionListener() {	//when drink pressed
-    		public void actionPerformed(ActionEvent e) {
-    			for (int i = 0; i < iCount; i++) {	// go through menu
-    				if (menu_item.getCategory() == "Drink") {	//if menu item is drink
-    					Object[] data = {menu_item.getName()};	//fill in list
-    					menuItem = new JList(data);		//display in JList menuItem
-    				}
-    			}
-    		}
-    	}); 
-    	
-    	//Pressing Food button fill menuItem list
-    	food.addActionListener(new ActionListener() {
-    		public void actionPerformed(ActionEvent e) {
-    			for (int i = 0; i < iCount; i++) {
-    				if (menu_item.getCategory() == "Food") {	//if menu item is food
-    					Object[] data = {menu_item.getName()};	//fill in list
-    					menuItem = new JList(data);		//display in JList menuItem
-    				}
-    			}
-    			
-    		}
-    	});
-    	
-    	//Pressing Pastry button fill menuItem list
-    	pastry.addActionListener(new ActionListener() {
-    		public void actionPerformed(ActionEvent e) {
-    			for (int i = 0; i < iCount; i++) {
-    				if (menu_item.getCategory() == "Pastry") {
-    					Object[] data = {menu_item.getName()};	//fill in list
-    					menuItem = new JList(data);		//display in JList menuItem
-    				}
-    			}
-    		}
-    	}); 
-    }
-    
-    //add to cart Item ID and time stamp, for quantity of order 
-    private void AddItem() {
-		// Quantity of the Item selected
-		itemQuantity = quantity.getComponentCount();
-		LocalDateTime time = customer.timestamp;
-		
-		addItem.addActionListener(new ActionListener() {
-    		public void actionPerformed(ActionEvent e) {
-    			for(int i = 0; i< coffee.menu.size(); i ++) {
-    				if(menuItem.getSelectedValue().toString() == menu_item.getName()) {
-    					for (int j = 0; i < itemQuantity; i++) {
-    						cart.put(menu_item.getIdentifier(), time); //add item to cart number of time it was selected
-    					}
-    						
-    				}
-    			}
-    			
-    		}
-    	}); 
-    }
-    
-    //Remove item from cart
-    private void RemoveItem() {
-    	removeItem.addActionListener(new ActionListener() {
-    		public void actionPerformed(ActionEvent e) {
-    			for(int i = 0; i< coffee.menu.size(); i ++) {
-    				if(menuItem.getSelectedValue().toString() == menu_item.getName()) {
-    					cart.remove(menu_item.getIdentifier()); //remove item from cart			
-    				}
-    			}
-    			
-    		}
-    	});
+	public void setUp() {
+		DiscountDescription();
+		Display();
 	}
 	
-    //Pass list to customer class
-	private void Purchase() {
-		purchase.addActionListener(new ActionListener() {
-    		public void actionPerformed(ActionEvent e) {
-//    			cart.entrySet().forEach(null);
-//    			customer.setCart(cart.ge);
-    			
-    		}
-    	}); 
-	}
-	
-	// Display description of item chosen
-	private void DisplayItemDescription() {
-		//get the description of the item selected
-		for(int i = 0; i< coffee.menu.size(); i ++) {
-			if(menuItem.getSelectedValue().toString() == menu_item.getName()) {
-				description.setText(menu_item.getDescription());	// Display description
-			}
-		}
-	}
-		
-	// Display Price
-	private void DisplayPrice() {
-		descriptionSum.setText("Tax  " + cashier.getCartTax() +
-								"\"Subtotal  \" + cashier.getCartSubtotalPrice()" +
-								"Total  " + customer.getCartTotalPrice());
-	}
-		
-	// Display List of Current Order from Current Customer
-	private void DisplayOrder() {
-		Object[] order = {cart.keySet()};	//get list of item names added
-		orderList = new JList(order);		//display in JList orderList
-	}
-		
-		
-	// Display Receipt of Current Customer
-	private void DisplayReceipt() {
-		try {
-			lect = new BufferedReader(new FileReader(custReport));
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-           String texta = null;
-            try {
-			while ((texta = lect.readLine()) != null) {	//while there are still lines
-			    lis.addElement(texta);	//add the lines to listModel
-				}
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-           orderList.setModel(lis);	//show receipt in JList
-	}
-	
-	// Display Final Report of Coffee Shop
-	private void DisplayFinalReport() {
-		endOfDay.addActionListener(new ActionListener() {
-	   		public void actionPerformed(ActionEvent e) {
-	   			try {
-					lector = new BufferedReader(new FileReader(finalReport));
-				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-	               String texta = null;
-	                try {
-					while ((texta = lector.readLine()) != null) {	//while there are still lines
-					    lista.addElement(texta);	//add the lines to listModel
-       
+	private void setupListener() {
+		Display();
+		//DiscountDescription();
+		initialiseCategoryList();
+		ActionListener Listener = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == newCust) {
+					String name = nameCust.getText(); //need to define invalid names or something
+	    			createNewCustomer(name); 
+				}if (e.getSource() == drink) {
+			        menuItem.setModel(drinkCategory);
+				}if (e.getSource() == food) {
+					menuItem.setModel(foodCategory);
+				}if (e.getSource() == pastry) {
+					menuItem.setModel(pastryCategory);
+				}if (e.getSource() == addItem) {
+					String selectedItem = (String) menuItem.getSelectedValue();
+					selectedItem = selectedItem.substring(0, 20).trim();
+					int itemQuantaty = (Integer)quantity.getValue();
+					LocalDateTime timeStamp = LocalDateTime.now();
+					try {
+						currentCustomer.addItem(selectedItem, itemQuantaty, timeStamp);
+						displayOrder();
+					} catch (InvalidMenuItemQuantityException | InvalidMenuItemDataException e1) {
+						e1.printStackTrace();
 					}
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				}if (e.getSource() == removeItem) {
+					String selectedItem = (String) menuItem.getSelectedValue();
+					selectedItem = selectedItem.substring(0, 20).trim();
+					int itemQuantaty = (Integer)quantity.getValue();
+					try {
+						currentCustomer.removeItem(selectedItem, itemQuantaty);
+						displayOrder();
+					} catch (NoMatchingMenuItemIDException | InvalidMenuItemQuantityException
+							| InvalidMenuItemDataException | InvalidCartItemException e1) {
+						e1.printStackTrace();
+					}
+				}if (e.getSource() == purchase) {
+			  	    CoffeeShop.customerList.put(currentCustomer.getId(), currentCustomer);
+					shop.GenerateCustomerReport(currentCustomer.getId());
+					
+				}if (e.getSource() == endOfDay) {
+					String report  = shop.GenerateFinalReportDisplay();
+					summaryView.setText(report);
 				}
-    			summaryView.setModel(lista);	//show report in JList
-    		}
-    	}); 
+			}
+		};
+		
+		
+		newCust.addActionListener(Listener);
+		food.addActionListener(Listener);
+		drink.addActionListener(Listener);
+		pastry.addActionListener(Listener);
+		addItem.addActionListener(Listener);
+		removeItem.addActionListener(Listener);
+		purchase.addActionListener(Listener);
+		endOfDay.addActionListener(Listener);
 	}
     
+	
+    public void createNewCustomer(String name) {
+ 	   LocalDateTime timeStamp = LocalDateTime.now();
+ 	   Customer newCustomer = new Customer(name, timeStamp);
+ 	   currentCustomer = newCustomer;
+    }
+    
+    private void DiscountDescription() {
+
+  	    description.setText("Product Description:");
+  	    orderList.setText("Order list:");
+    }
+    
+    private void displayOrder() {
+    	orderList.setText("");
+    	String output = "Order list: \n\n";
+    	Set<String> cartSet = currentCustomer.cart.keySet();
+		for (String orderID: cartSet) {
+			output += String.format("%-10s %-30s %-20s\n", " ",CoffeeShop.menu.get(orderID).getName(), 
+					String.valueOf(currentCustomer.cart.get(orderID).size() + "x"));
+		}
+    	orderList.setText(output);
+    }
+    
+    private void initialiseCategoryList() {
+    	for (Map.Entry m : CoffeeShop.menu.entrySet()) { 
+   		 	 MenuItem item = (MenuItem) m.getValue();
+   		 	 
+    		 String category = item.getCategory();
+    		 String display = String.format("%-40s %-4s", item.getName(),String.valueOf(item.getCost() + "£"));
+    		 
+    		 if(category.equals("Drink")) {
+    			 drinkCategory.addElement(display);
+    		 } else if (category.equals( "Pastry")) {
+    			 pastryCategory.addElement(display);
+    		 } else if (category.equals("Food")) {
+    			foodCategory.addElement(display);
+    		 }
+    	 }
+    }
+    
+    private void Display() {
+    	menuItem.addMouseListener(new MouseAdapter()  {
+		      @Override
+		      public void mouseClicked(MouseEvent e) {
+		    	  String selectedItem = (String) menuItem.getSelectedValue();
+		    	  selectedItem = selectedItem.substring(0, 20).trim();
+		    	  MenuItem item = CoffeeShop.menu.get(selectedItem);
+		    	  String product = "Product Description: \n";
+		    	  description.setText(product+item.getDescription());
+		      }
+		    });
+    }
+    
+    private void CustomerPurchase(){
+    	String ID = currentCustomer.getId();
+  	    CoffeeShop.customerList.put(ID, currentCustomer);
+  	    
+  	    String order = "Customer Receipt: \n\n";
+  	    Set<String> cartSet = currentCustomer.cart.keySet();
+		for (String orderID: cartSet) {
+			order += String.format("%-10s %-30s %-20s\n", " ",CoffeeShop.menu.get(orderID).getName(), 
+					String.valueOf(currentCustomer.cart.get(orderID).size() + "x"));
+		}
+		receipView.setText(order);
+  	    
+    }
 
 }
     
+

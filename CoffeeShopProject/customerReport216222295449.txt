@@ -1,0 +1,13 @@
+Name:      ann       
+ID:        216222295449
+Date:      24-02-2021
+Time:      19:54:49  
+
+Orders:
+           Sandwich             1x                  
+           Tea                  4x                  
+           Muffin               1x                  
+           Panini               1x                  
+           Cinnamon Swirl       1x                  
+
+Total Price:                    20.30£    

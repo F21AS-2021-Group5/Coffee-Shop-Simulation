@@ -14,22 +14,8 @@ public class Cashier {
 	public int taxable;
 	HashMap<String, ArrayList<LocalDateTime>> cart;
 	Customer customer;
-	CoffeeShop coffeeshop;
-	public float subtotal = (float) 1.0;
-	public float tax = (float) 1.0;
-	public float discount= (float) 1.0;
-	public float total= (float) 1.0;
-	public Customer currentCustomer;
 	
-	public Cashier() {
-		
-	}
-	
-	public void setCustomer(Customer customer) {
-		this.currentCustomer = customer;
-	}
-	
-	// Those methods need to be completed!!
+
 	public float getCartSubtotalPrice() {
 		subtotal = customer.getCartTotalPrice();
 		return subtotal;

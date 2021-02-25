@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.io.*;
 import java.security.Timestamp;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.io.File;  // Import the File class
@@ -16,12 +17,18 @@ public class CoffeeShop {
 	
 	public static HashMap<String, MenuItem> menu;
 	public static HashMap<String, Customer> customerList;
-	public static Customer currentCustomer;
-	private static File finalReport;
 	private static HashMap<String,Integer> inventory;
-	private static double[] prices = {0.00, 0.00,0.00,0.00};
-	private static String line = String.format("%1$" + 55 + "s", "- \n").replace(' ', '-');
 	
+	private static File finalReport;
+	private static String line = String.format("%1$" + 55 + "s", "- \n").replace(' ', '-');
+	private static DecimalFormat df2 = new DecimalFormat("#.##");
+	
+	String finalReportString = "";
+	String customerReceiptString = "";
+	
+	double[] money = {0.00,0.00,0.00,0.00};
+	
+	public static Customer currentCustomer;
 	Cashier cashier = new Cashier();
 
 	public CoffeeShop(String filename)
@@ -34,13 +41,6 @@ public class CoffeeShop {
 		fillMenu(filename);
 		fillCustomerList("CustomerList");
 	}
-	
-	double sub = 0.00;
-	double tax = 0.00;
-	double dis = 0.00;
-	double total = 0.00;
-	
-	double[] money = {0.00,0.00,0.00,0.00};
 	
 	
 	/**
@@ -161,32 +161,72 @@ public class CoffeeShop {
 	   }
    }
    
-   public String GenerateReceitDisplay() {
+   public void generateReceitDisplay() {
 	    float[] values = returnAllValuesOfCustomer(currentCustomer);
 	    for (int i=0; i<money.length; i++) 
 	    { 
 	        money[i] += values[i];
 	    }
-	   
-	   String receit = "";
-	   return receit;
    }
    
-   public String GenerateFinalReportDisplay() {
-	   calculateInventory();
+   /**
+	 * String containing all Customer object details 
+	 * @return string for customer receit
+	 */
+	public String generateReceipt()
+	{
+		// Date time formatter 
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+		String datetime = currentCustomer.timestamp.format(formatter);
+		String[] datetimeSplit = datetime.split(" ");
+		 
+		// Initial customer information
+		String output = String.format("%-20s \n\n", "Customer Receipt:") + 
+						String.format("%-10s %-10s\n", "Name:", currentCustomer.name) + 
+						String.format("%-10s %-10s\n\n", "ID:",currentCustomer.id) +
+						String.format("%-10s %-10s\n", "Date:", datetimeSplit[0]) +
+						String.format("%-10s %-10s\n", "Time:",datetimeSplit[1]) +
+						line +
+						String.format("ORDER :\n");
+		
+		// Print all cart orders with quantities 
+		Set<String> cartSet = currentCustomer.cart.keySet();
+		for (String orderID: cartSet) {
+			int quantaty = currentCustomer.cart.get(orderID).size();
+			String cost = df2.format(menu.get(orderID).getCost()*quantaty) +"£";
+			output += String.format("%-4s %-20s %-20s %-20s\n", " ", menu.get(orderID).getName(), 
+					String.valueOf(quantaty + "x"), 
+					cost);
+		}
+		float[] values = returnAllValuesOfCustomer(currentCustomer);
+		output += line +  String.format("%-10s %-30s %-10s\n", " ","Sub total : ", Double.toString(values[0])+ "£")+ 
+	             String.format("%-10s %-30s %-10s\n", " ", "Taxes : ", Double.toString(values[1])+ "£")+ 
+	             String.format("%-10s %-30s %-10s\n\n"," ", "Discount : ", Double.toString(values[2])+ "£")+ 
+	             String.format("%-10s %-30s %-10s\n", " ", "TOTAL : ", String.valueOf(values[3] + "£"));
+		
+		return output;
+	}
+   
+	/**
+	 * Generates a string for the final report 
+	 * @return string for final report  
+	 */   
+   public String generateFinalReportDisplay() {
+	   calculateInventory();   // Calculate inventory 
+	   // Format the date time string
 	   DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 	   String datetime = LocalDateTime.now().format(formatter);
 	   String[] datetimeSplit = datetime.split(" ");
 	   
-	   cashier.getDiscount();
-	   
+	   // Initialise end of day report string 
 	   String output = String.format("%-20s \n\n", "End of the day report") + 
 					   String.format("%-10s %-10s\n", "Date:", datetimeSplit[0]) +
 					   String.format("%-10s %-10s\n", "Time:",datetimeSplit[1]) +
 					   line;
 	   
+	   // Strings to hold category informations
 	   String drink = ""; String food = "" ; String pastry = ""; 
-	   
+	   // Goes trough inventory
 	   for (Map.Entry m:inventory.entrySet()) { 
 		   String category = menu.get(m.getKey()).getCategory();
 		   if (category.equals("Drink")) {
@@ -204,7 +244,7 @@ public class CoffeeShop {
 	   output += String.format("%-20s \n\n", "FOOD") + food+ line +
 			   String.format("%-20s \n\n", "DRINKS") + drink+ line +
 			   String.format("%-20s \n\n", "PASTRIES") + pastry + line +"\n" ;
-	   Double.toString(money[0]);
+	   
 	   output += String.format("%-30s %-10s\n", "Number of customers: ", customerList.size())+ 
 	             String.format("%-40s %-10s\n", "Sub total of day : ", Double.toString(money[0])+ "£")+ 
 	             String.format("%-40s %-10s\n", "Taxes : ", Double.toString(money[1])+ "£")+ 
@@ -218,7 +258,11 @@ public class CoffeeShop {
 	   float[] allValues = {cashier.getCartSubtotalPrice(), cashier.getCartTax(), cashier.getDiscount(), cashier.getCartTotalPrice()};
 	   return allValues;
    }
-      
+   
+   
+   /**
+	 * Calculates inventory for the final report 
+	 */   
    private void calculateInventory() {
 	   // Go though customer list
        for (Map.Entry m:customerList.entrySet()) { 
@@ -235,17 +279,19 @@ public class CoffeeShop {
    					inventory.put(orderID, inventory.get(orderID) + cus.getCart().get(orderID).size());
    				}
    			}
-       }        
-       
+       }            
    }
    
-   
+   /**
+	 * Creates new customer 
+	 * @param name of the customer
+	 */
    public void createNewCustomer(String name) {
-	   LocalDateTime timeStamp = LocalDateTime.now();
+ 	   LocalDateTime timeStamp = LocalDateTime.now();
  	   Customer newCustomer = new Customer(name, timeStamp);
+ 	   customerList.put(newCustomer.getId(), newCustomer);
  	   currentCustomer = newCustomer;
-   }
-
+    }
    
 	public static void main(String[] args) {
 		CoffeeShop item = new CoffeeShop("MenuItems");
@@ -254,7 +300,6 @@ public class CoffeeShop {
 		GUIcaffee GUI = new GUIcaffee();
 		GUI.initializeGUI(); 
 		GUI.paintScreen();
-		GUI.setUp();
 	}
 
 }

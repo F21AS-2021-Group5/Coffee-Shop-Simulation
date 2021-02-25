@@ -3,9 +3,21 @@ Date:      22-02-2021
 Time:      21:01:19  
 
 Orders:
-           Toastie         2x        Cost:      5.70£      
-           Croissant       3x        Cost:      6.75£      
-           Mocha           1x        Cost:      2.95£      
+		   Latte			0x		Cost:	0.0£			
+		   Mocha			1x      Cost:   2.95£
+		   Cappuccino		0x		Cost:	0.0£
+		   Americano		0x		Cost:	0.0£
+		   Espresso			0x		Cost:	0.0£
+		   Tea				0x		Cost:	0.0£
+		   Panini			0x		Cost:	0.0£
+           Toastie			2x      Cost:   5.70£              
+           Sandwich			0x		Cost:	0.0£
+           Salad			0x		Cost:	0.0£ 
+           Croissant		3x		Cost:	6.75£      
+           Brownies			0x		Cost:	0.0£
+           Muffin			0x		Cost:	0.0£
+           Cinnamon Swirl	0x		Cost:	0.0£
+                 
 
 
 Number of customers:      2         

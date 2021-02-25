@@ -1,0 +1,12 @@
+Name:      adam      
+ID:        1616161161684139
+Date:      25-02-2021
+Time:      08:41:39  
+
+Orders:
+           Muffin               2x                  
+           Panini               3x                  
+           Americano            1x                  
+           Salad                3x                  
+
+Total Price:                    20.45£    

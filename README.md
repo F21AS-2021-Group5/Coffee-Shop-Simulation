@@ -1,12 +1,3 @@
 # Coffee-Shop-Simulation
 
-To visualise the GUI class, you need to download WindowBuilder:
-   On the taskbar, select Help -> Eclipse Marketplace -> type WindowBuilder -> Install WindowBuilder 1.9.4
-   Then you can select GUI class, right click -> Open with -> WindowBuilder editor. You can select design instead of source to view GUI.
-To make GUI work, you need to add a new library:
-   For the library: Right click CoffeeShopProject -> Build Path -> Configure Biuld Path -> Java Build Path -> Libraries -> Add Library -> JRE System Library -> Execution    Environment -> JavaSE 1.8 -> Finish -> Apply and close
-To make GUI work, you need to add a plugin:
-   Download : org.eclipse.swt.win32.win32.x86_64
-   Link: https://jar-download.com/?search_box=org.eclipse.swt.win32.win32.x64&fbclid=IwAR0VYlPXxaZbYwREuRdSOoFX3hbKqTcIWzLrLMRQu6wbKx_SVS5tz6MqNFM
-   Add it to your plugin in eclipse
-   Right click CoffeeShopProject -> Build Path -> Configure Biuld Path -> Java Build Path -> Add Variable -> Configure Variables -> New -> Find the plugin you downloaded -> Finish -> Apply and close
+This application is a simulation of a coffee shop system. The user can visualise a menu, choose items and purchase his order via a GUI interface. The items from the menu are shown by categories and the user can visualise his order and receipt. Multiple purchase can be made by different user/customer and the final report is displayed at the end. The goal of this project was to develop a suitable software architecture, using appropriate data structure, and test throughout the deveopment of the application to deliver a successful Coffe Shop interface.

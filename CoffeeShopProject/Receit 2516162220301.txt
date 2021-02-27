@@ -1,0 +1,19 @@
+Customer Receipt:    
+
+Name:      Hannah    
+ID:        2516162220301
+
+Date:      27-02-2021
+Time:      22:03:01  
+------------------------------------------------------
+ORDER :
+     Vegetables           1x                   3.85£               
+     Americano            1x                   2.25£               
+     Latte                1x                   2.85£               
+     Cinnamon Swirl       3x                   9.75£               
+------------------------------------------------------
+           Sub total :                    18.7£     
+           Taxes :                        4.68£     
+           Discount :                     4.35£     
+Type:      D1 :  1     D2 :  0     D3 :  0     
+           TOTAL :                        19.02£    

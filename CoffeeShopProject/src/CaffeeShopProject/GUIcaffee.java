@@ -33,12 +33,12 @@ public class GUIcaffee {
 	 */
 	private String CreateInitialText() {
 		String output = String.format("%-20s \n\n", "Discounts when buying") + 
+				String.format("%-10s %-20s\n", " ", "1 Drinks, 1 Food, 1 Pastry")+
+				String.format("%-30s %-20s\n\n", " ", "5£ for the combination")+
 				String.format("%-10s %-20s\n", " ", "3 Drinks and 1 Food: ") +
 				String.format("%-30s %-20s\n\n", " ", "20% off for the combination")+
 				String.format("%-10s %-20s\n", " ", "3 Pastry: ") +
-				String.format("%-30s %-20s\n\n", " ", "25% off for the combination")+
-				String.format("%-10s %-20s\n", " ", "1 Drinks, 1 Food, 1 Pastry")+
-				String.format("%-30s %-20s\n\n", " ", "6£ for the combination");
+				String.format("%-30s %-20s\n\n", " ", "25% off for the combination");
 		return output;
 	}
 	
@@ -74,6 +74,7 @@ public class GUIcaffee {
 	JSpinner quantity = new JSpinner(quantityModel);
 	
 	JLabel label = new JLabel();
+	JLabel nameLabel = new JLabel("Customer Name:");
 	
 	
 	
@@ -83,7 +84,8 @@ public class GUIcaffee {
 	private DefaultListModel foodCategory = new DefaultListModel(); 
 	private DefaultListModel pastryCategory = new DefaultListModel();
 	
-	CoffeeShop shop = new CoffeeShop("MenuItems");
+	//CoffeeShop shop = new CoffeeShop("MenuItems");
+	Cashier cashier;
 	
 	double fees;
 	boolean feePaid;
@@ -92,7 +94,8 @@ public class GUIcaffee {
 	HashMap<String, LocalDateTime> cart;
 	
 	
-	public GUIcaffee() {
+	public GUIcaffee(Cashier cashier) {
+		this.cashier = cashier;
 		
 		//addWindowListener(this);
 		//newCust.addActionListener(this);
@@ -110,7 +113,8 @@ public class GUIcaffee {
 		setupListener();
 		label.setBounds(10, 10, 300, 60);
 		newCust.setBounds(250, 20, 150, 40);
-		nameCust.setBounds(450, 20, 150, 40);
+		nameLabel.setBounds(450, 10, 150, 20);
+		nameCust.setBounds(450, 30, 150, 30);
 		drink.setBounds(50, 85, 150, 40);
 		food.setBounds(250, 85, 150, 40);
 		pastry.setBounds(450, 85, 150, 40);
@@ -166,6 +170,7 @@ public class GUIcaffee {
 		frame.getContentPane().add(summaryView);
 		frame.getContentPane().add(reset);
 		frame.getContentPane().add(label);
+		frame.getContentPane().add(nameLabel);
 	}
 	
 	/**
@@ -192,7 +197,6 @@ public class GUIcaffee {
 		removeItem.setEnabled(true);
 		pastry.setEnabled(true);
 		purchase.setEnabled(true);
-		receipt.setEnabled(true);
 	}
 	
 	
@@ -209,8 +213,8 @@ public class GUIcaffee {
 					       "Error", JOptionPane.ERROR_MESSAGE);
 					}else {
 						set();	
-						shop.createNewCustomer(name);
-						currentCustomer = shop.currentCustomer;
+						cashier.createNewCustomer(name);
+						currentCustomer = cashier.currentCustomer;
 					}		
 				}if (e.getSource() == drink) {
 			        menuItem.setModel(drinkCategory);
@@ -248,22 +252,28 @@ public class GUIcaffee {
 					    if (reply == JOptionPane.YES_OPTION) {
 					    	addItem.setEnabled(false);
 							removeItem.setEnabled(false);
-							receipView.setText(shop.generateReceipt());
+							receipView.setText(cashier.generateReceipt());
 						} 
 					} else {
 						addItem.setEnabled(false);
 						removeItem.setEnabled(false);
-						receipView.setText(shop.generateReceipt());
+						receipView.setText(cashier.generateReceipt());
 					}
+					receipt.setEnabled(true);
 					
 					//shop.GenerateCustomerReport(currentCustomer.getId());
 					
 				}if (e.getSource() == receipt) {
+					System.out.println("report");
+					cashier.generateCustomerReport();
 					
 					
 				}if (e.getSource() == endOfDay) {
-					String report  = shop.generateFinalReportDisplay();
+					
+					String report = cashier.generateFinalReport();
+					//String report  = shop.generateFinalReportDisplay();
 					summaryView.setText(report);
+					cashier.generateFinalReportFile();
 				}if (e.getSource() == reset) {
 					reset();
 				}

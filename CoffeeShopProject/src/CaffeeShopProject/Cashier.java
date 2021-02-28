@@ -29,7 +29,7 @@ public class Cashier {
 	public float tax;
 	public float discount;
 	public float total;
-	public int taxable;
+	//public int taxable;
 	public String receipt;
 	//HashMap<String, ArrayList<LocalDateTime>> cart;
 	//Customer customer;
@@ -39,7 +39,7 @@ public class Cashier {
 	private static DecimalFormat df2 = new DecimalFormat("#.##");
 	//private static ArrayList<Float> money;
 	//private static float money[];
-	private static float[] money = {0, 0, 0, 0, 0, 0, 0};
+	//private static float[] money = {0, 0, 0, 0, 0, 0, 0};
 	int discount1 = 0;
 	int discount2 = 0;
 	int discount3 = 0;
@@ -219,12 +219,9 @@ public class Cashier {
 			} else {
 				// No more discounts
 				noMoreDiscountsAvailable = true;
-			}
-			
+			}	
 			System.out.println("after f " + food.size() + " d " + drink.size() + " p " +pastry.size());
-			
-		}
-		
+		}	
 		return discount;
 	}
 	
@@ -283,7 +280,7 @@ public class Cashier {
 	 */
 	public void generateCustomerReport() {
 		   try {
-			   File customerReport =new File("Receit " + currentCustomer.getId() + ".txt");
+			   //File customerReport =new File("Receit " + currentCustomer.getId() + ".txt");
 			   FileWriter customerWriter = new FileWriter("Receit " + currentCustomer.getId() + ".txt");
 			   customerWriter.write(receipt);
 			   customerWriter.close();

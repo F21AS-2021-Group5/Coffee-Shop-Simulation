@@ -1,3 +1,16 @@
+/**
+ * CoffeeShop.java - class to implement the coffee shop simulation
+ * 
+ * @author Esther Rayssiguie 
+ * @author Jake Marrocco
+ * @author Karolina Judzentyte
+ * @author Valerio Franchi
+ * @version 0.1
+ * 
+ * Copyright (c) 2021 
+ * All rights reserved.
+ */
+
 package CaffeeShopProject;
 
 import java.time.DateTimeException;
@@ -19,30 +32,37 @@ public class CoffeeShop {
 	public static HashMap<String, Customer> customerList;
 	public static ArrayList<Float> money;
 	
-	
 	Cashier cashier;
 	
-
+	/**
+	 * Constructor for CoffeeShop class
+	 * @param name Name of cashier 
+	 */
 	public CoffeeShop(String name)
 	{
 		menu = new HashMap<>(); 
 		customerList = new HashMap<>();
 		cashier = null;
 		money =  new ArrayList<Float>();
-		for (int i =0 ;i <=6; i++) {
+		
+		// add initial money to cashier 
+		for (int i = 0 ; i <= 6; i++) {
 			money.add((float) 0);
 		}
 		
+		// creates cashier and fills menu and customer list data structures 
 		createNewCashier(name);
 		fillMenu("MenuItems");
 		fillCustomerList("CustomerList");	
 	}
 	
+	/**
+	 * Creates a new Cashier instance 
+	 * @param id Cashier identifier 
+	 */
 	private void createNewCashier(String id) {
-		Cashier newCashier = new Cashier(id);
-		cashier = newCashier;
+		cashier = new Cashier(id);
 	}
-	
 	
 	/**
 	 * Read menu data and store it in menu map 
@@ -55,12 +75,12 @@ public class CoffeeShop {
     	   br = new BufferedReader(file);       // Create buffer reader for file
     	   String inputLine = br.readLine();   // Read first line
            while (inputLine != null) {                             //while its contains stuff
-               String[] data = inputLine.split(";");        //split by slashes
+               String[] data = inputLine.split(";");        //split by semicolon
                if (data.length == 5) {
                    try {
                        MenuItem item = new MenuItem(data[0], data[1], data[2], Float.parseFloat(data[3]), data[4]); //New MenuItem
                        menu.put(data[1].trim(), item);                             // Put MenuItem in menu
-                   } catch (IllegalArgumentException e){ //If add anything anything unaceptable in MenuItem
+                   } catch (IllegalArgumentException e){ 	//If add anything anything unacceptable in MenuItem
                 	   throw new IllegalArgumentException();
                    }
                } else {
@@ -68,6 +88,7 @@ public class CoffeeShop {
                }
                inputLine = br.readLine();                          //read the next line
            }
+       // catch possible exceptions 
        } catch (FileNotFoundException e) {
     	   System.out.println("File does not exist. \n"); 
        } catch (IOException e) {
@@ -82,6 +103,10 @@ public class CoffeeShop {
        //System.out.println(menu.get("Latte").getCategory());
    }
    
+   /**
+    * Fills the customer list with information from text file 
+    * @param fileName File (.txt) name with initial orders 
+    */
    private void fillCustomerList(String fileName){
 	   BufferedReader br = null; //reader
        try {
@@ -89,15 +114,17 @@ public class CoffeeShop {
     	   br = new BufferedReader(file);       // Create buffer reader for file
     	   String inputLine = br.readLine();   // Read first line
            while (inputLine != null) {                             //while its contains stuff
-               String[] data = inputLine.split(";");        //split by slashes
+               String[] data = inputLine.split(";");        //split by semicolon
                if (data.length == 4) {
                    try {
-                	   LocalDateTime timeStamp = stingToTimestam(data[3]);
+                	   LocalDateTime timeStamp = stringToTimestamp(data[3]);
+                	   // initialize customer list with new customer 
                 	   if (customerList.isEmpty()) {
                 		   Customer newCustomer = new Customer(data[1], data[0], timeStamp);
                 		   customerList.put(data[0].trim(), newCustomer);
                 		   cashier.setCustomer(newCustomer); 
                 	   }
+                	   // if customer list does not contain customer in file row, add it 
                 	   if(!customerList.containsKey(data[0])) {
                 		   cashier.runCashier();
                 		   Customer newCustomer = new Customer(data[1], data[0], timeStamp);
@@ -105,7 +132,8 @@ public class CoffeeShop {
                 		   cashier.setCustomer(newCustomer); 
                 	   }
                 	   customerList.get(data[0].trim()).addItem(data[2], 1, timeStamp);
-                   } catch (IllegalArgumentException e){ //If add anything anything unaceptable in MenuItem
+                	// catch all exceptions 
+                   } catch (IllegalArgumentException e){ //If add anything anything unacceptable in MenuItem
                 	   throw new IllegalArgumentException();
                    } catch (IllegalStateException e) {
                 	   throw new IllegalStateException();
@@ -119,8 +147,8 @@ public class CoffeeShop {
                }
                inputLine = br.readLine();                          //read the next line
            }
-           System.out.println("loop");
            cashier.runCashier();
+       // catch all possible exceptions
        } catch (FileNotFoundException e) {
     	   System.out.println("File does not exist. \n"); 
        } catch (IOException e) {
@@ -134,10 +162,15 @@ public class CoffeeShop {
        }
    }
    
-   
-   private LocalDateTime stingToTimestam(String timeString){
+   /**
+    * Converts a string to LocalDateTime object
+    * @param timeString Time stamp in string format 
+    * @return Corresponding LocalDateTime object 
+    */
+   private LocalDateTime stringToTimestamp(String timeString){
 	   LocalDateTime localDateTime = null;
 	   try {
+		   // set formatter and convert string to LocalDateTime 
 		   String pattern = "yyyy-MM-dd HH:mm:ss.SSSSSSSSS";
 		   DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
 		   localDateTime = LocalDateTime.from(formatter.parse(timeString));
@@ -148,10 +181,7 @@ public class CoffeeShop {
 	    return localDateTime; // Fine to return 0 since catch in the Customer class 
    }
    
-   
-   
-   
-   
+   // main method 
 	public static void main(String[] args) {
 		// Needs initial cashier 
 		CoffeeShop shop = new CoffeeShop("Adam");

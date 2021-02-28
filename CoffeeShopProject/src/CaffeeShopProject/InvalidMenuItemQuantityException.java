@@ -1,5 +1,5 @@
 /**
- * InvalidOrderQuantityException.java - class to implement an exception for invalid item quantity
+ * InvalidMenuItemQuantityException.java - class to implement an exception for invalid menu item quantity
  * 
  * @author Esther Rayssiguie 
  * @author Jake Marrocco
@@ -16,7 +16,7 @@ package CaffeeShopProject;
 public class InvalidMenuItemQuantityException extends Exception{
 
 	/**
-	 * Constructor for InvalidOrderQuantityException class
+	 * Constructor for InvalidMenuItemQuantityException class
 	 */
 	public InvalidMenuItemQuantityException() {
 		super("Invalid item quantity.");

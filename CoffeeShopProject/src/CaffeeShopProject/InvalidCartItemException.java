@@ -14,6 +14,7 @@
 package CaffeeShopProject;
 
 public class InvalidCartItemException extends Exception{
+	
 	/**
 	 * Constructor of InvalidCartItemException class
 	 */

@@ -1,3 +1,16 @@
+/**
+ * Cashier.java - class to implement the cashier for the coffee shop simulation
+ * 
+ * @author Esther Rayssiguie 
+ * @author Jake Marrocco
+ * @author Karolina Judzentyte
+ * @author Valerio Franchi
+ * @version 0.1
+ * 
+ * Copyright (c) 2021 
+ * All rights reserved.
+ */
+
 package CaffeeShopProject;
 
 import java.text.DecimalFormat;
@@ -26,7 +39,7 @@ public class Cashier {
 	private static DecimalFormat df2 = new DecimalFormat("#.##");
 	//private static ArrayList<Float> money;
 	//private static float money[];
-	private static float[] money = {0,0,0,0,0,0,0};
+	private static float[] money = {0, 0, 0, 0, 0, 0, 0};
 	int discount1 = 0;
 	int discount2 = 0;
 	int discount3 = 0;
@@ -36,11 +49,18 @@ public class Cashier {
 	//CoffeeShop shop = new CoffeeShop("MenuItems"); 
 	EndOfDay report = new EndOfDay();
 	
+	/**
+	 * Constructor for Cashier class
+	 * @param ID Cashier identifier
+	 */
 	public Cashier(String ID) {
 		currentCustomer = null;
 		this.ID =ID;
 	}
 	
+	/**
+	 * @return Cashier identifier 
+	 */
 	public String getID() {
 		return ID;
 	}
@@ -81,6 +101,7 @@ public class Cashier {
 	             String.format("%-10s %-30s %-10s\n"," ", "Discount : ", df2.format(discount) +"£" )+ 
 	             String.format("%-10s %-5s %-5s %-5s %-5s %-5s %-5s \n","Type: ","D1 : ",String.valueOf(discount1),  "D2 : ",String.valueOf(discount2), "D3 : ",String.valueOf(discount3) )+ 
 	             String.format("%-10s %-30s %-10s\n", " ", "TOTAL : ", df2.format(total) +"£");
+		
 		// Update the final prices 
 		receipt = output;
 		return output;
@@ -98,16 +119,21 @@ public class Cashier {
  	   currentCustomer = newCustomer;
     }
   
-	
+	/**
+	 * @return Cart sub total price 
+	 */
 	public float getCartSubtotalPrice() {
 		subtotal = currentCustomer.getCartTotalPrice();
 		return subtotal;
 	}
 	
+	/**
+	 * @return Cart tax 
+	 */
 	public float getCartTax() {
 		// loop through items in cart
 		// if item is taxable, add 20% of item price to tax 
-		tax =  (float) (subtotal*0.25);
+		tax = (float) (subtotal*0.25);
 		/*
 		taxable = 1;
 		float itemTax = 0;
@@ -123,6 +149,10 @@ public class Cashier {
 		return tax;
 	}
 	
+	/**
+	 * Calculates the discounted price based on the items inside the cart 
+	 * @return Discounted price 
+	 */
 	public float getDiscount() {
 		// discount 1 = 1 drink & 1 food & 1 pastry = £5 //
 		// discount 2 = 3 drinks & 1 food = 20% off //
@@ -141,23 +171,20 @@ public class Cashier {
 			int quantity = currentCustomer.cart.get(orderID).size();
 			System.out.println(quantity);
 			
-			if(CoffeeShop.menu.get(orderID).getCategory().equals("Drink")) {
-				for(int i =1; i<=quantity; i++) {
+			if (CoffeeShop.menu.get(orderID).getCategory().equals("Drink")) {
+				for(int i = 1; i <= quantity; i++) {
 					drink.add(CoffeeShop.menu.get(orderID).getCost());
 				}
 			} else if (CoffeeShop.menu.get(orderID).getCategory().equals("Food")) {
-				for(int i =1; i<=quantity; i++) {
+				for(int i = 1; i <= quantity; i++) {
 					food.add(CoffeeShop.menu.get(orderID).getCost());
 				}
 				
-				
 			} else if (CoffeeShop.menu.get(orderID).getCategory().equals("Pastry") ) {
-				for(int i =1; i<=quantity; i++) {
+				for(int i = 1; i <= quantity; i++) {
 					pastry.add(CoffeeShop.menu.get(orderID).getCost());
-				}
-				
+				}	
 			}
-		
         } 
 		
 		boolean noMoreDiscountsAvailable = false;
@@ -165,80 +192,99 @@ public class Cashier {
 		discount2 = 0;
 		discount3 = 0;
 		
-		
-		
 		while(!noMoreDiscountsAvailable) {
 			System.out.println(currentCustomer.getId());
-			System.out.println("before f " + food.size() + " d " + drink.size() + " p " +pastry.size());
+			System.out.println("before f " + food.size() + " d " + drink.size() + " p " + pastry.size());
+			
 			// First checks to see all the combinations
 			if (drink.size() >= 1 && food.size() >= 1 && pastry.size() >= 1) {
-				float conbination = drink.remove(0) +food.remove(0) +pastry.remove(0);
-				discount += conbination - 5;
-				//System.out.println("discoubt1  "+discount);
-				discount1 =discount1 +1;
-			// Then if other discounts are available
-			}else if (drink.size() >=3 && food.size() >= 1) { 
-				float cobination = drink.remove(0) + drink.remove(0)+ drink.remove(0) + food.remove(0);
-				discount += cobination/5;
-				//System.out.println("discoubt2  "+discount);
-				discount2 =discount2 +1;
-			}else if (pastry.size() >=3 ) {
-				float cobination = pastry.remove(0) +pastry.remove(0)+pastry.remove(0);
-				discount += cobination/4;
-				//System.out.println("discoubt3  "+discount);
-				discount3 =discount3 +1;
-			}else {
-			// No more discounts
+				float combination = drink.remove(0) + food.remove(0) + pastry.remove(0);
+				discount += combination - 5;
+				//System.out.println("discount1  " + discount);
+				discount1 = discount1 + 1;
 				
+			// Then if other discounts are available
+			} else if (drink.size() >= 3 && food.size() >= 1) { 
+				float combination = drink.remove(0) + drink.remove(0) + drink.remove(0) + food.remove(0);
+				discount += combination / 5;
+				//System.out.println("discoubt2  " + discount);
+				discount2 = discount2 + 1;
+				
+			} else if (pastry.size() >= 3) {
+				float combination = pastry.remove(0) + pastry.remove(0) + pastry.remove(0);
+				discount += combination / 4;
+				//System.out.println("discount3  " + discount);
+				discount3 = discount3 + 1;
+				
+			} else {
+				// No more discounts
 				noMoreDiscountsAvailable = true;
 			}
 			
-			System.out.println("afther f " + food.size() + " d " + drink.size() + " p " +pastry.size());
-			
+			System.out.println("after f " + food.size() + " d " + drink.size() + " p " +pastry.size());
 			
 		}
 		
 		return discount;
 	}
 	
-	// For values that are initialised at the initialisation of coffeeShop
+	/**	
+	 * @param customer Customer object 
+	 */
 	public void setCustomer(Customer customer) {
+		// For values that are initialised at the initialisation of coffeeShop
 		System.out.println("here");
 		currentCustomer = customer;
 	}
 	
+	/**
+	 * @return Sub total, tax, discount, total, discount n.1, discount n.2, and discount n.3
+	 */
 	public float[] returnSums() {
-		float[] allValues = {subtotal, tax,  discount, total, discount1, discount2,discount3};
+		float[] allValues = {subtotal, tax, discount, total, discount1, discount2, discount3};
 		System.out.println(allValues[0]);
 		return allValues;
 	}
 	
-	
+	/**
+	 * @return Cart total price 
+	 */
 	public float getCartTotalPrice() {
 		total = subtotal + tax - discount;
 		return total;
 	}
 	
+	/**
+	 * Updates final customer cart sum 
+	 */
 	public void runCashier() {
 		subtotal = 0;
 		tax = 0;
-		discount= 0;
+		discount = 0;
 		total = 0;
+		
 		getCartSubtotalPrice();
 		getCartTax();
 		getDiscount();
 		getCartTotalPrice();
-		report.upDateFinalSum(returnSums());
+		
+		report.updateFinalSum(returnSums());
 	}
 	
+	/**
+	 * @return Final report for customer 
+	 */
 	public String generateFinalReport() {
 		return report.generateFinalReportDisplay();
 	}
 	
+	/**
+	 * Writes report to text file 
+	 */
 	public void generateCustomerReport() {
 		   try {
-			   File customerReport =new File("Receit "+currentCustomer.getId()+".txt");
-			   FileWriter customerWriter = new FileWriter("Receit "+currentCustomer.getId()+".txt");
+			   File customerReport =new File("Receit " + currentCustomer.getId() + ".txt");
+			   FileWriter customerWriter = new FileWriter("Receit " + currentCustomer.getId() + ".txt");
 			   customerWriter.write(receipt);
 			   customerWriter.close();
 		   } catch (IOException e) {
@@ -247,6 +293,9 @@ public class Cashier {
 		   }
 	}
 	
+	/**
+	 * Calls function that generates the final report text file 
+	 */
 	public void generateFinalReportFile() {
 		report.generateFinalReport(); 
 	}

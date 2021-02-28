@@ -152,7 +152,7 @@ public class GUIcaffee {
 		descriptionSum.setEditable(false);
 		
 		label.setText("Coffee Shop");
-		Font  f2  = new Font(Font.SANS_SERIF,  Font.BOLD, 35);
+		Font  f2 = new Font(Font.SANS_SERIF, Font.BOLD, 35);
 		label.setFont(f2);
 	}
 	
@@ -222,7 +222,7 @@ public class GUIcaffee {
 					if(name.trim().isEmpty()){ //ERROR HANDLING if the text field is empty
 					    JOptionPane.showMessageDialog(null,
 					        "Error you did not enter a customer's name, please try again.", 
-					       "Error", JOptionPane.ERROR_MESSAGE);
+					         "Error", JOptionPane.ERROR_MESSAGE);
 					} else {
 						set();	
 						cashier.createNewCustomer(name);
@@ -328,15 +328,15 @@ public class GUIcaffee {
 	 * Which will be inserted to menuItem JList
 	 */
     private void InitialiseCategoryList() {
-    	for (Map.Entry m : CoffeeShop.menu.entrySet()) {  // Go though each entry of menu
+    	for (Map.Entry m: CoffeeShop.menu.entrySet()) {  // Go though each entry of menu
    		 	 MenuItem item = (MenuItem) m.getValue();     // Get the value menu item
    		 	 
     		 String category = item.getCategory();        // Get category 
-    		 String display = String.format("%-40s %-4s", item.getName(),String.valueOf(item.getCost() + "£")); // Format the display
+    		 String display = String.format("%-40s %-4s", item.getName(), String.valueOf(item.getCost() + "£")); // Format the display
     		 // Depending in the category inserts item 
     		 if(category.equals("Drink")) { 
     			 drinkCategory.addElement(display);
-    		 } else if (category.equals( "Pastry")) {
+    		 } else if (category.equals("Pastry")) {
     			 pastryCategory.addElement(display);
     		 } else if (category.equals("Food")) {
     			foodCategory.addElement(display);
@@ -355,7 +355,7 @@ public class GUIcaffee {
 		    	  selectedItem = selectedItem.substring(0, 20).trim();  // Trim it 
 		    	  MenuItem item = CoffeeShop.menu.get(selectedItem);    // Get the item from the coffeeshop 
 		    	  String product = "Product Description: \n";           
-		    	  description.setText(product+item.getDescription());   // Set description
+		    	  description.setText(product + item.getDescription());   // Set description
 		    	  quantity.setValue(1); // Reset the quantity to 1 upon pressing to new object
 		      }
     	});

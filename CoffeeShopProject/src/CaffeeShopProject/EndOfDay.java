@@ -60,10 +60,10 @@ public class EndOfDay {
 	   // Strings to hold category informations
 	   String drink = ""; String food = "" ; String pastry = ""; 
 	   // Goes trough inventory
-	   for (Map.Entry m:inventory.entrySet()) { 
+	   for (Map.Entry m: inventory.entrySet()) { 
 		   String category = CoffeeShop.menu.get(m.getKey()).getCategory();
 		   if (category.equals("Drink")) {
-			   drink += String.format("%-5s %-25s %-10s \n", " ",m.getKey(), 
+			  drink += String.format("%-5s %-25s %-10s \n", " ",m.getKey(), 
 						String.valueOf(m.getValue() + "x"));
 	      }if (category.equals("Food")) {
 	    	  food += String.format("%-5s %-25s %-10s \n", " ",m.getKey(), 
@@ -75,18 +75,19 @@ public class EndOfDay {
        }
 	   
 	   // creates final report by concatenating strings 
-	   output += String.format("%-20s \n\n", "FOOD") + food+ line +
-			   String.format("%-20s \n\n", "DRINKS") + drink+ line +
-			   String.format("%-20s \n\n", "PASTRIES") + pastry + line +"\n" ;
+	   output += String.format("%-20s \n\n", "FOOD") + food + line +
+			     String.format("%-20s \n\n", "DRINKS") + drink + line +
+			     String.format("%-20s \n\n", "PASTRIES") + pastry + line + "\n" ;
 	   
-	   output += String.format("%-30s %-10s\n", "Number of customers: ", CoffeeShop.customerList.size())+ 
-	             String.format("%-40s %-10s\n", "Sub total of day : ", df2.format(CoffeeShop.money.get(0))+ "£")+ 
-	             String.format("%-40s %-10s\n", "Taxes : ", df2.format(CoffeeShop.money.get(1))+ "£")+ 
-	             String.format("%-40s %-10s\n", "Discount : ", df2.format(CoffeeShop.money.get(2))+ "£")+ 
-	             String.format("%-50s %-10s\n", "Type D1 : ", df2.format(CoffeeShop.money.get(4))+ "£")+ 
-	             String.format("%-50s %-10s\n", "Type D2 : ", df2.format(CoffeeShop.money.get(5))+ "£")+ 
-	             String.format("%-50s %-10s\n", "Type D3 : ", df2.format(CoffeeShop.money.get(6))+ "£")+ 
-	             String.format("%-40s %-10s\n", "Total of the day : ", df2.format(CoffeeShop.money.get(3))+ "£");
+	   output += String.format("%-30s %-10s\n", "Number of customers: ", CoffeeShop.customerList.size()) + 
+	             String.format("%-40s %-10s\n", "Sub total of day : ", df2.format(CoffeeShop.money.get(0)) + "£") + 
+	             String.format("%-40s %-10s\n", "Taxes : ", df2.format(CoffeeShop.money.get(1)) + "£")+ 
+	             String.format("%-40s %-10s\n", "Discount : ", df2.format(CoffeeShop.money.get(2)) + "£")+ 
+	             String.format("%-50s %-10s\n", "Type D1 : ", df2.format(CoffeeShop.money.get(4)) + "£") + 
+	             String.format("%-50s %-10s\n", "Type D2 : ", df2.format(CoffeeShop.money.get(5)) + "£") + 
+	             String.format("%-50s %-10s\n", "Type D3 : ", df2.format(CoffeeShop.money.get(6)) + "£") + 
+	             String.format("%-40s %-10s\n", "Total of the day : ", df2.format(CoffeeShop.money.get(3)) + "£");
+	   
 	   report = output;
 	   return output;
    }

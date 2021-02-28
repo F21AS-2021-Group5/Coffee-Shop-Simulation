@@ -207,7 +207,7 @@ public class Customer {
 	public String generateID(String name, LocalDateTime timestamp)
 	{
 		// initialize random object and seed it 
-		String generatedID ="";
+		String generatedID = "";
 		Random random = new Random();
 		random.setSeed(3);
 		
@@ -220,7 +220,7 @@ public class Customer {
 		String timestampString = timestamp.format(formatter).substring(9);
 		
 		// removes white spaces inside string
-		name = name.replaceAll("\\s","").toLowerCase();
+		name = name.replaceAll("\\s", "").toLowerCase();
 		
 		// convert string of chars to string of integer values 
 		for(int i: randIndices) {

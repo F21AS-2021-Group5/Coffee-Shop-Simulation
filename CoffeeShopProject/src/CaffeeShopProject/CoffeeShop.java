@@ -138,9 +138,9 @@ public class CoffeeShop {
                    } catch (IllegalStateException e) {
                 	   throw new IllegalStateException();
                    } catch (InvalidMenuItemQuantityException e) {
-					e.printStackTrace();
+                	   e.printStackTrace();
                    } catch (InvalidMenuItemDataException e) {
-					e.printStackTrace();
+                	   e.printStackTrace();
                    } 
                } else {
                    //System.out.println("Invalid data line. Will drop it. \n");

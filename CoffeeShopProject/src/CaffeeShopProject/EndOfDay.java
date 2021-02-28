@@ -1,3 +1,16 @@
+/**
+ * EndOfDay.java - class to implement the end of day report generation 
+ * 
+ * @author Esther Rayssiguie 
+ * @author Jake Marrocco
+ * @author Karolina Judzentyte
+ * @author Valerio Franchi
+ * @version 0.1
+ * 
+ * Copyright (c) 2021 
+ * All rights reserved.
+ */
+
 package CaffeeShopProject;
 
 import java.io.File;
@@ -19,7 +32,9 @@ public class EndOfDay {
 	
 	private static HashMap<String,Integer> inventory;
 	
-	
+	/**
+	 * Constructor for EndOfDay class
+	 */
 	public EndOfDay() {
 		inventory = new HashMap<>();
 		finalReport =new File("FinalReport.txt");
@@ -59,6 +74,7 @@ public class EndOfDay {
 		  }
        }
 	   
+	   // creates final report by concatenating strings 
 	   output += String.format("%-20s \n\n", "FOOD") + food+ line +
 			   String.format("%-20s \n\n", "DRINKS") + drink+ line +
 			   String.format("%-20s \n\n", "PASTRIES") + pastry + line +"\n" ;
@@ -80,7 +96,7 @@ public class EndOfDay {
 	 */   
   private void calculateInventory() {
 	   // Go though customer list
-      for (Map.Entry m:CoffeeShop.customerList.entrySet()) { 
+      for (Map.Entry m: CoffeeShop.customerList.entrySet()) { 
           Customer cus = (Customer) m.getValue();  // Get Customer object 
         
           // Go through all orders of a customer  
@@ -97,15 +113,24 @@ public class EndOfDay {
       }            
   }
   
-  public void upDateFinalSum(float[] money) {
-	   for (int i =0; i<= CoffeeShop.money.size()-1; i++) {
-		   float newValue = CoffeeShop.money.get(i) +money[i];
+  /**
+   * Updates coffee shop's total money 
+   * @param money Array storing money to add 
+   */
+  public void updateFinalSum(float[] money) {
+	  // for all elements in float array, add to Coffeeshop money ArrayList 
+	   for (int i = 0; i <= CoffeeShop.money.size()-1; i++) {
+		   float newValue = CoffeeShop.money.get(i) + money[i];
 		   CoffeeShop.money.set(i, newValue) ;
 	   }
   }
   
+  /**
+   * Generates final report text file 
+   */
   public void generateFinalReport() {
 	   try {
+		   // creates a text file and writes the report to it 
 		   FileWriter finalWriter = new FileWriter("FinalReport.txt");
 		   finalWriter.write(report);
 		   finalWriter.close();

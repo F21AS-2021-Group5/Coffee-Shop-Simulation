@@ -89,6 +89,7 @@ public class EndOfDay {
 	             String.format("%-40s %-10s\n", "Total of the day : ", df2.format(CoffeeShop.money.get(3)) + "£");
 	   
 	   report = output;
+	  
 	   return output;
    }
    
@@ -96,6 +97,7 @@ public class EndOfDay {
 	 * Calculates inventory for the final report 
 	 */   
   private void calculateInventory() {
+	  inventory.clear();
 	   // Go though customer list
       for (Map.Entry m: CoffeeShop.customerList.entrySet()) { 
           Customer cus = (Customer) m.getValue();  // Get Customer object 

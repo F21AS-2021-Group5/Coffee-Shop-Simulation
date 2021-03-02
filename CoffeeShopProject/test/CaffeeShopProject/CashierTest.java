@@ -55,14 +55,12 @@ class CashierTest {
 		//System.out.println("new test");
 	}
 	
-
-	
 	
 	@Test
 	void testcreateNewCustomer() {
 		// create new customer //
 		LocalDateTime t = LocalDateTime.now();
-		Customer customer = new Customer("Andrew", "A1", t);
+		customer = new Customer("Andrew", "A1", t);
 		
 		// check for customer information //
 		assertTrue(customer.name == "Andrew");
@@ -73,9 +71,10 @@ class CashierTest {
 	
 	@Test
 	void testcreateNewCashier() {
+		// check cashier constructor
 		LocalDateTime t = LocalDateTime.now();
-		Customer customer = new Customer("Andrew", "A1", t);
-		Cashier cashier = new Cashier("Beth");
+		customer = new Customer("Andrew", "A1", t);
+		cashier = new Cashier("Beth");
 		cashier.createNewCustomer(customer.name);
 	
 		assertTrue(cashier.ID == "Beth");
@@ -86,9 +85,9 @@ class CashierTest {
 	void testgetCartTax() {
 		
 		LocalDateTime t = LocalDateTime.now();
-		Customer customer = new Customer("Andrew", "A1", t);
+		customer = new Customer("Andrew", "A1", t);
 		
-		Cashier cashier = new Cashier("B");
+		cashier = new Cashier("B");
 		cashier.createNewCustomer(customer.name);
 
 		
@@ -98,15 +97,15 @@ class CashierTest {
 		
 		// test for intiger price //
 		cashier.subtotal = 4;
-		assertEquals(4*0.25, cashier.getCartTax(), delta);
+		assertEquals(1, cashier.getCartTax(), delta);
 		
 		// test for decimal tax //
 		cashier.subtotal = (float) 2.00;
-		assertEquals(2*0.25, cashier.getCartTax(), delta);
+		assertEquals(0.5, cashier.getCartTax(), delta);
 		
 		// test for decimal price //
 		cashier.subtotal = (float) 2.99;
-		assertEquals(2.99*0.25, cashier.getCartTax(), delta);
+		assertEquals(0.7475, cashier.getCartTax(), delta);
 		
 
 	}
@@ -115,9 +114,9 @@ class CashierTest {
 	void testgetDiscount1() throws InvalidMenuItemQuantityException, InvalidMenuItemDataException {
 			
 		LocalDateTime t = LocalDateTime.now();
-		Customer customer = new Customer("Andrew", "A1", t);
+		customer = new Customer("Andrew", "A1", t);
 		
-		Cashier cashier = new Cashier("B");
+		cashier = new Cashier("B");
 		cashier.createNewCustomer(customer.name);
 		cashier.currentCustomer = customer;
 		
@@ -135,7 +134,7 @@ class CashierTest {
 		assertTrue(customer.cart.containsKey(itemId3));
 
 		assertEquals(8.2, cashier.getCartSubtotalPrice(), delta);
-		assertEquals(8.2 - 5, cashier.getDiscount(), delta);
+		assertEquals(3.2, cashier.getDiscount(), delta);
 
 		assertTrue(cashier.discount1 == 1);
 		assertTrue(cashier.discount2 == 0);
@@ -147,9 +146,9 @@ class CashierTest {
 	void testgetDiscount2() throws InvalidMenuItemQuantityException, InvalidMenuItemDataException {
 
 		LocalDateTime t = LocalDateTime.now();
-		Customer customer = new Customer("Andrew", "A1", t);
+		customer = new Customer("Andrew", "A1", t);
 		
-		Cashier cashier = new Cashier("B");
+		cashier = new Cashier("B");
 		cashier.createNewCustomer(customer.name);
 		cashier.currentCustomer = customer;
 		
@@ -177,9 +176,9 @@ class CashierTest {
 		
 
 		LocalDateTime t = LocalDateTime.now();
-		Customer customer = new Customer("Andrew", "A1", t);
+		customer = new Customer("Andrew", "A1", t);
 		
-		Cashier cashier = new Cashier("B");
+		cashier = new Cashier("B");
 		cashier.createNewCustomer(customer.name);
 		cashier.currentCustomer = customer;
 		
@@ -203,9 +202,9 @@ class CashierTest {
 		System.out.println("----------- now -----------");
 		
 		LocalDateTime t = LocalDateTime.now();
-		Customer customer = new Customer("Andrew", "A1", t);
+		customer = new Customer("Andrew", "A1", t);
 		
-		Cashier cashier = new Cashier("B");
+		cashier = new Cashier("B");
 		cashier.createNewCustomer(customer.name);
 		cashier.currentCustomer = customer;
 		
@@ -213,12 +212,14 @@ class CashierTest {
 		String itemId2 = "Panini";
 		String itemId3 = "Muffin";
 		
+		// add items to cart and check cart final price
 		customer.addItem(itemId1, 2, LocalDateTime.now());
 		customer.addItem(itemId2, 1, LocalDateTime.now());
 		customer.addItem(itemId3, 4, LocalDateTime.now());
 		
 		System.out.println(cashier.getCartSubtotalPrice());
-
-		assertEquals(2.6*2+3.25*1+2.35*4-cashier.getDiscount()+cashier.getCartTax(),cashier.getCartTotalPrice(), delta);
+		
+		//check that returned total price is the same then supposed to
+		assertEquals(17.849998,cashier.getCartTotalPrice(), delta);
 	}
 }

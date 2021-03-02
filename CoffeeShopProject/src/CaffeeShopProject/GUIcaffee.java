@@ -75,7 +75,6 @@ public class GUIcaffee {
 	
 	private static Customer currentCustomer;
 	
-	//CoffeeShop shop = new CoffeeShop("MenuItems");
 	Cashier cashier;
 	
 	double fees;
@@ -90,8 +89,6 @@ public class GUIcaffee {
 	 */
 	public GUIcaffee(Cashier cashier) {
 		this.cashier = cashier;		
-		//addWindowListener(this);
-		//newCust.addActionListener(this);
 		InitialiseCategoryList(); // Initialise Category list 
 		reset();
 	}
@@ -276,8 +273,6 @@ public class GUIcaffee {
 						receipView.setText(cashier.generateReceipt());
 					}
 					receipt.setEnabled(true);
-					
-					//shop.GenerateCustomerReport(currentCustomer.getId());
 				
 				// if receipt button is clicked
 				} if (e.getSource() == receipt) {
@@ -288,7 +283,6 @@ public class GUIcaffee {
 				} if (e.getSource() == endOfDay) {
 					
 					String report = cashier.generateFinalReport();
-					//String report  = shop.generateFinalReportDisplay();
 					summaryView.setText(report);
 					cashier.generateFinalReportFile();
 				} if (e.getSource() == reset) {

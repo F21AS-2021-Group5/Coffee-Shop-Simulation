@@ -281,16 +281,8 @@ public class Customer {
 		
 		// if it already exists, add quantity to item in cart 
 		itemId = itemId.trim();
-		if (cart.containsKey(itemId)) {
-			//int currentQuantity = cart.get(itemId);
-			
-			// if quantity is invalid, throw exception 
-			//if (currentQuantity <= 0)
-			//	throw new InvalidMenuItemQuantityException(); 
-			
-			// add quantity 
-			//cart.put(itemId, currentQuantity + quantity);
-			
+		if (cart.containsKey(itemId)) {			
+			// add quantity 			
 			for (int i = 0; i < quantity; i++)
 				cart.get(itemId).add(timestamp);
 			
@@ -303,7 +295,7 @@ public class Customer {
 			ArrayList<LocalDateTime> orders = new ArrayList<LocalDateTime>();
 			for (int i = 0; i < quantity; i++)
 				orders.add(timestamp);
-			//cart.put(itemId, quantity);
+
 			cart.put(itemId, orders);
 			
 			// add price to total cost

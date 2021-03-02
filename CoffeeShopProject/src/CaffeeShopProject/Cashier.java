@@ -29,24 +29,17 @@ public class Cashier {
 	public float tax;
 	public float discount;
 	public float total;
-	//public int taxable;
 	public String receipt;
-	//HashMap<String, ArrayList<LocalDateTime>> cart;
-	//Customer customer;
 	public static Customer currentCustomer;
 	
 	private static String line = String.format("%1$" + 55 + "s", "- \n").replace(' ', '-');
 	private static DecimalFormat df2 = new DecimalFormat("#.##");
-	//private static ArrayList<Float> money;
-	//private static float money[];
-	//private static float[] money = {0, 0, 0, 0, 0, 0, 0};
 	int discount1 = 0;
 	int discount2 = 0;
 	int discount3 = 0;
 	
 	String ID;
 	
-	//CoffeeShop shop = new CoffeeShop("MenuItems"); 
 	EndOfDay report = new EndOfDay();
 	
 	/**
@@ -134,18 +127,6 @@ public class Cashier {
 		// loop through items in cart
 		// if item is taxable, add 20% of item price to tax 
 		tax = (float) (subtotal*0.25);
-		/*
-		taxable = 1;
-		float itemTax = 0;
-		tax = 0;
-		while (taxable == 1) {
-			for (Map.Entry mapElement : currentCustomer.cart.entrySet()) { 
-				if (CoffeeShop.menu.get(mapElement).getCategory() == "drink") {
-					tax = tax + CoffeeShop.menu.get(mapElement).getCost();
-				}
-			}
-		}
-		*/
 		return tax;
 	}
 	
@@ -163,7 +144,7 @@ public class Cashier {
 		List<Float> pastry = new ArrayList<Float>();
 		
 		
-		// Go through the cart to find all the items baugth
+		// Go through the cart to find all the items but
 		Set<String> cartSet = currentCustomer.cart.keySet(); 
 		
 		for (String orderID: cartSet) {
@@ -200,20 +181,17 @@ public class Cashier {
 			if (drink.size() >= 1 && food.size() >= 1 && pastry.size() >= 1) {
 				float combination = drink.remove(0) + food.remove(0) + pastry.remove(0);
 				discount += combination - 5;
-				//System.out.println("discount1  " + discount);
 				discount1 = discount1 + 1;
 				
 			// Then if other discounts are available
 			} else if (drink.size() >= 3 && food.size() >= 1) { 
 				float combination = drink.remove(0) + drink.remove(0) + drink.remove(0) + food.remove(0);
 				discount += combination / 5;
-				//System.out.println("discoubt2  " + discount);
 				discount2 = discount2 + 1;
 				
 			} else if (pastry.size() >= 3) {
 				float combination = pastry.remove(0) + pastry.remove(0) + pastry.remove(0);
 				discount += combination / 4;
-				//System.out.println("discount3  " + discount);
 				discount3 = discount3 + 1;
 				
 			} else {
@@ -280,7 +258,6 @@ public class Cashier {
 	 */
 	public void generateCustomerReport() {
 		   try {
-			   //File customerReport =new File("Receit " + currentCustomer.getId() + ".txt");
 			   FileWriter customerWriter = new FileWriter("Receit " + currentCustomer.getId() + ".txt");
 			   customerWriter.write(receipt);
 			   customerWriter.close();

@@ -84,7 +84,7 @@ public class CoffeeShop {
                 	   throw new IllegalArgumentException();
                    }
                } else {
-                  // System.out.println("Invalid data line. Will drop it. \n");
+                  System.out.println("Invalid data line. Will drop it. \n");
                }
                inputLine = br.readLine();                          //read the next line
            }
@@ -100,7 +100,6 @@ public class CoffeeShop {
                //do nothing
            }
        }
-       //System.out.println(menu.get("Latte").getCategory());
    }
    
    /**
@@ -143,7 +142,7 @@ public class CoffeeShop {
                 	   e.printStackTrace();
                    } 
                } else {
-                   //System.out.println("Invalid data line. Will drop it. \n");
+                   System.out.println("Invalid data line. Will drop it. \n");
                }
                inputLine = br.readLine();                          //read the next line
            }
@@ -175,7 +174,7 @@ public class CoffeeShop {
 		   DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
 		   localDateTime = LocalDateTime.from(formatter.parse(timeString));
 		} catch(Exception e) { //this generic but you can control another types of exception
-		    // look the origin of excption 
+		    // look the origin of exception 
 			System.out.println("Could't conver sting to time stamp");
 		}
 	    return localDateTime; // Fine to return 0 since catch in the Customer class 

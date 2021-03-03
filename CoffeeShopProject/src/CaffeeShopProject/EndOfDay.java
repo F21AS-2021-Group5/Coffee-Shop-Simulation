@@ -83,9 +83,9 @@ public class EndOfDay {
 	             String.format("%-40s %-10s\n", "Sub total of day : ", df2.format(CoffeeShop.money.get(0)) + "£") + 
 	             String.format("%-40s %-10s\n", "Taxes : ", df2.format(CoffeeShop.money.get(1)) + "£")+ 
 	             String.format("%-40s %-10s\n", "Discount : ", df2.format(CoffeeShop.money.get(2)) + "£")+ 
-	             String.format("%-50s %-10s\n", "Type D1 : ", df2.format(CoffeeShop.money.get(4)) + "£") + 
-	             String.format("%-50s %-10s\n", "Type D2 : ", df2.format(CoffeeShop.money.get(5)) + "£") + 
-	             String.format("%-50s %-10s\n", "Type D3 : ", df2.format(CoffeeShop.money.get(6)) + "£") + 
+	             String.format("%-50s %-10s\n", "Type D1 : ", df2.format(CoffeeShop.money.get(4)) ) + 
+	             String.format("%-50s %-10s\n", "Type D2 : ", df2.format(CoffeeShop.money.get(5)) ) + 
+	             String.format("%-50s %-10s\n", "Type D3 : ", df2.format(CoffeeShop.money.get(6)) ) + 
 	             String.format("%-40s %-10s\n", "Total of the day : ", df2.format(CoffeeShop.money.get(3)) + "£");
 	   
 	   report = output;

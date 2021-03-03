@@ -225,8 +225,8 @@ public class GUIcaffee {
 						set();	
 						cashier.createNewCustomer(name);
 						currentCustomer = cashier.currentCustomer;
+						newCust.setEnabled(false);
 					}		
-					newCust.setEnabled(false);
 				// if the categories are clicked on, display items in category 
 				} if (e.getSource() == drink) {
 			        menuItem.setModel(drinkCategory);

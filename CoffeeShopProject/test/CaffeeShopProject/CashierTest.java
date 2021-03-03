@@ -23,6 +23,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -302,4 +304,55 @@ class CashierTest {
 		// check that returned total price is the same it is supposed to be
 		assertEquals(17.85,cashier.getCartTotalPrice(), delta);
 	}
+	
+	@Test
+	void testGenerateCustomerReport1 () throws InvalidMenuItemQuantityException, InvalidMenuItemDataException {
+		// test that generateCustomerReport() works under normal circumstances //
+		LocalDateTime t = LocalDateTime.now();
+		customer = new Customer("Andrew", "A1", t);
+		
+		cashier = new Cashier("B");
+		cashier.createNewCustomer(customer.name);
+		cashier.currentCustomer = customer;
+		
+		String itemId1 = "Cappuccino";
+		String itemId2 = "Panini";
+		String itemId3 = "Muffin";
+		
+		customer.addItem(itemId1, 2, LocalDateTime.now());
+		customer.addItem(itemId2, 1, LocalDateTime.now());
+		customer.addItem(itemId3, 4, LocalDateTime.now());
+		
+		cashier.getCartTotalPrice();
+		cashier.generateReceipt();
+		cashier.generateCustomerReport();
+		
+	}
+	
+	@Test
+	void testGenerateCustomerReport2 () throws InvalidMenuItemQuantityException, InvalidMenuItemDataException {
+		// test that generateCustomerReport() throws NullPointerException when no receipt has been generated //
+		LocalDateTime t = LocalDateTime.now();
+		customer = new Customer("Andrew", "A1", t);
+		
+		cashier = new Cashier("B");
+		cashier.createNewCustomer(customer.name);
+		cashier.currentCustomer = customer;
+		
+		String itemId1 = "Cappuccino";
+		String itemId2 = "Panini";
+		String itemId3 = "Muffin";
+		
+		customer.addItem(itemId1, 2, LocalDateTime.now());
+		customer.addItem(itemId2, 1, LocalDateTime.now());
+		customer.addItem(itemId3, 4, LocalDateTime.now());
+		
+		cashier.getCartTotalPrice();
+
+		assertThrows(NullPointerException.class,
+			() -> {cashier.generateCustomerReport();}
+		);
+	}
+	
+
 }

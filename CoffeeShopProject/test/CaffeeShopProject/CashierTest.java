@@ -198,9 +198,89 @@ class CashierTest {
 	}
 	
 	@Test
-	void testgetCartTotalPrice() throws InvalidMenuItemQuantityException, InvalidMenuItemDataException {
-		System.out.println("----------- now -----------");
+	void testgetDiscount4() throws InvalidMenuItemQuantityException, InvalidMenuItemDataException {
 		
+
+		LocalDateTime t = LocalDateTime.now();
+		customer = new Customer("Andrew", "A1", t);
+		
+		cashier = new Cashier("B");
+		cashier.createNewCustomer(customer.name);
+		cashier.currentCustomer = customer;
+		
+		String itemId1 = "Cappuccino";
+		String itemId2 = "Panini";
+		String itemId3 = "Muffin";
+
+		customer.addItem(itemId1, 1, LocalDateTime.now());
+		customer.addItem(itemId2, 1, LocalDateTime.now());
+		customer.addItem(itemId3, 4, LocalDateTime.now());
+		
+		// test discount combination 1 //
+		assertEquals(4.9625,cashier.getDiscount(), delta);
+
+		assertTrue(cashier.discount1 == 1);
+		assertTrue(cashier.discount2 == 0);
+		assertTrue(cashier.discount3 == 1);
+	}
+	
+	@Test
+	void testgetDiscount5() throws InvalidMenuItemQuantityException, InvalidMenuItemDataException {
+		
+
+		LocalDateTime t = LocalDateTime.now();
+		customer = new Customer("Andrew", "A1", t);
+		
+		cashier = new Cashier("B");
+		cashier.createNewCustomer(customer.name);
+		cashier.currentCustomer = customer;
+		
+		String itemId1 = "Cappuccino";
+		String itemId2 = "Panini";
+		String itemId3 = "Muffin";
+
+		customer.addItem(itemId1, 2, LocalDateTime.now());
+		customer.addItem(itemId2, 2, LocalDateTime.now());
+		customer.addItem(itemId3, 5, LocalDateTime.now());
+		
+		// test discount combination 2 //
+		assertEquals(8.1625,cashier.getDiscount(), delta);
+
+		assertTrue(cashier.discount1 == 2);
+		assertTrue(cashier.discount2 == 0);
+		assertTrue(cashier.discount3 == 1);
+	}
+	
+	@Test
+	void testgetDiscount6() throws InvalidMenuItemQuantityException, InvalidMenuItemDataException {
+		
+
+		LocalDateTime t = LocalDateTime.now();
+		customer = new Customer("Andrew", "A1", t);
+		
+		cashier = new Cashier("B");
+		cashier.createNewCustomer(customer.name);
+		cashier.currentCustomer = customer;
+		
+		String itemId1 = "Cappuccino";
+		String itemId2 = "Panini";
+		String itemId3 = "Muffin";
+
+		customer.addItem(itemId1, 5, LocalDateTime.now());
+		customer.addItem(itemId2, 3, LocalDateTime.now());
+		customer.addItem(itemId3, 2, LocalDateTime.now());
+		
+		// test discount combination 3 //
+		assertEquals(8.61,cashier.getDiscount(), delta);
+
+		assertTrue(cashier.discount1 == 2);
+		assertTrue(cashier.discount2 == 1);
+		assertTrue(cashier.discount3 == 0);
+	}
+	
+	@Test
+	void testgetCartTotalPrice() throws InvalidMenuItemQuantityException, InvalidMenuItemDataException {
+				
 		LocalDateTime t = LocalDateTime.now();
 		customer = new Customer("Andrew", "A1", t);
 		
@@ -219,7 +299,7 @@ class CashierTest {
 		
 		System.out.println(cashier.getCartSubtotalPrice());
 		
-		//check that returned total price is the same then supposed to
-		assertEquals(17.849998,cashier.getCartTotalPrice(), delta);
+		// check that returned total price is the same it is supposed to be
+		assertEquals(17.85,cashier.getCartTotalPrice(), delta);
 	}
 }

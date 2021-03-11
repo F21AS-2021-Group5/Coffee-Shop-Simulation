@@ -54,9 +54,7 @@ public class CoffeeShop {
 		//createNewCashier(name);
 		fillMenu("MenuItems");
 		//fillCustomerList("CustomerList");	
-		
-		Thread addCustomerThread = new Thread(new CustomerQueue("CustomerList", "CustomerListOnline", 1500));
-		addCustomerThread.start();
+
 	}
 	
 	/**
@@ -71,7 +69,7 @@ public class CoffeeShop {
 	 * Read menu data and store it in menu map 
 	 * @param fileName String
 	 */
-   private void fillMenu(String fileName) {
+   public void fillMenu(String fileName) {
        BufferedReader br = null; //reader
        try {
     	   FileReader file = new FileReader(fileName);   // Read file
@@ -191,7 +189,10 @@ public class CoffeeShop {
 		// Each cashier has their own GUI 
 		//GUIcaffee GUI = new GUIcaffee(shop.cashier);
 		//GUI.initializeGUI(); 
-		//GUI.paintScreen();
+		//GUI.paintScreen();		
+		
+		Thread addCustomerThread = new Thread(new CustomerQueue("CustomerList", "CustomerListOnline", 1500));
+		addCustomerThread.start();
 	}
 
 }

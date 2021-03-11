@@ -18,19 +18,14 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 
 public class CustomerQueue implements Runnable{
 	
 	// in-shop queue and online queue 
-	ArrayDeque<Customer> shopQueue;
-	ArrayDeque<Customer> onlineQueue;
+	Deque<Customer> shopQueue;
+	Deque<Customer> onlineQueue;
 	
 	// delay between thread iterations
 	long delay;
@@ -44,8 +39,8 @@ public class CustomerQueue implements Runnable{
 	 */
 	public CustomerQueue(String shopQueueFile, String onlineQueueFile, long delay) {
 		// initialize queues 
-		shopQueue = new ArrayDeque<Customer>();
-		onlineQueue = new ArrayDeque<Customer>();				
+		shopQueue = new LinkedList<Customer>();
+		onlineQueue = new LinkedList<Customer>();				
 		
 		// set delay 
 		this.delay = delay;
@@ -54,9 +49,8 @@ public class CustomerQueue implements Runnable{
 		try {
 			shopReader = new BufferedReader(new FileReader(shopQueueFile));
 			onlineReader = new BufferedReader(new FileReader(onlineQueueFile));
-			System.out.println("check");
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			e.printStackTrace(); 
 		}
 	}
 
@@ -66,7 +60,7 @@ public class CustomerQueue implements Runnable{
 		String online = null; 
 		String inshop = null;		
 		
-		do {
+		while (true) {
 			// every number of milliseconds, add customer to end of queue 
 			try {
 				// add to queue while prioritizing the online queue 
@@ -80,6 +74,9 @@ public class CustomerQueue implements Runnable{
 						addToQueue(inshop, false);
 				}
 				
+				if (online == null && inshop == null)
+					break;
+				
 				// delay for visualization purposes 
 				Thread.sleep(delay);
 				
@@ -89,7 +86,7 @@ public class CustomerQueue implements Runnable{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		} while(online != null || inshop != null);	
+		}
 	}	
 
    /**
@@ -97,7 +94,7 @@ public class CustomerQueue implements Runnable{
     * @param line Line from text file containing customer information 
     * @param online Online or in-shop queue
     */
-   private void addToQueue(String line, boolean online){
+   public void addToQueue(String line, boolean online){
 
 	   try {	   		
 	   		// while loop variables 
@@ -139,11 +136,10 @@ public class CustomerQueue implements Runnable{
 		   if (online)
 			   success = onlineQueue.add(customer);
 		   else
-			   success = shopQueue.add(customer);		   
+			   success = shopQueue.add(customer);
 		   
-		   // throw exception if not added 
 		   if (!success)
-			   throw new CustomerAdditionException();
+			   System.out.println("Customer object not added to queue.");
 			   
 		   System.out.println(customer.receipt());		   
 	    	   
@@ -161,8 +157,6 @@ public class CustomerQueue implements Runnable{
 	   } catch (InvalidMenuItemDataException e) {
 		   e.printStackTrace();
 		   
-	   } catch (CustomerAdditionException e) {
-		   e.printStackTrace();
-	   } 
+	   }
    }
 }

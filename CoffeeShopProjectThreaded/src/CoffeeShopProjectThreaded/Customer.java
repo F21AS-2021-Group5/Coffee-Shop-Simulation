@@ -246,11 +246,16 @@ public class Customer {
 	
 	/**
 	 * Compares this Customer object to another Customer object using the 'id' field
-	 * @param otherCustomer
+	 * @param o	Object to compare with 
 	 * @return false if they do not match, true if they match 
 	 */
-	public boolean equals(Customer otherCustomer)
+	@Override
+	public boolean equals(Object o)
 	{
+		if (!(o instanceof Customer))
+			return false;
+		
+		Customer otherCustomer = (Customer) o;		
 		return id.equals(otherCustomer.id);
 	}
 	

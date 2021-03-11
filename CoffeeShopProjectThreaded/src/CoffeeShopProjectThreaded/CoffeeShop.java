@@ -51,9 +51,12 @@ public class CoffeeShop {
 		}
 		
 		// creates cashier and fills menu and customer list data structures 
-		createNewCashier(name);
+		//createNewCashier(name);
 		fillMenu("MenuItems");
-		fillCustomerList("CustomerList");	
+		//fillCustomerList("CustomerList");	
+		
+		Thread addCustomerThread = new Thread(new CustomerQueue("CustomerList", "CustomerListOnline", 1500));
+		addCustomerThread.start();
 	}
 	
 	/**
@@ -166,7 +169,7 @@ public class CoffeeShop {
     * @param timeString Time stamp in string format 
     * @return Corresponding LocalDateTime object 
     */
-   private LocalDateTime stringToTimestamp(String timeString){
+   public static LocalDateTime stringToTimestamp(String timeString){
 	   LocalDateTime localDateTime = null;
 	   try {
 		   // set formatter and convert string to LocalDateTime 
@@ -186,9 +189,9 @@ public class CoffeeShop {
 		CoffeeShop shop = new CoffeeShop("Adam");
 		
 		// Each cashier has their own GUI 
-		GUIcaffee GUI = new GUIcaffee(shop.cashier);
-		GUI.initializeGUI(); 
-		GUI.paintScreen();
+		//GUIcaffee GUI = new GUIcaffee(shop.cashier);
+		//GUI.initializeGUI(); 
+		//GUI.paintScreen();
 	}
 
 }

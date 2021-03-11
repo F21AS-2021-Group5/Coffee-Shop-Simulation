@@ -1,7 +1,7 @@
 End of the day report 
 
-Date:      02-03-2021
-Time:      13:10:50  
+Date:      11-03-2021
+Time:      15:54:29  
 ------------------------------------------------------
 FOOD                 
 
@@ -9,18 +9,19 @@ FOOD
 ------------------------------------------------------
 DRINKS               
 
+      Tea                       1x         
       Mocha                     1x         
 ------------------------------------------------------
 PASTRIES             
 
-      Croissant                 3x         
+      Croissant                 2x         
 ------------------------------------------------------
 
 Number of customers:           3         
-Sub total of day :                       15.4£     
-Taxes :                                  3.85£     
+Sub total of day :                       15,25£    
+Taxes :                                  3,81£     
 Discount :                               0£        
-Type D1 :                                          0£        
-Type D2 :                                          0£        
-Type D3 :                                          0£        
-Total of the day :                       19.25£    
+Type D1 :                                          0         
+Type D2 :                                          0         
+Type D3 :                                          0         
+Total of the day :                       19,06£    

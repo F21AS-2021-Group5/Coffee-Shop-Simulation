@@ -18,11 +18,19 @@ import java.util.Iterator;
 import java.util.Queue;
 
 
-public class NewCashier extends Thread{
+public class NewCashier implements Runnable{
 	
 	public String ID;	//Cashier ID
 	public Customer currentCustomer;
 	private Queue<Customer> queue;
 	private NewGUI GUI;
+	
+	
+	
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

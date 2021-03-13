@@ -1,3 +1,16 @@
+/**
+ * NewGUI.java - class to create and display GUI 
+ * 
+ * @author Esther Rayssiguie 
+ * @author Jake Marrocco
+ * @author Karolina Judzentyte
+ * @author Valerio Franchi
+ * @version 0.1
+ * 
+ * Copyright (c) 2021 
+ * All rights reserved.
+ */
+
 package CoffeeShopProjectThreaded;
 
 //import org.omg.PortableServer.THREAD_POLICY_ID;

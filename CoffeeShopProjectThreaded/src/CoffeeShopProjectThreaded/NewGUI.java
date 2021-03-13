@@ -59,6 +59,15 @@ public class NewGUI extends Thread{
 	}
 	
 	public synchronized void DisplayCustomers() {
+		//Clear customer list
+		customerlist.removeAll();
+		
+		//Size is 1/4 of the width of the frame and same height
+		int customerListWidth = width;
+		int customerListHeight = height / 4;
+		customerlist.setBounds(0, 0, customerListWidth, customerListHeight);
+		
+		
 		
 	}
 	
@@ -71,11 +80,28 @@ public class NewGUI extends Thread{
 	}
 	
 	public void DisplayOrders() {
+		int orderWidth = width;
+		int orderHeight = height/4;
+		orders.setBounds(0, 2 * height / 4, orderWidth, orderHeight);
+		//if cashier has a customer (currentCustomer not null)
+		// Orders cashierDisp = get Cashier ID handling current customer
+		// orders.setText 
+		orders.setVisible(true);
+		frame.add(orders);
 		
 	}
 	
-	void CreateCashierDisplay() {
+	void CreateCashierDisplay(Cashier cash, int totalCashier, int currentCashier) {
+		int cashierWidth = width / totalCashier;
+		int cashierHeight = height / 4;
+		JTextArea cashierText = new JTextArea();
+		cashierText.setName("Cashier" + currentCashier);
+		cashierText.setBounds((cashierWidth*currentCashier) - cashierWidth, height / 4, cashierWidth, cashierHeight);
+		//if cashier has a customer
+		// cashierText.setText(cashier.currentCustomer.getName() + "ordered" + cashier.currentCustomer.order() + ".\ price of" + cashier.currentCustomer.orderCost()); 
 		
+		cashierText.setVisible(true);
+		cashier.add(cashierText);
 	}
 	
 	//Update GUI with new information

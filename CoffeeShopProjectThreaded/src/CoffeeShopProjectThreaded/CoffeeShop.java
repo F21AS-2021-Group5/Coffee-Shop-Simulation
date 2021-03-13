@@ -23,6 +23,9 @@ import java.security.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import CoffeeShopProjectThreaded.GUIcaffee;
+
 import java.io.File;  // Import the File class
 import java.io.IOException;  // Import the IOException class to handle errors
 
@@ -187,9 +190,9 @@ public class CoffeeShop {
 		CoffeeShop shop = new CoffeeShop("Adam");
 		
 		// Each cashier has their own GUI 
-		//GUIcaffee GUI = new GUIcaffee(shop.cashier);
-		//GUI.initializeGUI(); 
-		//GUI.paintScreen();		
+//		GUIcaffee GUI = new GUIcaffee(shop.cashier);
+//		GUI.initializeGUI(); 
+//		GUI.paintScreen();		
 		
 		Thread addCustomerThread = new Thread(new CustomerQueue("CustomerList", "CustomerListOnline", 1500));
 		addCustomerThread.start();

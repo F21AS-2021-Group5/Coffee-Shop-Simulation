@@ -21,6 +21,7 @@ public class Cook implements Runnable{
 	int currentCustomer;
 	
 	OrderQueue queue;
+	private Log log;
 	
 	/**
 	 * Constructor for Cook class
@@ -52,6 +53,8 @@ public class Cook implements Runnable{
 				
 				System.out.println("Item " + head.getItemID() + " for customer " +
 						head.getCustomerID() + " prepared.");
+				log.updateLog("Item " + head.getItemID() + " for customer " +
+						head.getCustomerID() + " prepared.");
 				
 				try {
 					Thread.sleep(1000);
@@ -66,7 +69,7 @@ public class Cook implements Runnable{
 	 * Processes each item ordered (NOT FINISHED)
 	 */
 	void processItem() {
-		
+		log.updateLog("Cooking food in process");
 		System.out.println("Cooking food...");
 	}
 }

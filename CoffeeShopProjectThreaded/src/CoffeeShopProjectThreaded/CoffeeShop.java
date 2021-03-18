@@ -35,6 +35,8 @@ public class CoffeeShop {
 	public static HashMap<String, Customer> customerList;
 	public static ArrayList<Float> money;
 	
+	public static OrderQueue orderQueue;
+	
 	Cashier cashier;
 	
 	/**
@@ -47,6 +49,8 @@ public class CoffeeShop {
 		customerList = new HashMap<>();
 		cashier = null;
 		money =  new ArrayList<Float>();
+		
+		orderQueue = new OrderQueue();
 		
 		// add initial money to cashier 
 		for (int i = 0 ; i <= 6; i++) {
@@ -194,8 +198,19 @@ public class CoffeeShop {
 //		GUI.initializeGUI(); 
 //		GUI.paintScreen();		
 		
-		Thread addCustomerThread = new Thread(new CustomerQueue("CustomerList", "CustomerListOnline", 1500));
-		addCustomerThread.start();
+		//Thread addCustomerThread = new Thread(new CustomerQueue("CustomerList", "CustomerListOnline", 1500));
+		//addCustomerThread.start();
+		
+		orderQueue.addToQueue(1, "FOOD001", false);
+		orderQueue.addToQueue(1, "DRINK003", true);
+		orderQueue.addToQueue(2, "PASTRY001", false);
+		orderQueue.addToQueue(3, "DRINK005", true);
+		
+		Thread cook1 = new Thread(new Cook(orderQueue));
+		Thread barista1 = new Thread(new Barista(orderQueue));
+		
+		cook1.start();
+		barista1.start();
 	}
 
 }

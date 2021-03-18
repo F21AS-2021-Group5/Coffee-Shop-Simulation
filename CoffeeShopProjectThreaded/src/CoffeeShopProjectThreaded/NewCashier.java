@@ -13,6 +13,7 @@
 
 package CoffeeShopProjectThreaded;
 
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Queue;
@@ -23,34 +24,56 @@ public class NewCashier implements Runnable{
 	public String ID;	//Cashier ID
 	public String name; //Cashier name
 	public Customer currentCustomer;
-	private Queue<Customer> queue;
+	public CustomerQueue queue;
+	public HashMap<Customer, String> allcustomers; //NEED TO CHANGE THIS LATER
 	private NewGUI GUI;
 	private static int cashierCount = 0;
 	public int cashierNumber = 0;
+	private int delay = 1000; //delay for thread
 	
 	private Log log;
 	
-	public NewCashier(String name, String id, Queue<Customer> queue, NewGUI gui) {
+	/**
+	 * Constructor for NewCashier class
+	 */
+	public NewCashier(String name, String id, HashMap<Customer, String> queue, NewGUI gui) {
 		this.ID = id;
 		this.name = name;
-		this.setQueue(queue);
+		queue = new HashMap<>();
 		this.GUI = gui;
 		cashierNumber = cashierCount++;
 	}
 	
 	
-	
 	@Override
 	public void run() {
+		
 		// TODO Auto-generated method stub
 		while(true) {
-			while(!(queue.isEmpty())) {
-				System.out.println("Currently waiting in queue " + queue.size());
-				if(!(queue.isEmpty())) {
-					customers();
+			//First manage online customers (they have priority)
+			while(!(queue.onlineQueue.isEmpty())) {
+				System.out.println("Currently waiting in queue " + queue.onlineQueue.size());
+				if(!(queue.onlineQueue.isEmpty())) {
+					customers(); //Call method customer below
+					//Customer who purchased their order is removed form the queue
+					currentCustomer = queue.onlineQueue.remove();	
 				}
 				try {
-					Thread.sleep(100);
+					Thread.sleep(delay); //Delay for visualisation
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			//Then manage customers in shop
+			while(!(queue.shopQueue.isEmpty())) {
+				System.out.println("Currently waiting in queue " + queue.shopQueue.size());
+				if(!(queue.shopQueue.isEmpty())) {
+					customers();
+					//Customer who purchased their order is removed form the queue
+					currentCustomer = queue.shopQueue.remove();
+				}
+				try {
+					Thread.sleep(delay);
 				}catch(InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -58,21 +81,22 @@ public class NewCashier implements Runnable{
 		}
 	}
 	
+	/**
+	 * Update Log file with actions
+	 */
 	public synchronized void customers() {
-		//Customer who purchased their order is removed form the queue
-		currentCustomer = queue.remove();
 		log.updateLog(name + " " + ID + ": Is processing order of  " + currentCustomer.getName());
 		//String orderID = currentCustomer.get Order ID
 		double price = currentCustomer.cartTotalPrice;
 		log.updateLog(name + " " + ID + ": Processed the oder of " + currentCustomer.getName() + " Total amount is: " + price + "£"); 
+		//ADD CUSTOMERS TO GENERAL QUEUE +THEIR ORDER 
 	}
 	
-	public void setQueue(Queue<Customer> queue) {
-		this.queue = queue;
-	}
-	
-	public Queue<Customer> getQueue(){
-		return queue;
-	}
+	/*
+	 * public void setQueue(Queue<Customer> queue) { this.customerqueue.shopQueue =
+	 * queue; }
+	 * 
+	 * public Queue<Customer> getQueue(){ return customerqueue.shopQueue; }
+	 */
 
 }

@@ -51,12 +51,12 @@ public class NewCashier implements Runnable{
 		// TODO Auto-generated method stub
 		while(true) {
 			//First manage online customers (they have priority)
-			while(!(queue.onlineQueue.isEmpty())) {
-				System.out.println("Currently waiting in queue " + queue.onlineQueue.size());
-				if(!(queue.onlineQueue.isEmpty())) {
+			while(!(queue.getOnlineQueue().isEmpty())) {
+				System.out.println("Currently waiting in queue " + queue.getOnlineQueue().size());
+				if(!(queue.getOnlineQueue().isEmpty())) {
 					customers(); //Call method customer below
 					//Customer who purchased their order is removed form the queue
-					currentCustomer = queue.onlineQueue.remove();	
+					currentCustomer = queue.getOnlineQueue().remove();	
 				}
 				try {
 					Thread.sleep(delay); //Delay for visualisation
@@ -65,12 +65,12 @@ public class NewCashier implements Runnable{
 				}
 			}
 			//Then manage customers in shop
-			while(!(queue.shopQueue.isEmpty())) {
-				System.out.println("Currently waiting in queue " + queue.shopQueue.size());
-				if(!(queue.shopQueue.isEmpty())) {
+			while(!(queue.getShopQueue().isEmpty())) {
+				System.out.println("Currently waiting in queue " + queue.getShopQueue().size());
+				if(!(queue.getShopQueue().isEmpty())) {
 					customers();
 					//Customer who purchased their order is removed form the queue
-					currentCustomer = queue.shopQueue.remove();
+					currentCustomer = queue.getShopQueue().remove();
 				}
 				try {
 					Thread.sleep(delay);

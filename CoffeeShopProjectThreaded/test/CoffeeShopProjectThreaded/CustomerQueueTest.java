@@ -50,10 +50,10 @@ class CustomerQueueTest {
 		assertEquals(2, queue.getShopQueue().size());	
 		
 		// check names of customers in the queues 
-		assertEquals("Vale", queue.getShopQueue().peekFirst().name);
-		assertEquals("Kale", queue.getShopQueue().peekLast().name);
-		assertEquals("Valerio", queue.getOnlineQueue().peekFirst().name);
-		assertEquals("Franchi", queue.getOnlineQueue().peekLast().name);
+		assertEquals("Vale", queue.getShopQueue().peekFirst().getName());
+		assertEquals("Kale", queue.getShopQueue().peekLast().getName());
+		assertEquals("Valerio", queue.getOnlineQueue().peekFirst().getName());
+		assertEquals("Franchi", queue.getOnlineQueue().peekLast().getName());
 		
 		// check time passed
 		Duration duration = Duration.between(start, finish);

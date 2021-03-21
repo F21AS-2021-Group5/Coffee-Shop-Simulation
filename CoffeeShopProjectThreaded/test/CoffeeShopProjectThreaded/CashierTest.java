@@ -59,9 +59,9 @@ class CashierTest {
 		customer = new Customer("Andrew", "A1", t);
 		
 		// check for customer information //
-		assertTrue(customer.name == "Andrew");
-		assertTrue(customer.id == "A1");
-		assertTrue(customer.timestamp == t);
+		assertTrue(customer.getName() == "Andrew");
+		assertTrue(customer.getId() == "A1");
+		assertTrue(customer.getTimestamp() == t);
 		
 	}
 	
@@ -71,7 +71,7 @@ class CashierTest {
 		LocalDateTime t = LocalDateTime.now();
 		customer = new Customer("Andrew", "A1", t);
 		cashier = new Cashier("Beth");
-		cashier.createNewCustomer(customer.name);
+		cashier.createNewCustomer(customer.getName());
 	
 		assertTrue(cashier.ID == "Beth");
 		
@@ -84,7 +84,7 @@ class CashierTest {
 		customer = new Customer("Andrew", "A1", t);
 		
 		cashier = new Cashier("B");
-		cashier.createNewCustomer(customer.name);
+		cashier.createNewCustomer(customer.getName());
 
 		
 		// test for zero price //
@@ -113,7 +113,7 @@ class CashierTest {
 		customer = new Customer("Andrew", "A1", t);
 		
 		cashier = new Cashier("B");
-		cashier.createNewCustomer(customer.name);
+		cashier.createNewCustomer(customer.getName());
 		cashier.currentCustomer = customer;
 		
 		String itemId1 = "Cappuccino";
@@ -145,7 +145,7 @@ class CashierTest {
 		customer = new Customer("Andrew", "A1", t);
 		
 		cashier = new Cashier("B");
-		cashier.createNewCustomer(customer.name);
+		cashier.createNewCustomer(customer.getName());
 		cashier.currentCustomer = customer;
 		
 		String itemId1 = "Cappuccino";
@@ -175,7 +175,7 @@ class CashierTest {
 		customer = new Customer("Andrew", "A1", t);
 		
 		cashier = new Cashier("B");
-		cashier.createNewCustomer(customer.name);
+		cashier.createNewCustomer(customer.getName());
 		cashier.currentCustomer = customer;
 		
 		String itemId1 = "Cappuccino";
@@ -201,7 +201,7 @@ class CashierTest {
 		customer = new Customer("Andrew", "A1", t);
 		
 		cashier = new Cashier("B");
-		cashier.createNewCustomer(customer.name);
+		cashier.createNewCustomer(customer.getName());
 		cashier.currentCustomer = customer;
 		
 		String itemId1 = "Cappuccino";
@@ -228,7 +228,7 @@ class CashierTest {
 		customer = new Customer("Andrew", "A1", t);
 		
 		cashier = new Cashier("B");
-		cashier.createNewCustomer(customer.name);
+		cashier.createNewCustomer(customer.getName());
 		cashier.currentCustomer = customer;
 		
 		String itemId1 = "Cappuccino";
@@ -255,7 +255,7 @@ class CashierTest {
 		customer = new Customer("Andrew", "A1", t);
 		
 		cashier = new Cashier("B");
-		cashier.createNewCustomer(customer.name);
+		cashier.createNewCustomer(customer.getName());
 		cashier.currentCustomer = customer;
 		
 		String itemId1 = "Cappuccino";
@@ -281,7 +281,7 @@ class CashierTest {
 		customer = new Customer("Andrew", "A1", t);
 		
 		cashier = new Cashier("B");
-		cashier.createNewCustomer(customer.name);
+		cashier.createNewCustomer(customer.getName());
 		cashier.currentCustomer = customer;
 		
 		String itemId1 = "Cappuccino";
@@ -306,7 +306,7 @@ class CashierTest {
 		customer = new Customer("Andrew", "A1", t);
 		
 		cashier = new Cashier("B");
-		cashier.createNewCustomer(customer.name);
+		cashier.createNewCustomer(customer.getName());
 		cashier.currentCustomer = customer;
 		
 		String itemId1 = "Cappuccino";
@@ -330,7 +330,7 @@ class CashierTest {
 		customer = new Customer("Andrew", "A1", t);
 		
 		cashier = new Cashier("B");
-		cashier.createNewCustomer(customer.name);
+		cashier.createNewCustomer(customer.getName());
 		cashier.currentCustomer = customer;
 		
 		String itemId1 = "Cappuccino";

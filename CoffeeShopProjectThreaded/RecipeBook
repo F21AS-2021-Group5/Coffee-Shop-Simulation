@@ -1,19 +1,19 @@
 DRINK001;Latte;Drink
-Froth milk
-Prepare espresso
-Gently add a high amount of frothed milk to the espresso
+Frothing milk
+Preparing espresso
+Gently adding frothed milk to the espresso
 
 DRINK002;Mocha;Drink
-Prepare espresso
-Add hot chocolate to espresso
-Froth milk
-Gently add the frothed milk to the espresso
-Put whipped cream on top of latte
+Preparing espresso
+Adding hot chocolate to espresso
+Frothing milk
+Gently adding the frothed milk to the espresso
+Putting whipped cream on top of latte
 
 DRINK003;Cappuccino;Drink
-Froth milk
-Prepare espresso
-Gently add the frothed milk to the coffee with even distribution
+Frothing milk
+Preparing espresso
+Gently adding the frothed milk to the espresso 
 
 DRINK004;Americano;Drink
 Boiling water 
@@ -23,7 +23,7 @@ Adding water to espresso
 DRINK005;Espresso;Drink
 Grinding coffee
 Pressing grinded coffee
-Inserting pressed coffee in machine and make espresso
+Inserting pressed coffee in machine and making espresso
 
 DRINK006;Tea;Drink
 Boiling water 

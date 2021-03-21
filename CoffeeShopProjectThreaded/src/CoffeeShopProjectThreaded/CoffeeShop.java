@@ -201,13 +201,13 @@ public class CoffeeShop {
 		//Thread addCustomerThread = new Thread(new CustomerQueue("CustomerList", "CustomerListOnline", 1500));
 		//addCustomerThread.start();
 		
-		orderQueue.addToQueue(1, "FOOD001", false);
-		orderQueue.addToQueue(1, "DRINK003", true);
-		orderQueue.addToQueue(2, "PASTRY001", false);
-		orderQueue.addToQueue(3, "DRINK005", true);
+		orderQueue.addToQueue("Marco", "FOOD001");
+		orderQueue.addToQueue("Matteo", "DRINK003");
+		orderQueue.addToQueue("Alessandro", "PASTRY001");
+		orderQueue.addToQueue("Francesca", "DRINK005");
 		
-		Thread cook1 = new Thread(new Cook(orderQueue));
-		Thread barista1 = new Thread(new Barista(orderQueue));
+		Thread cook1 = new Thread(new Cook("Giulia", orderQueue, 2000));
+		Thread barista1 = new Thread(new Barista("Paolo", orderQueue, 2000));
 		
 		cook1.start();
 		barista1.start();

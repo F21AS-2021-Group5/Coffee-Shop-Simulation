@@ -87,7 +87,7 @@ public class NewCashier implements Runnable{
 	public synchronized void customers() {
 		log.updateLog(name + " " + ID + ": Is processing order of  " + currentCustomer.getName());
 		//String orderID = currentCustomer.get Order ID
-		double price = currentCustomer.cartTotalPrice;
+		double price = currentCustomer.getCartTotalPrice();
 		log.updateLog(name + " " + ID + ": Processed the oder of " + currentCustomer.getName() + " Total amount is: " + price + "£"); 
 		//ADD CUSTOMERS TO GENERAL QUEUE +THEIR ORDER 
 	}

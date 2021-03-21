@@ -164,8 +164,6 @@ public class CustomerQueue implements Runnable{
 			    	    customer = new Customer(data[1], data[0], timeStamp);
 			    	    
 			    	    String whichQueue = (online) ? "online" : "in-shop";
-			    	    System.out.println("Customer " + customer.getName() + " (ID: "
-			    	    		+ customer.getId() + ") added to " + whichQueue + " queue.");
 			    	    log.updateLog("Customer " + customer.getName() + " (ID: "
 			    	    		+ customer.getId() + ") added to " + whichQueue + " queue.");
 			    	    count++;

@@ -13,23 +13,46 @@
 
 package CoffeeShopProjectThreaded;
 
+import java.util.ArrayList;
+
 import CoffeeShopProjectThreaded.OrderQueue.QueueItem;
 
 public class Cook implements Runnable{
 
 	private String currentItem;
-	private int currentCustomer;
+	private String currentCustomer;
 	
 	private OrderQueue queue;
 	private Log log;
+	
+	private long delay;
+	
+	private String name;
 	
 	/**
 	 * Constructor for Cook class
 	 * @param queue Queue of orders 
 	 */
-	public Cook(OrderQueue queue) { 
+	public Cook(String name, OrderQueue queue, long delay) { 
+		this.name = name;
 		this.queue = queue;
+		this.delay = delay;
 		log = Log.getInstance();
+	}
+	
+	/**
+	 * @return Barista name
+	 */
+	public String getName() {
+		return name;
+	}
+	
+	/**
+	 * Set name of barista 
+	 * @param name Barista name
+	 */
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	/**
@@ -50,7 +73,7 @@ public class Cook implements Runnable{
 	/**
 	 * @return Current customer identifier
 	 */
-	public int getCurrentCustomer() {
+	public String getCurrentCustomer() {
 		return currentCustomer;
 	}
 	
@@ -58,7 +81,7 @@ public class Cook implements Runnable{
 	 * Sets the current customer identifier
 	 * @param currentCustomer Current customer identifier
 	 */
-	public void setCurrentCustomer(int currentCustomer) {
+	public void setCurrentCustomer(String currentCustomer) {
 		this.currentCustomer = currentCustomer;
 	}
 	
@@ -77,46 +100,48 @@ public class Cook implements Runnable{
 		this.queue = queue;
 	}
 	
+
 	/**
-	 * While the queue is not empty, complete orders (NOT FINISHED0
+	 * While the queue is not empty, complete orders 
 	 */
 	@Override
 	public void run() {
-		while (!queue.kitchenQueue.isEmpty()) {
-			QueueItem head = queue.removeHeadFromQueue(false);			
-
+		while (!queue.getKitchenQueue().isEmpty()) {			
+			QueueItem head = queue.removeHeadFromQueue(false);
+			String status = "";
+			
 			if (head.isRemoved()) {
 				currentItem = head.getItemID();
 				currentCustomer = head.getCustomerID();		
 				
-				processItem();
+				// get recipe of current item 
+				ArrayList<String> recipe = queue.getRecipeBook().get(currentItem);
 				
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+				// go through recipe instructions 
+				for (String instruction: recipe) {
+					
+					// update status 
+					status = "[PREPARATION] Cook " + name + ": " + instruction;
+					log.updateLog(status);
+					
+					try {
+						Thread.sleep(delay);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 				
-				System.out.println("Item " + head.getItemID() + " for customer " +
-						head.getCustomerID() + " prepared.");
+				// update status 
+				status = "[FINISHED] Cook " + name + ": " + CoffeeShop.menu.get(head.getItemID()) + 
+						" for customer " + CoffeeShop.customerList.get(head.getCustomerID()) + " prepared.";			
+				log.updateLog(status);
 				
-				log.updateLog("Item " + head.getItemID() + " for customer " +
-						head.getCustomerID() + " prepared.");
-				
-				try {
-					Thread.sleep(1000);
+				/*try {
+					Thread.sleep(delay);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
-				}
+				}*/
 			}
 		}
-	}
-	
-	/**
-	 * Processes each item ordered (NOT FINISHED)
-	 */
-	void processItem() {
-		log.updateLog("Cooking food in process");
-		System.out.println("Cooking food...");
 	}
 }

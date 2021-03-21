@@ -66,13 +66,13 @@ public class Cashier {
 	{
 		// Date time formatter 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-		String datetime = currentCustomer.timestamp.format(formatter);
+		String datetime = currentCustomer.getTimestamp().format(formatter);
 		String[] datetimeSplit = datetime.split(" ");
 		 
 		// Initial customer information
 		String output = String.format("%-20s \n\n", "Customer Receipt:") + 
-						String.format("%-10s %-10s\n", "Name:", currentCustomer.name) + 
-						String.format("%-10s %-10s\n\n", "ID:",currentCustomer.id) +
+						String.format("%-10s %-10s\n", "Name:", currentCustomer.getName()) + 
+						String.format("%-10s %-10s\n\n", "ID:",currentCustomer.getId()) +
 						String.format("%-10s %-10s\n", "Date:", datetimeSplit[0]) +
 						String.format("%-10s %-10s\n", "Time:",datetimeSplit[1]) +
 						line +

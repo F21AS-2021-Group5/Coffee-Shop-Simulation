@@ -73,26 +73,14 @@ public class Cashier implements Runnable{
 		while (true) {
 			if(shopQueue.isEmpty() == false) {
 				serveCustomer();
-				
 			}
 			try {
 				Thread.sleep(delay);
-				
-				//th.sleep(delay);
-		
-				
-				//th.notifyAll();
-				//th.wait();
 			}catch(InterruptedException e) {
 				//Thread.currentThread().interrupt();
 				System.out.println(e.getMessage());
-			}
-			
-			
+			}	
 		}
-		
-		//report.updateFinalSum(returnSums());
-		
 	}
 	
 	public void serveCustomer() {
@@ -100,16 +88,20 @@ public class Cashier implements Runnable{
 			//shopQueue
 			if(shopQueue.isEmpty() == false) {
 			currentCustomer = shopQueue.pop();
+			
+			System.out.println("Cash: " + ID+  "  Size: " +shopQueue.size() + " " +currentCustomer.getName());
 			}
-			System.out.println("Cash: " + ID+  "  Size: " +shopQueue.size());
-			System.out.println(currentCustomer.name);
+			
+			//System.out.println(currentCustomer.name);
 			shopQueue.notifyAll();
+			 /*
 			try {
 				shopQueue.wait();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			 */
 	    }
 		
 	}
@@ -122,13 +114,13 @@ public class Cashier implements Runnable{
 	{
 		// Date time formatter 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-		String datetime = currentCustomer.timestamp.format(formatter);
+		String datetime = currentCustomer.getTimestamp().format(formatter);
 		String[] datetimeSplit = datetime.split(" ");
 		 
 		// Initial customer information
 		String output = String.format("%-20s \n\n", "Customer Receipt:") + 
-						String.format("%-10s %-10s\n", "Name:", currentCustomer.name) + 
-						String.format("%-10s %-10s\n\n", "ID:",currentCustomer.id) +
+						String.format("%-10s %-10s\n", "Name:", currentCustomer.getName()) + 
+						String.format("%-10s %-10s\n\n", "ID:",currentCustomer.getId()) +
 						String.format("%-10s %-10s\n", "Date:", datetimeSplit[0]) +
 						String.format("%-10s %-10s\n", "Time:",datetimeSplit[1]) +
 						line +

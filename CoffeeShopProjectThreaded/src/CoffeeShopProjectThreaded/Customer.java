@@ -28,10 +28,10 @@ import java.util.Random;
 
 public class Customer {
 	
-	String id;
-	String name;
-	LocalDateTime timestamp;
-	float cartTotalPrice;
+	private String id;
+	private String name;
+	private LocalDateTime timestamp;
+	private float cartTotalPrice;
 	
 	HashMap<String, ArrayList<LocalDateTime>> cart;
 

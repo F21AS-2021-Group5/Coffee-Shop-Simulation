@@ -1,0 +1,76 @@
+DRINK001;Latte;Drink
+Frothing milk
+Preparing espresso
+Gently adding frothed milk to the espresso
+
+DRINK002;Mocha;Drink
+Preparing espresso
+Adding hot chocolate to espresso
+Frothing milk
+Gently adding the frothed milk to the espresso
+Putting whipped cream on top of latte
+
+DRINK003;Cappuccino;Drink
+Frothing milk
+Preparing espresso
+Gently adding the frothed milk to the espresso 
+
+DRINK004;Americano;Drink
+Boiling water 
+Preparing espresso 
+Adding water to espresso 
+
+DRINK005;Espresso;Drink
+Grinding coffee
+Pressing grinded coffee
+Inserting pressed coffee in machine and making espresso
+
+DRINK006;Tea;Drink
+Boiling water 
+Inserting tea bag inside boiled water 
+
+FOOD001;Panini;Food
+Cutting loaf of bread
+Putting meat and cheese on bread
+Grilling panini 
+
+FOOD002;Toastie;Food
+Cutting loaf of bread
+Adding different cheese slices on bread
+Heating up toastie 
+
+FOOD003;Sandwich;Food
+Cutting loaf of bread
+Adding vegetables, sliced cheese and meat on bread
+Heating up sandwich
+
+FOOD004;Salad;Food
+Mixing romaine with croutons and Parmesan cheese
+Adding Caesar dressing to salad 
+
+PASTRY001;Croissant;Pastry
+Grabbing croissant from counter
+
+PASTRY002;Brownies;Pastry
+Grabbing brownie from counter 
+
+PASTRY003;Muffin;Pastry
+Grabbing muffin from counter
+
+PASTRY004;Cinnamon Swirl;Pastry
+Grabbing cinnamon swirl from counter
+
+SIDE001;Fries;Side
+Baking french fries in oven
+Adding garlic seasoning to french fries
+
+SIDE002;Vegetables;Food
+Roasting vegetables 
+Adding honey and thyme to roasted vegetables 
+
+SIDE003;Salad;Food
+Mixing different leaf salads
+Adding balsamic dressing to salad
+
+SIDE004;Mash;Food
+Heating up potato and carrot mash

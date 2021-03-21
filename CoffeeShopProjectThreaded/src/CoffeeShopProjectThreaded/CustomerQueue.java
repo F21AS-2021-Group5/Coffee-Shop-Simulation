@@ -28,19 +28,26 @@ import java.util.Random;
 public class CustomerQueue implements Runnable{
 	
 	// in-shop queue and online queue 
+
 	//Deque<Customer> shopQueue;
-	Deque<Customer> onlineQueue;
+	//Deque<Customer> onlineQueue;
 	HashMap<Integer, String> menuList;
 	String[] customerNames={"Adam","Anna","Lora","Ben", "James", "Ema", "Lena", "Mike", "Natasha", "Sindy", "Ben", "Connor", "Steve", "Greg"};  
 	
+
+	//private Deque<Customer> shopQueue;	
+	private Deque<Customer> onlineQueue;
+
 	
 	// delay between thread iterations
 	Deque<Customer> shopQueue;
 	long delay;
 	
 	// variables for text file reading 
-	BufferedReader shopReader;
-	BufferedReader onlineReader;	
+	private BufferedReader shopReader;
+	private BufferedReader onlineReader;
+	
+	private Log log;
 	
 	/**
 	 * Constructor for CustomerQueue class
@@ -62,8 +69,32 @@ public class CustomerQueue implements Runnable{
 		} catch (FileNotFoundException e) {
 			e.printStackTrace(); 
 		}
+		
+		log = Log.getInstance();
 	}
-	*/
+	
+	/**
+	 * @return In-shop customer queue
+	 */
+	public Deque<Customer> getShopQueue() {
+		return shopQueue;
+	}
+
+	/**
+	 * Sets the in-shop customer queue 
+	 * @param shopQueue In-shop customer queue
+	 */
+	public void setShopQueue(Deque<Customer> shopQueue) {
+		this.shopQueue = shopQueue;
+	}
+	
+	/**
+	 * @return Online customer queue
+	 */
+	public Deque<Customer> getOnlineQueue() {
+		return onlineQueue;
+	}
+	
 	
 	public CustomerQueue(long delay, Deque<Customer> shopQueue) {
 		// initialize queues 
@@ -75,6 +106,30 @@ public class CustomerQueue implements Runnable{
 		this.updateList();
 	}
 	
+
+
+	/**
+	 * Sets the online customer queue 
+	 * @param onlineQueue Online customer queue
+	 */
+	public void setOnlineQueue(Deque<Customer> onlineQueue) {
+		this.onlineQueue = onlineQueue;
+	}
+
+	/**
+	 * @return Delay between each customer added to queue
+	 */
+	public long getDelay() {
+		return delay;
+	}
+	
+	/**
+	 * Sets the queue delay 
+	 * @param delay Delay between each customer added to queue
+	 */
+	public void setDelay(long delay) {
+		this.delay = delay;
+	}
 
 
 	@Override
@@ -139,7 +194,11 @@ public class CustomerQueue implements Runnable{
 		       		
 		   			if (count == 0) {		
 		   				// create customer 			    	        	            	   
-			    	    customer = new Customer(data[1], data[0], timeStamp); 
+			    	    customer = new Customer(data[1], data[0], timeStamp);
+			    	    
+			    	    String whichQueue = (online) ? "online" : "in-shop";
+			    	    log.updateLog("Customer " + customer.getName() + " (ID: "
+			    	    		+ customer.getId() + ") added to " + whichQueue + " queue.");
 			    	    count++;
 		   			} 
 		   			else {
@@ -198,7 +257,7 @@ public class CustomerQueue implements Runnable{
 	   }
    }
 
-   public void randCustomerToQueue(){
+   public synchronized void randCustomerToQueue(){
 			
 	   
 	   try {

@@ -17,10 +17,11 @@ import CoffeeShopProjectThreaded.OrderQueue.QueueItem;
 
 public class Barista implements Runnable{
 
-	String currentItem;
-	int currentCustomer;
+	private String currentItem;
+	private int currentCustomer;
 	
-	OrderQueue queue;
+	private OrderQueue queue;
+	private Log log;
 	
 	/**
 	 * Constructor for Barista class
@@ -30,6 +31,7 @@ public class Barista implements Runnable{
 		this.queue = queue;
 		currentItem = null;
 		currentCustomer = -1;
+		log = Log.getInstance();
 	}
 	
 	/**
@@ -53,6 +55,9 @@ public class Barista implements Runnable{
 				}
 				
 				System.out.println("Item " + head.getItemID() + " for customer " +
+						head.getCustomerID() + " prepared.");
+				
+				log.updateLog("Item " + head.getItemID() + " for customer " +
 						head.getCustomerID() + " prepared.");
 				
 				try {

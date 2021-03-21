@@ -24,15 +24,17 @@ import java.util.LinkedList;
 public class CustomerQueue implements Runnable{
 	
 	// in-shop queue and online queue 
-	Deque<Customer> shopQueue;
-	Deque<Customer> onlineQueue;
+	private Deque<Customer> shopQueue;
+	private Deque<Customer> onlineQueue;
 	
 	// delay between thread iterations
 	long delay;
 	
 	// variables for text file reading 
-	BufferedReader shopReader;
-	BufferedReader onlineReader;	
+	private BufferedReader shopReader;
+	private BufferedReader onlineReader;
+	
+	private Log log;
 	
 	/**
 	 * Constructor for CustomerQueue class
@@ -52,6 +54,8 @@ public class CustomerQueue implements Runnable{
 		} catch (FileNotFoundException e) {
 			e.printStackTrace(); 
 		}
+		
+		log = Log.getInstance();
 	}
 
 	@Override
@@ -111,7 +115,13 @@ public class CustomerQueue implements Runnable{
 		       		
 		   			if (count == 0) {		
 		   				// create customer 			    	        	            	   
-			    	    customer = new Customer(data[1], data[0], timeStamp); 
+			    	    customer = new Customer(data[1], data[0], timeStamp);
+			    	    
+			    	    String whichQueue = (online) ? "online" : "in-shop";
+			    	    System.out.println("Customer " + customer.getName() + " (ID: "
+			    	    		+ customer.getId() + ") added to " + whichQueue + " queue.");
+			    	    log.updateLog("Customer " + customer.getName() + " (ID: "
+			    	    		+ customer.getId() + ") added to " + whichQueue + " queue.");
 			    	    count++;
 		   			} 
 		   			else {

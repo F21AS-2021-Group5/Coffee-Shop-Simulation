@@ -17,10 +17,10 @@ import CoffeeShopProjectThreaded.OrderQueue.QueueItem;
 
 public class Cook implements Runnable{
 
-	String currentItem;
-	int currentCustomer;
+	private String currentItem;
+	private int currentCustomer;
 	
-	OrderQueue queue;
+	private OrderQueue queue;
 	private Log log;
 	
 	/**
@@ -29,6 +29,7 @@ public class Cook implements Runnable{
 	 */
 	public Cook(OrderQueue queue) { 
 		this.queue = queue;
+		log = Log.getInstance();
 	}
 	
 	/**
@@ -53,6 +54,7 @@ public class Cook implements Runnable{
 				
 				System.out.println("Item " + head.getItemID() + " for customer " +
 						head.getCustomerID() + " prepared.");
+				
 				log.updateLog("Item " + head.getItemID() + " for customer " +
 						head.getCustomerID() + " prepared.");
 				

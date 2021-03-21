@@ -22,7 +22,7 @@ public class Log {
 		log ="Coffee Shop Log\n\n"; 
 	}
 	
-	private static Log getInstance() {
+	public static Log getInstance() {
 		return instance;
 	}
 	

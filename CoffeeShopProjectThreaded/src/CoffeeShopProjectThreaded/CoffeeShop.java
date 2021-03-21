@@ -50,7 +50,7 @@ public class CoffeeShop {
 		cashier = null;
 		money =  new ArrayList<Float>();
 		
-		orderQueue = new OrderQueue();
+		orderQueue = new OrderQueue("RecipeBook");
 		
 		// add initial money to cashier 
 		for (int i = 0 ; i <= 6; i++) {

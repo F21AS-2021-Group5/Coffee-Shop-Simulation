@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*; 
 
-public class Cashier {
+public class Cashier implements Runnable{
 	
 	public float subtotal;
 	public float tax;
@@ -39,16 +39,24 @@ public class Cashier {
 	int discount3 = 0;
 	
 	String ID;
+	Long delay;
 	
 	EndOfDay report = new EndOfDay();
+	Deque<Customer> shopQueue;
+	Thread th;
 	
 	/**
 	 * Constructor for Cashier class
 	 * @param ID Cashier identifier
 	 */
-	public Cashier(String ID) {
+	public Cashier(String ID, Long delay, Deque<Customer> shopQueue) {
 		currentCustomer = null;
 		this.ID =ID;
+		this.delay = delay;
+		this.shopQueue = shopQueue;
+		//th = new Thread();
+		//th.run();
+		//this.th = th ;
 	}
 	
 	/**
@@ -56,6 +64,54 @@ public class Cashier {
 	 */
 	public String getID() {
 		return ID;
+	}
+	
+
+	
+	@Override
+	public void run(){	
+		while (true) {
+			if(shopQueue.isEmpty() == false) {
+				serveCustomer();
+				
+			}
+			try {
+				Thread.sleep(delay);
+				
+				//th.sleep(delay);
+		
+				
+				//th.notifyAll();
+				//th.wait();
+			}catch(InterruptedException e) {
+				//Thread.currentThread().interrupt();
+				System.out.println(e.getMessage());
+			}
+			
+			
+		}
+		
+		//report.updateFinalSum(returnSums());
+		
+	}
+	
+	public void serveCustomer() {
+		synchronized (shopQueue){
+			//shopQueue
+			if(shopQueue.isEmpty() == false) {
+			currentCustomer = shopQueue.pop();
+			}
+			System.out.println("Cash: " + ID+  "  Size: " +shopQueue.size());
+			System.out.println(currentCustomer.name);
+			shopQueue.notifyAll();
+			try {
+				shopQueue.wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    }
+		
 	}
 
    /**
@@ -115,7 +171,7 @@ public class Cashier {
 	/**
 	 * @return Cart sub total price 
 	 */
-	public float getCartSubtotalPrice() {
+	public synchronized float getCartSubtotalPrice() {
 		subtotal = currentCustomer.getCartTotalPrice();
 		return subtotal;
 	}
@@ -150,7 +206,7 @@ public class Cashier {
 		for (String orderID: cartSet) {
 			
 			int quantity = currentCustomer.cart.get(orderID).size();
-			System.out.println(quantity);
+			//System.out.println(quantity);
 			
 			if (CoffeeShop.menu.get(orderID).getCategory().equals("Drink")) {
 				for(int i = 1; i <= quantity; i++) {
@@ -174,8 +230,8 @@ public class Cashier {
 		discount3 = 0;
 		
 		while(!noMoreDiscountsAvailable) {
-			System.out.println(currentCustomer.getId());
-			System.out.println("before f " + food.size() + " d " + drink.size() + " p " + pastry.size());
+			//System.out.println(currentCustomer.getId());
+			//System.out.println("before f " + food.size() + " d " + drink.size() + " p " + pastry.size());
 			
 			// First checks to see all the combinations
 			if (drink.size() >= 1 && food.size() >= 1 && pastry.size() >= 1) {
@@ -198,7 +254,7 @@ public class Cashier {
 				// No more discounts
 				noMoreDiscountsAvailable = true;
 			}	
-			System.out.println("after f " + food.size() + " d " + drink.size() + " p " +pastry.size());
+			//System.out.println("after f " + food.size() + " d " + drink.size() + " p " +pastry.size());
 		}	
 		return discount;
 	}
@@ -208,7 +264,7 @@ public class Cashier {
 	 */
 	public void setCustomer(Customer customer) {
 		// For values that are initialised at the initialisation of coffeeShop
-		System.out.println("here");
+		//System.out.println("here");
 		currentCustomer = customer;
 	}
 	
@@ -217,7 +273,7 @@ public class Cashier {
 	 */
 	public float[] returnSums() {
 		float[] allValues = {subtotal, tax, discount, total, discount1, discount2, discount3};
-		System.out.println(allValues[0]);
+		//System.out.println(allValues[0]);
 		return allValues;
 	}
 	

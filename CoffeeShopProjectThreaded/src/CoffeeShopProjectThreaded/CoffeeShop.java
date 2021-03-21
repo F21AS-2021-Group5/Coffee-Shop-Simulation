@@ -24,6 +24,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+//import CaffeeShopProject.CoffeeShop;
 import CoffeeShopProjectThreaded.GUIcaffee;
 
 import java.io.File;  // Import the File class
@@ -68,9 +69,11 @@ public class CoffeeShop {
 	 * Creates a new Cashier instance 
 	 * @param id Cashier identifier 
 	 */
-	private void createNewCashier(String id) {
-		cashier = new Cashier(id);
+	/*
+	private void createNewCashier(String id, Long delay) {
+		cashier = new Cashier(id, delay);
 	}
+	*/
 	
 	/**
 	 * Read menu data and store it in menu map 
@@ -188,10 +191,65 @@ public class CoffeeShop {
 	    return localDateTime; // Fine to return 0 since catch in the Customer class 
    }
    
+   
    // main method 
 	public static void main(String[] args) {
 		// Needs initial cashier 
 		CoffeeShop shop = new CoffeeShop("Adam");
+		long time = 200L;
+		long time1 = 400L;
+		long time2 = 600L;
+		
+		/*custQue.randCustomerToQueue();
+		custQue.randCustomerToQueue();
+		custQue.randCustomerToQueue();
+		System.out.println(custQue.shopQueue.pop().cart);
+		System.out.println(custQue.shopQueue.pop().cart);
+		System.out.println(custQue.shopQueue.pop().cart);
+		*/
+		Deque<Customer> customerLine = new LinkedList<Customer>();
+		
+		Runnable line = new  CustomerQueue(time, customerLine);
+		Thread newCustomers = new Thread(line);
+		//newCustomers.lo
+		newCustomers.start();
+		
+		Runnable cashierOne = new Cashier("Adam", time1, customerLine); // or an anonymous class, or lambda...
+		Thread t1 = new Thread(cashierOne);
+		t1.start();
+		
+		Runnable cashierTwo = new Cashier("Barbara", time2, customerLine);; // or an anonymous class, or lambda...
+		Thread t2 = new Thread(cashierTwo);
+		t2.start();
+
+		Runnable cashierThree = new Cashier("Mindy", time2, customerLine);; // or an anonymous class, or lambda...
+		Thread t3 = new Thread(cashierThree);
+		t3.start();
+		
+		
+		//cashier2.start();
+		//cashier2.run();
+		/*
+		while(true) {
+			try {
+		          Thread.sleep(1000);
+		          System.out.println(CustomerQueue.shopQueue.size());
+		    } catch(InterruptedException e) {
+		          
+		    }
+		}
+		*/
+		//System.out.println(CustomerQueue.shopQueue.pop().cart);
+	
+	    //System.out.println(CustomerQueue.shopQueue.pop().cart);
+		
+		//Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+		//System.out.println(threadSet);
+		//custQue1.run();
+
+
+		//custQue.randCustomerToQueue();
+		
 		
 		// Each cashier has their own GUI 
 //		GUIcaffee GUI = new GUIcaffee(shop.cashier);
@@ -201,16 +259,21 @@ public class CoffeeShop {
 		//Thread addCustomerThread = new Thread(new CustomerQueue("CustomerList", "CustomerListOnline", 1500));
 		//addCustomerThread.start();
 		
-		orderQueue.addToQueue(1, "FOOD001", false);
-		orderQueue.addToQueue(1, "DRINK003", true);
-		orderQueue.addToQueue(2, "PASTRY001", false);
-		orderQueue.addToQueue(3, "DRINK005", true);
 		
-		Thread cook1 = new Thread(new Cook(orderQueue));
-		Thread barista1 = new Thread(new Barista(orderQueue));
 		
-		cook1.start();
-		barista1.start();
+		//orderQueue.addToQueue(1, "FOOD001", false);
+		//orderQueue.addToQueue(1, "DRINK003", true);
+		//orderQueue.addToQueue(2, "PASTRY001", false);
+		//orderQueue.addToQueue(3, "DRINK005", true);
+		
+		//System.out.println(orderQueue.barQueue);
+		
+		//Thread cook1 = new Thread(new Cook(orderQueue));
+		//Thread barista1 = new Thread(new Barista(orderQueue));
+		
+		//cook1.start();
+		//barista1.start();
+		
 	}
 
 }

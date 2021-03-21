@@ -1,18 +1,3 @@
-/**
- * Barista.java - class to implement a barista for the coffeeshop
- * 
- * @author Esther Rayssiguie 
- * @author Jake Marrocco
- * @author Karolina Judzentyte
- * @author Valerio Franchi
- * @version 0.1
- * 
- * Copyright (c) 2021 
- * All rights reserved.
- */
-
-package CoffeeShopProjectThreaded;
-
 import CoffeeShopProjectThreaded.OrderQueue.QueueItem;
 
 public class Barista implements Runnable{

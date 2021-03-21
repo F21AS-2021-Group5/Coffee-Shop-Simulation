@@ -89,7 +89,7 @@ public class Cashier implements Runnable{
 			if(shopQueue.isEmpty() == false) {
 			currentCustomer = shopQueue.pop();
 			
-			System.out.println("Cash: " + ID+  "  Size: " +shopQueue.size() + " " +currentCustomer.getName());
+			System.out.println("Cash: " + ID+  "  Size: " +shopQueue.size() ); //+ " " +currentCustomer.getName()
 			}
 			
 			//System.out.println(currentCustomer.name);

@@ -30,7 +30,7 @@ public class OrderQueue {
 	HashMap<String, ArrayList<String> > recipeBook; // stores recipes
 	String recipeFile;
 	BufferedReader recipeReader;
-	
+
 	/**
 	 * Class containing item object inside queue
 	 */
@@ -91,6 +91,51 @@ public class OrderQueue {
 		
 		// fill recipe book 
 		fillRecipeBook();
+	}
+	
+	/**
+	 * @return Kitchen food orders queue 
+	 */
+	public Deque<QueueItem> getKitchenQueue() {
+		return kitchenQueue;
+	}
+
+	/**
+	 * Kitchen food orders queue 
+	 * @param kitchenQueue Kitchen food orders queue 
+	 */
+	public void setKitchenQueue(Deque<QueueItem> kitchenQueue) {
+		this.kitchenQueue = kitchenQueue;
+	}
+
+	/** 
+	 * @return Bar beverages orders queue 
+	 */
+	public Deque<QueueItem> getBarQueue() {
+		return barQueue;
+	}
+	
+	/**
+	 * Bar beverages orders queue 
+	 * @param barQueue Bar beverages orders queue 
+	 */
+	public void setBarQueue(Deque<QueueItem> barQueue) {
+		this.barQueue = barQueue;
+	}
+	
+	/**
+	 * @return Recipe book
+	 */
+	public HashMap<String, ArrayList<String>> getRecipeBook() {
+		return recipeBook;
+	}
+	
+	/**
+	 *  Recipe book
+	 * @param recipeBook Recipe book
+	 */
+	public void setRecipeBook(HashMap<String, ArrayList<String>> recipeBook) {
+		this.recipeBook = recipeBook;
 	}
 	
 	/**

@@ -33,6 +33,51 @@ public class Cook implements Runnable{
 	}
 	
 	/**
+	 * @return Current item identifier
+	 */
+	public String getCurrentItem() {
+		return currentItem;
+	}
+	
+	/**
+	 * Sets the current item identifier
+	 * @param currentItem Current item identifier
+	 */
+	public void setCurrentItem(String currentItem) {
+		this.currentItem = currentItem;
+	}
+	
+	/**
+	 * @return Current customer identifier
+	 */
+	public int getCurrentCustomer() {
+		return currentCustomer;
+	}
+	
+	/**
+	 * Sets the current customer identifier
+	 * @param currentCustomer Current customer identifier
+	 */
+	public void setCurrentCustomer(int currentCustomer) {
+		this.currentCustomer = currentCustomer;
+	}
+	
+	/**
+	 * @return OrderQueue object 
+	 */
+	public OrderQueue getQueue() {
+		return queue;
+	}
+	
+	/**
+	 * Sets the OrderQueue object 
+	 * @param queue OrderQueue object 
+	 */
+	public void setQueue(OrderQueue queue) {
+		this.queue = queue;
+	}
+	
+	/**
 	 * While the queue is not empty, complete orders (NOT FINISHED0
 	 */
 	@Override

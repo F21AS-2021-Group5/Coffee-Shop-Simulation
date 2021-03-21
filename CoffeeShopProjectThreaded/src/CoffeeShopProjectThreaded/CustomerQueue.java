@@ -24,7 +24,7 @@ import java.util.LinkedList;
 public class CustomerQueue implements Runnable{
 	
 	// in-shop queue and online queue 
-	private Deque<Customer> shopQueue;
+	private Deque<Customer> shopQueue;	
 	private Deque<Customer> onlineQueue;
 	
 	// delay between thread iterations
@@ -57,6 +57,52 @@ public class CustomerQueue implements Runnable{
 		
 		log = Log.getInstance();
 	}
+	
+	/**
+	 * @return In-shop customer queue
+	 */
+	public Deque<Customer> getShopQueue() {
+		return shopQueue;
+	}
+
+	/**
+	 * Sets the in-shop customer queue 
+	 * @param shopQueue In-shop customer queue
+	 */
+	public void setShopQueue(Deque<Customer> shopQueue) {
+		this.shopQueue = shopQueue;
+	}
+	
+	/**
+	 * @return Online customer queue
+	 */
+	public Deque<Customer> getOnlineQueue() {
+		return onlineQueue;
+	}
+
+	/**
+	 * Sets the online customer queue 
+	 * @param onlineQueue Online customer queue
+	 */
+	public void setOnlineQueue(Deque<Customer> onlineQueue) {
+		this.onlineQueue = onlineQueue;
+	}
+
+	/**
+	 * @return Delay between each customer added to queue
+	 */
+	public long getDelay() {
+		return delay;
+	}
+	
+	/**
+	 * Sets the queue delay 
+	 * @param delay Delay between each customer added to queue
+	 */
+	public void setDelay(long delay) {
+		this.delay = delay;
+	}
+
 
 	@Override
 	public void run() {		

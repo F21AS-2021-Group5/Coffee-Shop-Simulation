@@ -25,8 +25,8 @@ class CustomerQueueTest {
 	@AfterEach
 	void tearDown() throws Exception {
 		// clear queues 
-		queue.onlineQueue.clear();
-		queue.shopQueue.clear();
+		queue.getOnlineQueue().clear();
+		queue.getShopQueue().clear();
 	}
 
 	@Test
@@ -46,14 +46,14 @@ class CustomerQueueTest {
 		LocalDateTime finish = LocalDateTime.now();
 		
 		// check queue size at the end 
-		assertEquals(2, queue.onlineQueue.size());
-		assertEquals(2, queue.shopQueue.size());	
+		assertEquals(2, queue.getOnlineQueue().size());
+		assertEquals(2, queue.getShopQueue().size());	
 		
 		// check names of customers in the queues 
-		assertEquals("Vale", queue.shopQueue.peekFirst().name);
-		assertEquals("Kale", queue.shopQueue.peekLast().name);
-		assertEquals("Valerio", queue.onlineQueue.peekFirst().name);
-		assertEquals("Franchi", queue.onlineQueue.peekLast().name);
+		assertEquals("Vale", queue.getShopQueue().peekFirst().name);
+		assertEquals("Kale", queue.getShopQueue().peekLast().name);
+		assertEquals("Valerio", queue.getOnlineQueue().peekFirst().name);
+		assertEquals("Franchi", queue.getOnlineQueue().peekLast().name);
 		
 		// check time passed
 		Duration duration = Duration.between(start, finish);

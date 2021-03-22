@@ -13,9 +13,10 @@
 
 package CoffeeShopProjectThreaded;
 
+//Log implemented as Singleton
 public class Log {
 	
-	private static Log instance = new Log();
+	private static Log instance; //Volatile modifier
 	private String log;
 	
 	private void Log() {
@@ -23,6 +24,14 @@ public class Log {
 	}
 	
 	public static Log getInstance() {
+		//Using Double-checked locking
+		if(instance == null) { //Read
+			synchronized(Log.class) {
+				if(instance == null) { //Read
+					instance = new Log(); //Write
+				}
+			}
+		}
 		return instance;
 	}
 	

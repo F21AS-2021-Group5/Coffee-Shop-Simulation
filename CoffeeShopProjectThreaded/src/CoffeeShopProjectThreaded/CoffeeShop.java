@@ -207,6 +207,7 @@ public class CoffeeShop {
 		System.out.println(custQue.shopQueue.pop().cart);
 		System.out.println(custQue.shopQueue.pop().cart);
 		*/
+		/*
 		Deque<Customer> customerLine = new LinkedList<Customer>();
 		
 		Runnable line = new  CustomerQueue(time, customerLine);
@@ -224,7 +225,26 @@ public class CoffeeShop {
 
 		Runnable cashierThree = new Cashier("Mindy", time2, customerLine);; // or an anonymous class, or lambda...
 		Thread t3 = new Thread(cashierThree);
+		t3.start();*/
+		
+		NewCustomerQueue queue = new NewCustomerQueue(false);
+		
+		Runnable handler = new QueueHandler(queue, 200L);
+		Thread h = new Thread(handler);
+		h.start();		
+		
+		Runnable cashierOne = new CashierTrial("Adam", 200L, queue); // or an anonymous class, or lambda...
+		Thread t1 = new Thread(cashierOne);
+		t1.start();
+		
+		Runnable cashierTwo = new CashierTrial("Barbara", 400L, queue);; // or an anonymous class, or lambda...
+		Thread t2 = new Thread(cashierTwo);
+		t2.start();
+
+		Runnable cashierThree = new CashierTrial("Mindy", 600L, queue);; // or an anonymous class, or lambda...
+		Thread t3 = new Thread(cashierThree);
 		t3.start();
+		
 		
 		
 		//cashier2.start();

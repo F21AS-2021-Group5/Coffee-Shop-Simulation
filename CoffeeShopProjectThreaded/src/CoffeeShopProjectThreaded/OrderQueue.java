@@ -25,14 +25,43 @@ import java.util.Map;
 
 public class OrderQueue {
 	
-	private Deque<QueueItem> kitchenQueue; // stores customer ID and item ID
-	private Deque<QueueItem> barQueue; 
+	private Deque<QueueItem> queue; // stores customer ID and item ID
+	private final Map<String, String> foodMap = new HashMap<String, String>();
+	private boolean isBar;
 	
-	private HashMap<String, ArrayList<String> > recipeBook; // stores recipes
-	private String recipeFile;
-	private BufferedReader recipeReader;
+	public class OperationOutput {
+		QueueItem item;
+		boolean success;
+		int updatedSize;
+		
+		/**
+		 * 
+		 * @param customer
+		 * @param success
+		 */
+		public OperationOutput(QueueItem item, boolean success, int updatedSize) {
+			this.item = item;
+			this.success = success;
+			this.updatedSize = updatedSize;
+		}
+		
+		/**
+		 * 
+		 * @return
+		 */
+		public QueueItem getItem() {
+			return item;
+		}
+		
+		/**
+		 * 
+		 * @return
+		 */
+		public boolean isSuccess() {
+			return success;
+		}
+	}
 	
-	private final Map<String, String> food = new HashMap<String, String>();
 
 	/**
 	 * Class containing item object inside queue
@@ -40,7 +69,7 @@ public class OrderQueue {
 	public class QueueItem {
 		private String itemID;
 		private String customerID;
-		private boolean removed;
+		private boolean success;
 		
 		/**
 		 * Constructor for QueueItem class
@@ -50,8 +79,7 @@ public class OrderQueue {
 		public QueueItem(String customerID, String itemID) {
 			this.itemID = itemID;
 			this.customerID = customerID;
-			
-			removed = false;
+			success = false;
 		}
 		
 		/**
@@ -71,158 +99,88 @@ public class OrderQueue {
 		/**
 		 * State of item inside queue 
 		 */
-		public boolean isRemoved() {
-			return removed;
+		public boolean isSuccess() {
+			return success;
 		}
 	}
 	
 	/**
 	 * Constructor for OrderQueue class
 	 */
-	public OrderQueue(String recipeFile) {
-		kitchenQueue = new LinkedList<QueueItem>();
-		barQueue = new LinkedList<QueueItem>();
-		recipeBook = new HashMap<String, ArrayList<String> >();
-		this.recipeFile = recipeFile; 
+	public OrderQueue(boolean isBar) {
+		this.isBar = isBar;	
 		
-		try {	   		
-			// create buffered reader 
-			recipeReader = new BufferedReader(new FileReader(recipeFile));		   		
-		} catch (FileNotFoundException e) {
-			e.printStackTrace(); 
-		}
-		
-		// fill recipe book 
-		fillRecipeBook();
+		queue = new LinkedList<QueueItem>();
 		
 		// initialize map 
-		food.put("FOOD", "Kitchen");
-	    food.put("PASTRY", "Bar");
-	    food.put("DRINK", "Bar");
-	    food.put("SIDE", "Kitchen");	    
+		foodMap.put("FOOD", "Kitchen");
+	    foodMap.put("PASTRY", "Bar");
+	    foodMap.put("DRINK", "Bar");
+	    foodMap.put("SIDE", "Kitchen");	    
 	}
 	
 	/**
-	 * @return Kitchen food orders queue 
+	 * @return True if bar queue, false if kitchen queue 
 	 */
-	public Deque<QueueItem> getKitchenQueue() {
-		return kitchenQueue;
+	public boolean isBar() {
+		return isBar;
 	}
 
 	/**
-	 * Kitchen food orders queue 
-	 * @param kitchenQueue Kitchen food orders queue 
+	 * @return Food orders queue 
 	 */
-	public void setKitchenQueue(Deque<QueueItem> kitchenQueue) {
-		this.kitchenQueue = kitchenQueue;
+	public Deque<QueueItem> getQueue() {
+		return queue;
 	}
 
-	/** 
-	 * @return Bar beverages orders queue 
-	 */
-	public Deque<QueueItem> getBarQueue() {
-		return barQueue;
-	}
-	
 	/**
-	 * Bar beverages orders queue 
-	 * @param barQueue Bar beverages orders queue 
+	 * Food orders queue 
+	 * @param queue Food orders queue 
 	 */
-	public void setBarQueue(Deque<QueueItem> barQueue) {
-		this.barQueue = barQueue;
-	}
-	
-	/**
-	 * @return Recipe book
-	 */
-	public HashMap<String, ArrayList<String>> getRecipeBook() {
-		return recipeBook;
-	}
-	
-	/**
-	 *  Recipe book
-	 * @param recipeBook Recipe book
-	 */
-	public void setRecipeBook(HashMap<String, ArrayList<String>> recipeBook) {
-		this.recipeBook = recipeBook;
-	}
-	
-	/**
-	 * Fills recipe book 
-	 */
-	void fillRecipeBook() {
-		String line = null;
-		ArrayList<String> instructions = new ArrayList<String>();
-		String itemId = null;
-		
-		while(true) {						
-   			// add to recipe book
-   			try {
-   				line = recipeReader.readLine();
-   			} catch (IOException e1) {
-   				e1.printStackTrace();
-   			}	
-			
-			if (line != null) {		
-	   			//split by semicolon
-	   			String[] data = line.split(";");
-	       		
-	   			// check whether line contains correct number of information 		       		
-	       		if (data.length == 3) {	
+	public void setQueue(Deque<QueueItem> queue) {
+		this.queue = queue;
+	}	
 
-			   		// add recipe to recipe book 
-	       			if (instructions.size() > 0 && itemId != null) {
-	       				
-				   		recipeBook.put(itemId, new ArrayList<String>(instructions));		       			 
-				   		instructions.clear(); 
-	       			}	       			
-	   				// assign item ID and clear instructions	
-	       			itemId = data[0];     			
-	   			} 
-	       		
-	       		// add instruction if line is not empty 
-	   			else if (data.length == 1 && !data[0].trim().isEmpty())	   				
-	   				instructions.add(data[0]);	 	   			 		   			
-		   		
-	       		// line empty 
-	   			else 
-	   				System.out.println("Invalid data line. Will drop it. \n");
-			} 
-			else {
-				// add recipe to recipe book 
-       			if (instructions.size() > 0 && itemId != null) 
-       				recipeBook.put(itemId, new ArrayList<String>(instructions));
-  
-				break;
-			}
-		}		
-	}
-	
 	/**
 	 * Adds item to queue one thread at a time 
 	 * @param customerID Customer identifier
 	 * @param itemID Item identifier
+	 * @return Queue item added, if successful or not, updated queue size 
 	 */
-	synchronized void addToQueue(String customerID, String itemID) {
-		if (fromBar(itemID))
-			barQueue.add(new QueueItem (customerID, itemID));
-		else
-			kitchenQueue.add(new QueueItem (customerID, itemID));
+	public synchronized OperationOutput addToQueue(String customerID, String itemID) {
+		QueueItem item = null;
+		try {
+			item = new QueueItem (customerID, itemID);
+			queue.add(item);	
+			notifyAll();			
+		}
+		catch (Exception e) {
+			return new OperationOutput(item, false, queue.size());
+		}
+		return new OperationOutput(item, true, queue.size());
 	}
 	
 	/**
 	 * Removes item from queue one thread at a time 
-	 * @param fromBarQueue True for item inside barQueue, false for inside kitchenQueue 
-	 * @return QueueItem removed 
+	 * @return Queue item added, if successful or not, updated queue size 
 	 */
-	synchronized QueueItem removeHeadFromQueue(boolean fromBarQueue) {
-		QueueItem head;
-		if (fromBarQueue)
-			head = barQueue.remove();
-		else
-			head = kitchenQueue.remove();
-		head.removed = true;
-		return head;
+	public synchronized OperationOutput removeFromQueue() {
+		QueueItem item;
+		
+		while (queue.isEmpty()) {
+    		try { 
+    			wait(); 
+    		} 
+    		catch (InterruptedException e) {} 
+		}
+		
+		item = queue.pop();
+		notifyAll();
+		
+		if (item == null)
+			return new OperationOutput(item, false, queue.size());
+		else	
+			return new OperationOutput(item, true, queue.size());
 	}
 	
 	/**
@@ -232,7 +190,7 @@ public class OrderQueue {
 	 */
 	boolean fromBar(String itemId) {
 		String onlyChars = itemId.replaceAll("[^A-Za-z]+", "");
-		if (food.get(onlyChars) == "Bar")
+		if (foodMap.get(onlyChars) == "Bar")
 			return true;
 		return false;
 	}

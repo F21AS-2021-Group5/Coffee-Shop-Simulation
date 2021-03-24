@@ -1,5 +1,5 @@
 /**
- * Cook.java - class to implement a cook for the coffeeshop
+ * Staff.java - class to implement a staff for the coffeeshop
  * 
  * @author Esther Rayssiguie 
  * @author Jake Marrocco
@@ -15,9 +15,10 @@ package CoffeeShopProjectThreaded;
 
 import java.util.ArrayList;
 
+import CoffeeShopProjectThreaded.OrderQueue.OperationOutput;
 import CoffeeShopProjectThreaded.OrderQueue.QueueItem;
 
-public class Cook implements Runnable{
+public class Staff implements Runnable{
 
 	private String currentItem;
 	private String currentCustomer;
@@ -28,28 +29,31 @@ public class Cook implements Runnable{
 	private long delay;
 	
 	private String name;
+	private String type;
 	
 	/**
-	 * Constructor for Cook class
+	 * Constructor for Staff class
 	 * @param queue Queue of orders 
 	 */
-	public Cook(String name, OrderQueue queue, long delay) { 
+	public Staff(String name, OrderQueue queue, long delay) { 
 		this.name = name;
 		this.queue = queue;
 		this.delay = delay;
+		
+		type = (queue.isBar()) ? "Barista" : "Cook";
 		log = Log.getInstance();
 	}
 	
 	/**
-	 * @return Barista name
+	 * @return Staff name
 	 */
 	public String getName() {
 		return name;
 	}
 	
 	/**
-	 * Set name of barista 
-	 * @param name Barista name
+	 * Set name of staff 
+	 * @param name Staff name
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -106,22 +110,24 @@ public class Cook implements Runnable{
 	 */
 	@Override
 	public void run() {
-		while (!queue.getKitchenQueue().isEmpty()) {			
-			QueueItem head = queue.removeHeadFromQueue(false);
-			String status = "";
+		while (true) {	
+
+			OrderQueue.OperationOutput out = queue.removeFromQueue();
 			
-			if (head.isRemoved()) {
-				currentItem = head.getItemID();
-				currentCustomer = head.getCustomerID();		
+			String status = "";
+			if (out.isSuccess())
+			{
+				currentItem = out.getItem().getItemID();
+				currentCustomer = out.getItem().getCustomerID();		
 				
 				// get recipe of current item 
-				ArrayList<String> recipe = queue.getRecipeBook().get(currentItem);
+				ArrayList<String> recipe = CoffeeShop.recipeBook.get(currentItem);
 				
 				// go through recipe instructions 
 				for (String instruction: recipe) {
 					
 					// update status 
-					status = "[PREPARATION] Cook " + name + ": " + instruction;
+					status = "[PREPARATION] " + type+ " " + name + ": " + instruction;
 					log.updateLog(status);
 					
 					try {
@@ -132,16 +138,19 @@ public class Cook implements Runnable{
 				}
 				
 				// update status 
-				status = "[FINISHED] Cook " + name + ": " + CoffeeShop.menu.get(head.getItemID()) + 
-						" for customer " + CoffeeShop.customerList.get(head.getCustomerID()) + " prepared.";			
-				log.updateLog(status);
-				
-				/*try {
-					Thread.sleep(delay);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}*/
+				status = "[FINISHED] " + type + " " + name + ": " + CoffeeShop.menu.get(out.getItem().getItemID()) + 
+						" for customer " + CoffeeShop.customerList.get(out.getItem().getCustomerID()) + " prepared.";			
+				log.updateLog(status);				
 			}
+			/*	
+			try {
+				Thread.sleep(delay);
+			}catch(InterruptedException e) {
+				//Thread.currentThread().interrupt();
+				System.out.println(e.getMessage());
+			}	
+			*/
+		
 		}
 	}
 }

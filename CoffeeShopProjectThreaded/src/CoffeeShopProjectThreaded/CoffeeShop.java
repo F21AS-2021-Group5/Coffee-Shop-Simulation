@@ -18,6 +18,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+// Import the File class
+// Import the IOException class to handle errors
 import java.io.*;
 import java.security.Timestamp;
 import java.text.DecimalFormat;
@@ -27,16 +29,12 @@ import java.util.*;
 //import CaffeeShopProject.CoffeeShop;
 import CoffeeShopProjectThreaded.GUIcaffee;
 
-import java.io.File;  // Import the File class
-import java.io.IOException;  // Import the IOException class to handle errors
-
 public class CoffeeShop {
 	
 	public static HashMap<String, MenuItem> menu;
 	public static HashMap<String, Customer> customerList;
-	public static ArrayList<Float> money;
-	
-	public static OrderQueue orderQueue;
+	public static ArrayList<Float> money;	
+	public static HashMap<String, ArrayList<String> > recipeBook; // stores recipes
 	
 	Cashier cashier;
 	
@@ -51,8 +49,6 @@ public class CoffeeShop {
 		cashier = null;
 		money =  new ArrayList<Float>();
 		
-		orderQueue = new OrderQueue("RecipeBook");
-		
 		// add initial money to cashier 
 		for (int i = 0 ; i <= 6; i++) {
 			money.add((float) 0);
@@ -62,7 +58,10 @@ public class CoffeeShop {
 		//createNewCashier(name);
 		fillMenu("MenuItems");
 		//fillCustomerList("CustomerList");	
-
+				
+		// fill recipe book 
+		recipeBook = new HashMap<String, ArrayList<String> >();
+		fillRecipeBook("RecipeBook");
 	}
 	
 	/**
@@ -112,6 +111,66 @@ public class CoffeeShop {
            }
        }
    }
+   
+	/**
+	 * Fills recipe book 
+	 * @param file Text file name 
+	 */
+	void fillRecipeBook(String file) {
+		BufferedReader recipeReader = null;
+		try {	   		
+			// create buffered reader 
+			recipeReader = new BufferedReader(new FileReader(file));		   		
+		} catch (FileNotFoundException e) {
+			e.printStackTrace(); 
+		}
+		
+		String line = null;
+		ArrayList<String> instructions = new ArrayList<String>();
+		String itemId = null;
+		
+		while(true) {						
+  			// add to recipe book
+  			try {
+  				line = recipeReader.readLine();
+  			} catch (IOException e1) {
+  				e1.printStackTrace();
+  			}	
+			
+			if (line != null) {		
+	   			//split by semicolon
+	   			String[] data = line.split(";");
+	       		
+	   			// check whether line contains correct number of information 		       		
+	       		if (data.length == 3) {	
+
+			   		// add recipe to recipe book 
+	       			if (instructions.size() > 0 && itemId != null) {
+	       				
+				   		recipeBook.put(itemId, new ArrayList<String>(instructions));		       			 
+				   		instructions.clear(); 
+	       			}	       			
+	   				// assign item ID and clear instructions	
+	       			itemId = data[0];     			
+	   			} 
+	       		
+	       		// add instruction if line is not empty 
+	   			else if (data.length == 1 && !data[0].trim().isEmpty())	   				
+	   				instructions.add(data[0]);	 	   			 		   			
+		   		
+	       		// line empty 
+	   			else 
+	   				System.out.println("Invalid data line. Will drop it. \n");
+			} 
+			else {
+				// add recipe to recipe book 
+      			if (instructions.size() > 0 && itemId != null) 
+      				recipeBook.put(itemId, new ArrayList<String>(instructions));
+ 
+				break;
+			}
+		}		
+	}	
    
    /**
     * Fills the customer list with information from text file 
@@ -227,6 +286,7 @@ public class CoffeeShop {
 		Thread t3 = new Thread(cashierThree);
 		t3.start();*/
 		
+		/*
 		NewCustomerQueue queue = new NewCustomerQueue(false);
 		
 		Runnable handler = new QueueHandler(queue, 200L);
@@ -244,7 +304,7 @@ public class CoffeeShop {
 		Runnable cashierThree = new CashierTrial("Mindy", 600L, queue);; // or an anonymous class, or lambda...
 		Thread t3 = new Thread(cashierThree);
 		t3.start();
-		
+		*/
 		
 		
 		//cashier2.start();
@@ -278,14 +338,31 @@ public class CoffeeShop {
 		
 		//Thread addCustomerThread = new Thread(new CustomerQueue("CustomerList", "CustomerListOnline", 1500));
 		//addCustomerThread.start();
-
-		orderQueue.addToQueue("Marco", "FOOD001");
-		orderQueue.addToQueue("Matteo", "DRINK003");
-		orderQueue.addToQueue("Alessandro", "PASTRY001");
-		orderQueue.addToQueue("Francesca", "DRINK005");
+		/*
+		//OrderQueue kitchenQueue = new OrderQueue(false);
+		OrderQueue barQueue = new OrderQueue(true);
 		
-		Thread cook1 = new Thread(new Cook("Giulia", orderQueue, 2000));
-		Thread barista1 = new Thread(new Barista("Paolo", orderQueue, 2000));
+		//kitchenQueue.addToQueue("Marco", "FOOD001");
+		barQueue.addToQueue("Matteo", "DRINK003");
+		barQueue.addToQueue("Alessandro", "PASTRY001");
+		barQueue.addToQueue("Francesca", "DRINK005");
+		
+		Runnable baristaOne = new Staff("Paolo", barQueue, 2000L);
+		Thread s1 = new Thread(baristaOne);
+		s1.start();
+		
+		Runnable baristaTwo = new Staff("Lavinia", barQueue, 1500L);
+		Thread s2 = new Thread(baristaTwo);
+		s2.start();
+		*/
+		
+		//Runnable cookOne = new Staff("Giulia", kitchenQueue, 2000L);
+		//Thread s3 = new Thread(cookOne);
+		//s3.start();
+		
+		//Runnable cookTwo = new Staff("Francesco", kitchenQueue, 2000L);
+		//Thread s4 = new Thread(cookTwo);
+		//s4.start();
 
 		
 		//orderQueue.addToQueue(1, "FOOD001", false);

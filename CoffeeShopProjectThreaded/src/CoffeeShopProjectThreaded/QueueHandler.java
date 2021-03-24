@@ -7,12 +7,14 @@ public class QueueHandler implements Runnable{
 	NewCustomerQueue shopQueue;
 	NewCustomerQueue onlineQueue;
 	long delay;
+	int maxCustomerNum;
 	
 	public QueueHandler(NewCustomerQueue onlineQueue, 
-			NewCustomerQueue shopQueue, long delay) {
+			NewCustomerQueue shopQueue, long delay, int maxCustomerNum) {
 		this.onlineQueue = onlineQueue;
 		this.shopQueue = shopQueue;
 		this.delay = delay;
+		this.maxCustomerNum = maxCustomerNum;
 	}
 	
 	public QueueHandler(NewCustomerQueue shopQueue, long delay) {
@@ -21,9 +23,9 @@ public class QueueHandler implements Runnable{
 	}
 
 	@Override
-	public void run() {				
-		
-		while (true) {
+	public void run() {	
+		for(int i =0; i<maxCustomerNum; i++) {
+		//while (true) {
 			// every number of milliseconds, add customer to end of queue 
 			try {
 				OperationOutput out = shopQueue.addToQueue();				
@@ -43,6 +45,7 @@ public class QueueHandler implements Runnable{
 				System.out.println(e.getMessage());
 			}
 		}
+		
 	}	
 	
 

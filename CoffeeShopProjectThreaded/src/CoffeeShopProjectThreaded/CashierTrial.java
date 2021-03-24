@@ -23,7 +23,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import CoffeeShopProjectThreaded.NewCustomerQueue.OperationOutput; 
+import CoffeeShopProjectThreaded.NewCustomerQueue.OperationOutput;
+import CoffeeShopProjectThreaded.Inventory.InventoryOutput;
+import CoffeeShopProjectThreaded.Bookkeeping.BookkeepingOutput;
 
 public class CashierTrial implements Runnable{
 	
@@ -46,6 +48,8 @@ public class CashierTrial implements Runnable{
 	EndOfDay report = new EndOfDay();
 	NewCustomerQueue onlineQueue;
 	NewCustomerQueue shopQueue;
+	Inventory inventory;
+	Bookkeeping books;
 	Thread th;
 	
 	/**
@@ -53,12 +57,14 @@ public class CashierTrial implements Runnable{
 	 * @param ID Cashier identifier
 	 */
 	public CashierTrial(String ID, Long delay, NewCustomerQueue onlineQueue,
-			NewCustomerQueue shopQueue) {
+			NewCustomerQueue shopQueue, Inventory inventory, Bookkeeping books) {
 		currentCustomer = null;
 		this.ID =ID;
 		this.delay = delay;
 		this.onlineQueue = onlineQueue;
 		this.shopQueue = shopQueue;
+		this.inventory =inventory;
+		this.books = books;
 	}
 	
 	/**
@@ -83,25 +89,28 @@ public class CashierTrial implements Runnable{
 	public void run() {
 		
 		while (true) {
-			/*
-			if (onlineQueue != null) {
-				if(!onlineQueue.getQueue().isEmpty()) 
-					currentCustomer = shopQueue.removeFromQueue();
-				else {
-					if(!shopQueue.getQueue().isEmpty()) 
-						currentCustomer = shopQueue.removeFromQueue();
-				}
-			} else {
-				if(!shopQueue.getQueue().isEmpty()) 
-					currentCustomer = shopQueue.removeFromQueue();
-			}*/
 			System.out.println("Cashier " + ID + " checking queue -> size: " + shopQueue.getQueue().size());
 			
 			OperationOutput out = shopQueue.removeFromQueue();
 			currentCustomer = out.getCustomer();
 			
-			if (out.isSuccess())
+			if (out.isSuccess()) {
+				getCartSubtotalPrice();
+			    getCartTax();
+			    getDiscount();
+			    getCartTotalPrice();
 				System.out.println("Cashier " + ID + " removed customer " + currentCustomer.getId() + " -> size: " + out.updatedSize);
+				InventoryOutput out1 = inventory.addToInventory(currentCustomer);
+				//if(out1.isSuccess()) {
+					//System.out.println("Cashier " + ID + " -> inventory size: "+ out1.updatedSize);
+				//}
+				BookkeepingOutput out2 = books.upDateBooks(returnSums());
+				if(out2.isSuccess()) {
+					System.out.println("Cashier " + ID + " -> total# of customers: "+ out2.numberOfCustomers);
+				}
+				
+			}
+				
 			
 			try {
 				Thread.sleep(delay);
@@ -155,21 +164,12 @@ public class CashierTrial implements Runnable{
 	}
 		
 		
-	/**
-	 * Creates new customer 
-	 * @param name of the customer
-	 */
-   public void createNewCustomer(String name) {
- 	   LocalDateTime timeStamp = LocalDateTime.now();
- 	   Customer newCustomer = new Customer(name, timeStamp);
- 	   CoffeeShop.customerList.put(newCustomer.getId(), newCustomer);
- 	   currentCustomer = newCustomer;
-    }
   
 	/**
 	 * @return Cart sub total price 
 	 */
 	public synchronized float getCartSubtotalPrice() {
+		subtotal = 0;
 		subtotal = currentCustomer.getCartTotalPrice();
 		return subtotal;
 	}
@@ -178,8 +178,7 @@ public class CashierTrial implements Runnable{
 	 * @return Cart tax 
 	 */
 	public float getCartTax() {
-		// loop through items in cart
-		// if item is taxable, add 20% of item price to tax 
+		tax = 0;
 		tax = (float) (subtotal*0.25);
 		return tax;
 	}
@@ -189,6 +188,7 @@ public class CashierTrial implements Runnable{
 	 * @return Discounted price 
 	 */
 	public float getDiscount() {
+		discount = 0;
 		// discount 1 = 1 drink & 1 food & 1 pastry = £5 //
 		// discount 2 = 3 drinks & 1 food = 20% off //
 		// discount 3 = 3 pastries = 25% off //
@@ -279,6 +279,7 @@ public class CashierTrial implements Runnable{
 	 * @return Cart total price 
 	 */
 	public float getCartTotalPrice() {
+		total = 0;
 		total = subtotal + tax - discount;
 		return total;
 	}
@@ -287,10 +288,7 @@ public class CashierTrial implements Runnable{
 	 * Updates final customer cart sum 
 	 */
 	public void runCashier() {
-		subtotal = 0;
-		tax = 0;
-		discount = 0;
-		total = 0;
+		
 		
 		getCartSubtotalPrice();
 		getCartTax();

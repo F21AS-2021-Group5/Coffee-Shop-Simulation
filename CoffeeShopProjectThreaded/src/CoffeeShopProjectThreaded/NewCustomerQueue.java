@@ -144,8 +144,12 @@ public class NewCustomerQueue {
 		notifyAll(); 
 		
 		if (customer == null)
-			return new OperationOutput(customer, false,queue.size());
+			return new OperationOutput(customer, false, queue.size());
 		else
-			return new OperationOutput(customer, true,queue.size());
+			return new OperationOutput(customer, true, queue.size());
+    }
+    
+    public String endOfDayReport() {
+    	return "str";
     }
 }

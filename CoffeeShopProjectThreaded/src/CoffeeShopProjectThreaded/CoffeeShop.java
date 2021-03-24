@@ -255,9 +255,9 @@ public class CoffeeShop {
 	public static void main(String[] args) {
 		// Needs initial cashier 
 		CoffeeShop shop = new CoffeeShop("Adam");
-		long time = 200L;
-		long time1 = 400L;
-		long time2 = 600L;
+		long time = 400L;
+		long time1 = 800L;
+		long time2 = 1000L;
 		
 		/*custQue.randCustomerToQueue();
 		custQue.randCustomerToQueue();
@@ -286,25 +286,36 @@ public class CoffeeShop {
 		Thread t3 = new Thread(cashierThree);
 		t3.start();*/
 		
-		/*
-		NewCustomerQueue queue = new NewCustomerQueue(false);
+		// /*
+		NewCustomerQueue queue = new NewCustomerQueue(false);   // Customer queue
+		Inventory inventory = new Inventory();                  // Inventory of ordered items
+		Bookkeeping books = new Bookkeeping();                  // Bookkeeping of earnings and other finances
 		
-		Runnable handler = new QueueHandler(queue, 200L);
+		Runnable handler = new QueueHandler(null, queue, 300L, 15);
 		Thread h = new Thread(handler);
+		h.setPriority(8);
 		h.start();		
 		
-		Runnable cashierOne = new CashierTrial("Adam", 200L, queue); // or an anonymous class, or lambda...
+		
+		Runnable cashierOne = new CashierTrial("Adam", 800L, null, queue, inventory, books); // or an anonymous class, or lambda...
 		Thread t1 = new Thread(cashierOne);
+		t1.setPriority(2);
 		t1.start();
 		
-		Runnable cashierTwo = new CashierTrial("Barbara", 400L, queue);; // or an anonymous class, or lambda...
+		
+		
+		Runnable cashierTwo = new CashierTrial("Barbara", 900L, null, queue, inventory, books);; // or an anonymous class, or lambda...
 		Thread t2 = new Thread(cashierTwo);
+		t2.setPriority(2);
 		t2.start();
+		
+		/*
 
-		Runnable cashierThree = new CashierTrial("Mindy", 600L, queue);; // or an anonymous class, or lambda...
+		Runnable cashierThree = new CashierTrial("Mindy", 1000L, queue);; // or an anonymous class, or lambda...
 		Thread t3 = new Thread(cashierThree);
 		t3.start();
-		*/
+		 */
+		
 		
 		
 		//cashier2.start();

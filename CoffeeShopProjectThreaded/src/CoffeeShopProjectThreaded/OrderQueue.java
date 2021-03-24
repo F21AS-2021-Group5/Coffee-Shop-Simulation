@@ -20,13 +20,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
 public class OrderQueue {
 	
 	private Deque<QueueItem> queue; // stores customer ID and item ID
-	private final Map<String, String> foodMap = new HashMap<String, String>();
 	private boolean isBar;
 	
 	public class OperationOutput {
@@ -67,26 +67,26 @@ public class OrderQueue {
 	 * Class containing item object inside queue
 	 */
 	public class QueueItem {
-		private String itemID;
+		private String item;
 		private String customerID;
 		private boolean success;
 		
 		/**
 		 * Constructor for QueueItem class
 		 * @param customerID Customer identifier
-		 * @param itemID Item identifier
+		 * @param itemID Item name
 		 */
-		public QueueItem(String customerID, String itemID) {
-			this.itemID = itemID;
+		public QueueItem(String customerID, String item) {
+			this.item = item;
 			this.customerID = customerID;
 			success = false;
 		}
 		
 		/**
-		 * Item identifier 
+		 * Item name 
 		 */
-		public String getItemID() {
-			return itemID;
+		public String getItem() {
+			return item;
 		}
 		
 		/**
@@ -112,11 +112,12 @@ public class OrderQueue {
 		
 		queue = new LinkedList<QueueItem>();
 		
-		// initialize map 
+		/*
 		foodMap.put("FOOD", "Kitchen");
 	    foodMap.put("PASTRY", "Bar");
 	    foodMap.put("DRINK", "Bar");
-	    foodMap.put("SIDE", "Kitchen");	    
+	    foodMap.put("SIDE", "Kitchen");	   
+	    */ 
 	}
 	
 	/**
@@ -183,26 +184,15 @@ public class OrderQueue {
 			return new OperationOutput(item, true, queue.size());
 	}
 	
-	/**
-	 * Determines if item is prepared by barista or cook
-	 * @param itemId Item identifier 
-	 * @return True if prepared by barista, false if by cook 
-	 */
-	boolean fromBar(String itemId) {
-		String onlyChars = itemId.replaceAll("[^A-Za-z]+", "");
-		if (foodMap.get(onlyChars) == "Bar")
-			return true;
-		return false;
-	}
+
 	
 	public static void main(String[] args) {
-		/*OrderQueue queue = new OrderQueue("RecipeBook");
 		
-		
+		/*
 		System.out.println("\n");
-		for (String item: queue.recipeBook.keySet()) {
+		for (String item: CoffeeShop.recipeBook.keySet()) {
 			System.out.println(item);
-			System.out.println(queue.recipeBook.get(item).toString());
+			System.out.println(CoffeeShop.recipeBook.get(item).toString());
 		}*/
 	}
 }

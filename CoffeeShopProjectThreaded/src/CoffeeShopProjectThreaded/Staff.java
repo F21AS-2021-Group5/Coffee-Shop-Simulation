@@ -117,11 +117,14 @@ public class Staff implements Runnable{
 			String status = "";
 			if (out.isSuccess())
 			{
-				currentItem = out.getItem().getItemID();
+				currentItem = out.getItem().getItem();
 				currentCustomer = out.getItem().getCustomerID();		
 				
 				// get recipe of current item 
 				ArrayList<String> recipe = CoffeeShop.recipeBook.get(currentItem);
+				
+				if (recipe == null)
+					System.out.println("Item does not exist in the menu.");
 				
 				// go through recipe instructions 
 				for (String instruction: recipe) {
@@ -137,9 +140,9 @@ public class Staff implements Runnable{
 					}
 				}
 				
-				// update status 
-				status = "[FINISHED] " + type + " " + name + ": " + CoffeeShop.menu.get(out.getItem().getItemID()) + 
-						" for customer " + CoffeeShop.customerList.get(out.getItem().getCustomerID()) + " prepared.";			
+				// update status				
+				status = "[FINISHED] " + type + " " + name + ": " + currentItem + 
+						" for customer " + CoffeeShop.customerList.get(out.getItem().getCustomerID()).getName() + " prepared.";			
 				log.updateLog(status);				
 			}
 			/*	

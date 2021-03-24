@@ -35,6 +35,7 @@ public class CoffeeShop {
 	public static HashMap<String, Customer> customerList;
 	public static ArrayList<Float> money;	
 	public static HashMap<String, ArrayList<String> > recipeBook; // stores recipes
+	public static Map<String, HashSet<String> > foodMap;
 	
 	Cashier cashier;
 	
@@ -62,6 +63,10 @@ public class CoffeeShop {
 		// fill recipe book 
 		recipeBook = new HashMap<String, ArrayList<String> >();
 		fillRecipeBook("RecipeBook");
+		
+		// fill food map 
+		foodMap = new HashMap<String, HashSet<String> >();
+		fillFoodMap();
 	}
 	
 	/**
@@ -112,11 +117,31 @@ public class CoffeeShop {
        }
    }
    
+   /**
+    * Fills the food map that tells who needs to make the food: kitchen or bar 
+    */
+   public void fillFoodMap() {
+		// initialize map
+		foodMap.put("Kitchen", new HashSet<String>());
+		foodMap.put("Bar", new HashSet<String>());		
+		
+		for (String name: menu.keySet())
+		{
+			String itemId = menu.get(name).getIdentifier();
+			String onlyChars = itemId.replaceAll("[^A-Za-z]+", "");
+			if (onlyChars.equals("FOOD") || onlyChars.equals("SIDE"))
+				foodMap.get("Kitchen").add(name);
+			else if (onlyChars.equals("PASTRY") || onlyChars.equals("DRINK"))
+				foodMap.get("Bar").add(name);
+		}
+		
+   }
+   
 	/**
 	 * Fills recipe book 
 	 * @param file Text file name 
 	 */
-	void fillRecipeBook(String file) {
+	public void fillRecipeBook(String file) {
 		BufferedReader recipeReader = null;
 		try {	   		
 			// create buffered reader 
@@ -151,7 +176,7 @@ public class CoffeeShop {
 				   		instructions.clear(); 
 	       			}	       			
 	   				// assign item ID and clear instructions	
-	       			itemId = data[0];     			
+	       			itemId = data[1];     			
 	   			} 
 	       		
 	       		// add instruction if line is not empty 
@@ -287,9 +312,13 @@ public class CoffeeShop {
 		t3.start();*/
 		
 		// /*
+		
 		NewCustomerQueue queue = new NewCustomerQueue(false);   // Customer queue
 		Inventory inventory = new Inventory();                  // Inventory of ordered items
 		Bookkeeping books = new Bookkeeping();                  // Bookkeeping of earnings and other finances
+		
+		OrderQueue kitchenQueue = new OrderQueue(false);
+		OrderQueue barQueue = new OrderQueue(true);
 		
 		Runnable handler = new QueueHandler(null, queue, 300L, 15);
 		Thread h = new Thread(handler);
@@ -297,17 +326,19 @@ public class CoffeeShop {
 		h.start();		
 		
 		
-		Runnable cashierOne = new CashierTrial("Adam", 800L, null, queue, inventory, books); // or an anonymous class, or lambda...
+		Runnable cashierOne = new CashierTrial("Adam", 800L, null, queue, kitchenQueue, barQueue, inventory, books); // or an anonymous class, or lambda...
 		Thread t1 = new Thread(cashierOne);
 		t1.setPriority(2);
 		t1.start();
 		
 		
 		
-		Runnable cashierTwo = new CashierTrial("Barbara", 900L, null, queue, inventory, books);; // or an anonymous class, or lambda...
+		Runnable cashierTwo = new CashierTrial("Barbara", 900L, null, queue, kitchenQueue, barQueue, inventory, books);; // or an anonymous class, or lambda...
 		Thread t2 = new Thread(cashierTwo);
 		t2.setPriority(2);
 		t2.start();
+		 
+		 
 		
 		/*
 
@@ -350,13 +381,15 @@ public class CoffeeShop {
 		//Thread addCustomerThread = new Thread(new CustomerQueue("CustomerList", "CustomerListOnline", 1500));
 		//addCustomerThread.start();
 		/*
-		//OrderQueue kitchenQueue = new OrderQueue(false);
+		OrderQueue kitchenQueue = new OrderQueue(false);
 		OrderQueue barQueue = new OrderQueue(true);
 		
-		//kitchenQueue.addToQueue("Marco", "FOOD001");
-		barQueue.addToQueue("Matteo", "DRINK003");
-		barQueue.addToQueue("Alessandro", "PASTRY001");
-		barQueue.addToQueue("Francesca", "DRINK005");
+		kitchenQueue.addToQueue("Marco", "Toastie");
+		barQueue.addToQueue("Matteo", "Espresso");
+		barQueue.addToQueue("Alessandro", "Croissant");
+		kitchenQueue.addToQueue("Fabrizio", "Fries");
+		barQueue.addToQueue("Francesca", "Cappuccino");	
+		*/	
 		
 		Runnable baristaOne = new Staff("Paolo", barQueue, 2000L);
 		Thread s1 = new Thread(baristaOne);
@@ -365,15 +398,15 @@ public class CoffeeShop {
 		Runnable baristaTwo = new Staff("Lavinia", barQueue, 1500L);
 		Thread s2 = new Thread(baristaTwo);
 		s2.start();
-		*/
 		
-		//Runnable cookOne = new Staff("Giulia", kitchenQueue, 2000L);
-		//Thread s3 = new Thread(cookOne);
-		//s3.start();
 		
-		//Runnable cookTwo = new Staff("Francesco", kitchenQueue, 2000L);
-		//Thread s4 = new Thread(cookTwo);
-		//s4.start();
+		Runnable cookOne = new Staff("Giulia", kitchenQueue, 2000L);
+		Thread s3 = new Thread(cookOne);
+		s3.start();
+		
+		Runnable cookTwo = new Staff("Francesco", kitchenQueue, 2000L);
+		Thread s4 = new Thread(cookTwo);
+		s4.start();
 
 		
 		//orderQueue.addToQueue(1, "FOOD001", false);

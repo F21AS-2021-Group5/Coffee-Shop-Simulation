@@ -28,7 +28,8 @@ public class QueueHandler implements Runnable{
 		//while (true) {
 			// every number of milliseconds, add customer to end of queue 
 			try {
-				OperationOutput out = shopQueue.addToQueue();				
+				OperationOutput out = shopQueue.addToQueue();
+				CoffeeShop.customerList.put(out.customer.getId(), out.customer);
 
 				System.out.println("Queue Handler added customer " + out.getCustomer().getId() + "-> size: " + out.updatedSize);
 				

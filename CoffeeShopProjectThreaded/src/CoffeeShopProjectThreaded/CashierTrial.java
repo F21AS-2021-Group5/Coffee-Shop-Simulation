@@ -48,6 +48,8 @@ public class CashierTrial implements Runnable{
 	EndOfDay report = new EndOfDay();
 	NewCustomerQueue onlineQueue;
 	NewCustomerQueue shopQueue;
+	OrderQueue kitchenQueue;
+	OrderQueue barQueue;
 	Inventory inventory;
 	Bookkeeping books;
 	Thread th;
@@ -57,12 +59,15 @@ public class CashierTrial implements Runnable{
 	 * @param ID Cashier identifier
 	 */
 	public CashierTrial(String ID, Long delay, NewCustomerQueue onlineQueue,
-			NewCustomerQueue shopQueue, Inventory inventory, Bookkeeping books) {
+			NewCustomerQueue shopQueue, OrderQueue kitchenQueue, 
+			OrderQueue barQueue, Inventory inventory, Bookkeeping books) {
 		currentCustomer = null;
 		this.ID =ID;
 		this.delay = delay;
 		this.onlineQueue = onlineQueue;
 		this.shopQueue = shopQueue;
+		this.kitchenQueue = kitchenQueue;
+		this.barQueue = barQueue;
 		this.inventory =inventory;
 		this.books = books;
 	}
@@ -71,11 +76,14 @@ public class CashierTrial implements Runnable{
 	 * Constructor for Cashier class
 	 * @param ID Cashier identifier
 	 */
-	public CashierTrial(String ID, Long delay, NewCustomerQueue shopQueue) {
+	public CashierTrial(String ID, Long delay, NewCustomerQueue shopQueue,
+			OrderQueue kitchenQueue, OrderQueue barQueue) {
 		currentCustomer = null;
 		this.ID =ID;
 		this.delay = delay;
 		this.shopQueue = shopQueue;
+		this.kitchenQueue = kitchenQueue;
+		this.barQueue = barQueue;
 	}
 	
 	/**
@@ -93,6 +101,19 @@ public class CashierTrial implements Runnable{
 			
 			OperationOutput out = shopQueue.removeFromQueue();
 			currentCustomer = out.getCustomer();
+			
+			///// ADDING ITEM TO QUEUE ////
+			for (String item: currentCustomer.getCart().keySet()) {
+				try {
+					if (isBarFood(item))
+						barQueue.addToQueue(currentCustomer.getId(), item);
+					else 
+						kitchenQueue.addToQueue(currentCustomer.getId(), item);
+				} catch (NoMatchingMenuItemIDException e) {
+					e.printStackTrace();
+				}
+			}
+			/////////////////////////////
 			
 			if (out.isSuccess()) {
 				getCartSubtotalPrice();
@@ -296,6 +317,21 @@ public class CashierTrial implements Runnable{
 		getCartTotalPrice();
 		
 		report.updateFinalSum(returnSums());
+	}
+	
+	/**
+	 * Determines if item is prepared by barista or cook
+	 * @param item Name of item
+	 * @return True if prepared by barista, false if by cook 
+	 * @throws NoMatchingMenuItemIDException Menu item does not exist 
+	 */
+	boolean isBarFood(String name) throws NoMatchingMenuItemIDException {	
+		
+		if (CoffeeShop.foodMap.get("Bar").contains(name))
+			return true;
+		if (!CoffeeShop.foodMap.get("Kitchen").contains(name))
+			throw new NoMatchingMenuItemIDException();
+		return false;
 	}
 	
 	/**

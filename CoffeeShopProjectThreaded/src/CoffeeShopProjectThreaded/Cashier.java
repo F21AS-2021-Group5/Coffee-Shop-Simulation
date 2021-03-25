@@ -45,6 +45,7 @@ public class Cashier implements Runnable{
 	Deque<Customer> shopQueue;
 	Thread th;
 	
+	
 	/**
 	 * Constructor for Cashier class
 	 * @param ID Cashier identifier

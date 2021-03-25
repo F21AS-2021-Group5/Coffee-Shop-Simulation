@@ -96,7 +96,9 @@ public class CashierTrial implements Runnable{
 	@Override
 	public void run() {
 		
-		while (true) {
+		boolean stop = false;
+		while (!stop) {
+			
 			System.out.println("Cashier " + ID + " checking queue -> size: " + shopQueue.getQueue().size());
 			
 			OperationOutput out = shopQueue.removeFromQueue();
@@ -129,17 +131,20 @@ public class CashierTrial implements Runnable{
 				if(out2.isSuccess()) {
 					System.out.println("Cashier " + ID + " -> total# of customers: "+ out2.numberOfCustomers);
 				}
-				
-			}
-				
-			
+			}	
+			//System.out.println(books.getCustomerNumber());
 			try {
 				Thread.sleep(delay);
 			}catch(InterruptedException e) {
 				//Thread.currentThread().interrupt();
+				stop = true;  ///// KILLS THE THREAD //////
 				System.out.println(e.getMessage());
+				
 			}	
 		}
+		
+		
+
 	}
 
    /**

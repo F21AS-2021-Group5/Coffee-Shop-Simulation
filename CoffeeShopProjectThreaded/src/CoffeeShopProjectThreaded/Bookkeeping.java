@@ -52,5 +52,9 @@ public class Bookkeeping {
 		}
 		return new BookkeepingOutput(true, allValues.get(7));
 	}
+	
+	public float getCustomerNumber() {
+		return allValues.get(7);
+	}
 
 }

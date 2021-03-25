@@ -25,39 +25,55 @@ import java.security.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Random;
 
 //import CaffeeShopProject.CoffeeShop;
 import CoffeeShopProjectThreaded.GUIcaffee;
+
 
 public class CoffeeShop {
 	
 	public static HashMap<String, MenuItem> menu;
 	public static HashMap<String, Customer> customerList;
-	public static ArrayList<Float> money;	
 	public static HashMap<String, ArrayList<String> > recipeBook; // stores recipes
 	public static Map<String, HashSet<String> > foodMap;
 	
 	Cashier cashier;
 	
+	NewCustomerQueue queue;
+	Inventory inventory;
+	Bookkeeping books;
+	OrderQueue kitchenQueue;
+	OrderQueue barQueue;
+	
+	//ArrayList<Thread> cashierList = new ArrayList<Thread>(); 
+	HashMap<String, Thread> cashierList;
+	
+	String[] cashierNames={"Ron","Leslie", "April", "Donna","Andy","Ann","Ben", 
+			"Tom", "Jerry", "Gerry", "Lerry"};  
+	
 	/**
 	 * Constructor for CoffeeShop class
 	 * @param name Name of cashier 
 	 */
-	public CoffeeShop(String name)
+	public CoffeeShop()
 	{
 		menu = new HashMap<>(); 
 		customerList = new HashMap<>();
-		cashier = null;
-		money =  new ArrayList<Float>();
+		cashier = null; 
 		
-		// add initial money to cashier 
-		for (int i = 0 ; i <= 6; i++) {
-			money.add((float) 0);
-		}
+		fillMenu("MenuItems");
 		
+		queue = new NewCustomerQueue(false);   // Customer queue
+		inventory = new Inventory();                  // Inventory of ordered items
+		books = new Bookkeeping();                  // Bookkeeping of earnings and other finances
+		
+		kitchenQueue = new OrderQueue(false);
+		barQueue = new OrderQueue(true);
 		// creates cashier and fills menu and customer list data structures 
 		//createNewCashier(name);
-		fillMenu("MenuItems");
+		cashierList = new HashMap<String, Thread>();
+		
 		//fillCustomerList("CustomerList");	
 				
 		// fill recipe book 
@@ -67,6 +83,7 @@ public class CoffeeShop {
 		// fill food map 
 		foodMap = new HashMap<String, HashSet<String> >();
 		fillFoodMap();
+	
 	}
 	
 	/**
@@ -197,122 +214,65 @@ public class CoffeeShop {
 		}		
 	}	
    
-   /**
-    * Fills the customer list with information from text file 
-    * @param fileName File (.txt) name with initial orders 
-    */
-   private void fillCustomerList(String fileName){
-	   BufferedReader br = null; //reader
-       try {
-    	   FileReader file = new FileReader(fileName);   // Read file
-    	   br = new BufferedReader(file);       // Create buffer reader for file
-    	   String inputLine = br.readLine();   // Read first line
-           while (inputLine != null) {                             //while its contains stuff
-               String[] data = inputLine.split(";");        //split by semicolon
-               if (data.length == 4) {
-                   try {
-                	   LocalDateTime timeStamp = stringToTimestamp(data[3]);
-                	   // initialize customer list with new customer 
-                	   if (customerList.isEmpty()) {
-                		   Customer newCustomer = new Customer(data[1], data[0], timeStamp);
-                		   customerList.put(data[0].trim(), newCustomer);
-                		   cashier.setCustomer(newCustomer); 
-                	   }
-                	   // if customer list does not contain customer in file row, add it 
-                	   if(!customerList.containsKey(data[0])) {
-                		   cashier.runCashier();
-                		   Customer newCustomer = new Customer(data[1], data[0], timeStamp);
-                		   customerList.put(data[0].trim(), newCustomer);
-                		   cashier.setCustomer(newCustomer); 
-                	   }
-                	   customerList.get(data[0].trim()).addItem(data[2], 1, timeStamp);
-                	// catch all exceptions 
-                   } catch (IllegalArgumentException e){ //If add anything anything unacceptable in MenuItem
-                	   throw new IllegalArgumentException();
-                   } catch (IllegalStateException e) {
-                	   throw new IllegalStateException();
-                   } catch (InvalidMenuItemQuantityException e) {
-                	   e.printStackTrace();
-                   } catch (InvalidMenuItemDataException e) {
-                	   e.printStackTrace();
-                   } 
-               } else {
-                   System.out.println("Invalid data line. Will drop it. \n");
-               }
-               inputLine = br.readLine();                          //read the next line
-           }
-           cashier.runCashier();
-       // catch all possible exceptions
-       } catch (FileNotFoundException e) {
-    	   System.out.println("File does not exist. \n"); 
-       } catch (IOException e) {
-           e.printStackTrace();
-       } finally {
-           try {
-               br.close();
-           } catch (IOException e) {
-               //do nothing
-           }
-       }
+//Working on this 	
+   private void createNewCashier() {
+	   Random rn = new Random();
+	   String name = cashierNames[rn.nextInt(cashierNames.length)];
+	   while(cashierList.containsKey(name)) {
+		   name = cashierNames[rn.nextInt(cashierNames.length)];
+	   }
+	   System.out.println(name);
+	   Runnable cashier = new CashierTrial(name, 800L, null, queue, kitchenQueue, barQueue, inventory, books); // or an anonymous class, or lambda...
+	   Thread t = new Thread(cashier);
+	   t.setPriority(2);
+	   cashierList.put(name, t);
+	   t.start();
+	   
    }
    
-   /**
-    * Converts a string to LocalDateTime object
-    * @param timeString Time stamp in string format 
-    * @return Corresponding LocalDateTime object 
-    */
-   public static LocalDateTime stringToTimestamp(String timeString){
-	   LocalDateTime localDateTime = null;
-	   try {
-		   // set formatter and convert string to LocalDateTime 
-		   String pattern = "yyyy-MM-dd HH:mm:ss.SSSSSSSSS";
-		   DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-		   localDateTime = LocalDateTime.from(formatter.parse(timeString));
-		} catch(Exception e) { //this generic but you can control another types of exception
-		    // look the origin of exception 
-			System.out.println("Could't conver sting to time stamp");
-		}
-	    return localDateTime; // Fine to return 0 since catch in the Customer class 
+   private void createHandler() {
+	    Runnable handler = new QueueHandler(null, queue, 600L, 15);
+	    Thread h = new Thread(handler);
+	    h.setPriority(8);
+	    //cashierList.put("Handler", h);
+		h.start();
    }
+   
+   private synchronized void removeCashier(String name) {
+	   //while(cashierList.get("Handler").isAlive()) {	   
+	   //}
+	   System.out.println("Cashier " + name + " has ended their shift");
+	   cashierList.get(name).interrupt();
+	   cashierList.remove(name);
+
+   }
+  
+   
+
    
    
    // main method 
 	public static void main(String[] args) {
 		// Needs initial cashier 
-		CoffeeShop shop = new CoffeeShop("Adam");
-		long time = 400L;
-		long time1 = 800L;
-		long time2 = 1000L;
 		
-		/*custQue.randCustomerToQueue();
-		custQue.randCustomerToQueue();
-		custQue.randCustomerToQueue();
-		System.out.println(custQue.shopQueue.pop().cart);
-		System.out.println(custQue.shopQueue.pop().cart);
-		System.out.println(custQue.shopQueue.pop().cart);
-		*/
+		CoffeeShop shop = new CoffeeShop();
+		//NewCustomerQueue queue = new NewCustomerQueue(false); 
+		shop.createHandler();
+		shop.createNewCashier();
+		shop.createNewCashier();
+		
+		//shop.removeCashier();
+		
+		//System.out.println("AFTHER");
+		//System.out.println(shop.books.getCustomerNumber());
+		//shop.removeCashier("Barbara");
+		
+		
+		//long time = 400L;
+		//long time1 = 800L;
+		//long time2 = 1000L;
+		
 		/*
-		Deque<Customer> customerLine = new LinkedList<Customer>();
-		
-		Runnable line = new  CustomerQueue(time, customerLine);
-		Thread newCustomers = new Thread(line);
-		//newCustomers.lo
-		newCustomers.start();
-		
-		Runnable cashierOne = new Cashier("Adam", time1, customerLine); // or an anonymous class, or lambda...
-		Thread t1 = new Thread(cashierOne);
-		t1.start();
-		
-		Runnable cashierTwo = new Cashier("Barbara", time2, customerLine);; // or an anonymous class, or lambda...
-		Thread t2 = new Thread(cashierTwo);
-		t2.start();
-
-		Runnable cashierThree = new Cashier("Mindy", time2, customerLine);; // or an anonymous class, or lambda...
-		Thread t3 = new Thread(cashierThree);
-		t3.start();*/
-		
-		// /*
-		
 		NewCustomerQueue queue = new NewCustomerQueue(false);   // Customer queue
 		Inventory inventory = new Inventory();                  // Inventory of ordered items
 		Bookkeeping books = new Bookkeeping();                  // Bookkeeping of earnings and other finances
@@ -320,7 +280,7 @@ public class CoffeeShop {
 		OrderQueue kitchenQueue = new OrderQueue(false);
 		OrderQueue barQueue = new OrderQueue(true);
 		
-		Runnable handler = new QueueHandler(null, queue, 300L, 15);
+		Runnable handler = new QueueHandler(null, queue, 700L, 6);
 		Thread h = new Thread(handler);
 		h.setPriority(8);
 		h.start();		
@@ -337,7 +297,7 @@ public class CoffeeShop {
 		Thread t2 = new Thread(cashierTwo);
 		t2.setPriority(2);
 		t2.start();
-		 
+		*/ 
 		 
 		
 		/*
@@ -390,7 +350,8 @@ public class CoffeeShop {
 		kitchenQueue.addToQueue("Fabrizio", "Fries");
 		barQueue.addToQueue("Francesca", "Cappuccino");	
 		*/	
-		
+		 ///THIIIIIS
+		/*
 		Runnable baristaOne = new Staff("Paolo", barQueue, 2000L);
 		Thread s1 = new Thread(baristaOne);
 		s1.start();
@@ -407,7 +368,7 @@ public class CoffeeShop {
 		Runnable cookTwo = new Staff("Francesco", kitchenQueue, 2000L);
 		Thread s4 = new Thread(cookTwo);
 		s4.start();
-
+        */
 		
 		//orderQueue.addToQueue(1, "FOOD001", false);
 		//orderQueue.addToQueue(1, "DRINK003", true);

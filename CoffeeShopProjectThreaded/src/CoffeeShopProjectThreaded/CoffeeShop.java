@@ -37,6 +37,7 @@ public class CoffeeShop {
 	public static HashMap<String, Customer> customerList;
 	public static HashMap<String, ArrayList<String> > recipeBook; // stores recipes
 	public static Map<String, HashSet<String> > foodMap;
+	public static HashMap<String, Cashier> acctiveCashiers;
 	
 	Cashier cashier;
 	
@@ -48,9 +49,13 @@ public class CoffeeShop {
 	
 	//ArrayList<Thread> cashierList = new ArrayList<Thread>(); 
 	HashMap<String, Thread> cashierList;
+	HashMap<String, Thread> baristaList;
+	HashMap<String, Thread> cookList;
 	
 	String[] cashierNames={"Ron","Leslie", "April", "Donna","Andy","Ann","Ben", 
 			"Tom", "Jerry", "Gerry", "Lerry"};  
+	String[] baristaNames={"Mac","Cahrlie", "Frank", "Deandra","Dennis"};  
+	String[] cookNames={"Dwight","Pam", "Jim", "Andy","Kelly", "Angela"};
 	
 	/**
 	 * Constructor for CoffeeShop class
@@ -73,6 +78,10 @@ public class CoffeeShop {
 		// creates cashier and fills menu and customer list data structures 
 		//createNewCashier(name);
 		cashierList = new HashMap<String, Thread>();
+		baristaList = new HashMap<String, Thread>();
+		cookList = new HashMap<String, Thread>();
+		
+		acctiveCashiers = new HashMap<String, Cashier>();
 		
 		//fillCustomerList("CustomerList");	
 				
@@ -215,19 +224,22 @@ public class CoffeeShop {
 	}	
    
 //Working on this 	
-   private void createNewCashier() {
+   private void addCashier() {
 	   Random rn = new Random();
 	   String name = cashierNames[rn.nextInt(cashierNames.length)];
 	   while(cashierList.containsKey(name)) {
 		   name = cashierNames[rn.nextInt(cashierNames.length)];
 	   }
-	   System.out.println(name);
-	   Runnable cashier = new CashierTrial(name, 800L, null, queue, kitchenQueue, barQueue, inventory, books); // or an anonymous class, or lambda...
+	   Cashier cash = new Cashier(name);
+	   acctiveCashiers.put(name, cash);
+	   
+	   Runnable cashier = new CashierTrial(name, 800L, null, queue, kitchenQueue, barQueue, inventory, books, cash); // or an anonymous class, or lambda...
 	   Thread t = new Thread(cashier);
 	   t.setPriority(2);
 	   cashierList.put(name, t);
 	   t.start();
 	   
+	
    }
    
    private void createHandler() {
@@ -236,6 +248,23 @@ public class CoffeeShop {
 	    h.setPriority(8);
 	    //cashierList.put("Handler", h);
 		h.start();
+		
+   }
+   
+   private void addBarista() {
+	   Random rn = new Random();
+	   String name = baristaNames[rn.nextInt(cashierNames.length)];
+	   while(cashierList.containsKey(name)) {
+		   name = baristaNames[rn.nextInt(cashierNames.length)];
+	   }
+	   Runnable barista = new Staff(name, barQueue, 2000L);
+	   Thread s = new Thread(barista);
+	   s.start();
+	   //baristaNames , cookNames
+   }
+   
+   private void addCook() {
+	   
    }
    
    private synchronized void removeCashier(String name) {
@@ -244,7 +273,8 @@ public class CoffeeShop {
 	   System.out.println("Cashier " + name + " has ended their shift");
 	   cashierList.get(name).interrupt();
 	   cashierList.remove(name);
-
+	   acctiveCashiers.remove(name);
+	   
    }
   
    
@@ -258,8 +288,8 @@ public class CoffeeShop {
 		CoffeeShop shop = new CoffeeShop();
 		//NewCustomerQueue queue = new NewCustomerQueue(false); 
 		shop.createHandler();
-		shop.createNewCashier();
-		shop.createNewCashier();
+		shop.addCashier();
+		shop.addCashier();
 		
 		//shop.removeCashier();
 		

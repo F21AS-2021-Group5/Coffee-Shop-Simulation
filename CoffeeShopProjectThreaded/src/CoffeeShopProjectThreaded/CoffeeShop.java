@@ -413,6 +413,10 @@ public class CoffeeShop {
 		//cook1.start();
 		//barista1.start();
 		
+		NewGUI gui = new NewGUI(shop);
+		gui.DisplayGUI();
+		gui.run();
+		
 	}
 
 }

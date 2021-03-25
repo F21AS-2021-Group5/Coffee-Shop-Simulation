@@ -25,7 +25,7 @@ import java.util.Queue;
 import javax.swing.*;
 
 
-public class NewGUI extends Thread{
+public class NewGUI{
 	
 	//Width and height of the window
 	//Components are scaled to width and height
@@ -33,12 +33,28 @@ public class NewGUI extends Thread{
 	int height = 600;
 	
 	JFrame frame;
-	private static Customer currentCustomer;
-	JTextArea customerlist = new JTextArea("Customer List");
+	Customer currentCustomer;
+	JTextArea customerlist = new JTextArea("Customer Queue:");
 	JTextArea onlineCustomerlist = new JTextArea("Online Customer List");
 	JTextArea orders = new JTextArea("Order List");
+	JTextArea cashiers = new JTextArea("Active Cashiers:");
+	JTextArea baristas = new JTextArea("Active Baristas:");
+	JTextArea cooks = new JTextArea("Active Cooks:");
+
 	JTextArea temp = new JTextArea("temp");
 	JPanel cashier = new JPanel();
+	JTextField removeCashier = new JTextField(3);
+	JTextField removeBarista = new JTextField(3);
+	JTextField removeCook = new JTextField(3);
+	
+	
+	// Buttons
+	JButton addCashier = new JButton("Add Cashier");
+	JButton addBarista = new JButton("Add Barista");
+	JButton addCook = new JButton("Add Cook");
+	JButton removecashiers = new JButton("Remove Cashier");
+	JButton removebaristas = new JButton("Remove Barista");
+	JButton removecooks = new JButton("Remove Cook");
 	
 	CoffeeShop main;
 	CustomerQueue customerQueue;
@@ -61,6 +77,26 @@ public class NewGUI extends Thread{
 		frame.setVisible(true);
 		//Close when Exit
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		
+		addCashier.setBounds(50, 155, 120, 40);
+		addBarista.setBounds(50, 205, 120, 40);
+		addCook.setBounds(50, 255, 120, 40);
+		removecashiers.setBounds(200, 155, 180, 40);
+		removebaristas.setBounds(200, 205, 180, 40);
+		removecooks.setBounds(200, 255, 180, 40);
+		removeCashier.setBounds(400, 155, 120, 40);
+		removeBarista.setBounds(400, 205, 120, 40);
+		removeCook.setBounds(400, 255, 120, 40);
+		frame.getContentPane().add(addCashier);
+		frame.getContentPane().add(addBarista);
+		frame.getContentPane().add(addCook);
+		frame.getContentPane().add(removecashiers);
+		frame.getContentPane().add(removebaristas);
+		frame.getContentPane().add(removecooks);		
+		frame.getContentPane().add(removeCashier);
+		frame.getContentPane().add(removeBarista);
+		frame.getContentPane().add(removeCook);		
+		
 	}
 	
 
@@ -69,51 +105,57 @@ public class NewGUI extends Thread{
 		//Clear customer list
 		customerlist.removeAll();
 		//Size is 1/4 of the height of the frame and half the height
+		
 		int customerListWidth = width/2;
 		int customerListHeight = height / 4;
-		customerlist.setBounds(10, 0, customerListWidth, customerListHeight);
-		
-		
-		
+		customerlist.setBounds(0, 0, customerListWidth, customerListHeight);
 		frame.getContentPane().add(customerlist);
-		customerlist.setText("queue:");
-		customerlist.append("\n Name:  ");
+		
+		
+		//customerlist.setText("Customer Queue:");
+		
 	}
 	
 	public synchronized void DisplayOnlineCustomers() {
 		onlineCustomerlist.removeAll();
-		
 		int onlineCustomerListWidth = width/2;
 		int onlineCustomerListHeight = height / 4;
-		onlineCustomerlist.setBounds(width/2, 0, onlineCustomerListWidth, onlineCustomerListHeight);
+		onlineCustomerlist.setBounds(onlineCustomerListWidth, 0, onlineCustomerListWidth, onlineCustomerListHeight);
 		
 		frame.getContentPane().add(onlineCustomerlist);
-		onlineCustomerlist.setText("online queue:");
+
+		//onlineCustomerlist.setText("online queue:");
 	}
 	
 	public void DisplayCashiers() {
-		int cashierWidth = width/2;
-		int cashierHeight = height / 4;
-		customerlist.setBounds(0, cashierHeight*2, cashierWidth, cashierHeight);
+		int cashierWidth = width;
+		int cashierHeight = height / 8;
+		cashiers.setBounds(0, height/2, cashierWidth, cashierHeight);
 		
+		//System.out.println(customerQueue.customerNames);
 		
-		CustomerName = main.cashier.currentCustomer.getName();
-		Items = main.cashier.currentCustomer.cart.toString();
-		
-		System.out.println(main.cashier.currentCustomer.getCartTotalPrice());
-		
-		frame.getContentPane().add(customerlist);
-		customerlist.setText("Current Customer:");
-		customerlist.append("\n Name:  ");
-		customerlist.append(CustomerName);
-		customerlist.append("\n Items:  ");
-		for (String key : main.cashier.currentCustomer.cart.keySet()) {
-            customerlist.append(key + "\n");
-            //System.out.println(key);
-        }
-		customerlist.append("\n Total Price:  ");
-		customerlist.append(String.valueOf(main.cashier.currentCustomer.getCartTotalPrice()));
+		frame.getContentPane().add(cashiers);
+		//cashiers.setText("Active Cashiers:");
 	}
+	
+	public void DisplayBaristas() {
+		int baristaWidth = width;
+		int baristaHeight = height / 8;
+		baristas.setBounds(0, height/8*5, baristaWidth, baristaHeight);
+				
+		frame.getContentPane().add(baristas);
+		//baristas.setText("Active Baristas:");
+	}
+	
+	public void DisplayCooks() {
+		int cookWidth = width;
+		int cookHeight = height / 8;
+		cooks.setBounds(0, height/4*3, cookWidth, cookHeight);
+				
+		frame.getContentPane().add(cooks);
+		//cooks.setText("Active Cooks:");
+	}
+	
 	
 	public void DisplayOrders() {
 		int orderWidth = width;
@@ -131,12 +173,11 @@ public class NewGUI extends Thread{
 	}
 	
 	public synchronized void DisplayTemp() {		
-		int onlineCustomerListWidth = width;
-		int onlineCustomerListHeight = height / 4;
-		temp.setBounds(width, height, onlineCustomerListWidth, onlineCustomerListHeight);
+
+		temp.setBounds(width, height, 0, 0);
 		
 		frame.getContentPane().add(temp);
-		temp.setText("queue:");
+		//temp.setText("");
 	}
 	
 	
@@ -156,9 +197,11 @@ public class NewGUI extends Thread{
 	//Update GUI with new information
 	public void update() {
 		DisplayCustomers();
-		DisplayOnlineCustomers();
+		//DisplayOnlineCustomers();
 		DisplayCashiers();
-		DisplayOrders();
+		DisplayBaristas();
+		DisplayCooks();
+		//DisplayOrders();
 		DisplayTemp();
 		
 		frame.repaint();

@@ -37,15 +37,15 @@ public class CashierRunnable implements Runnable{
 	private Log log;
 	
 	// constructor initialized variables 
-	private String ID;
-	private Long delay;	
-	private NewCustomerQueue onlineQueue;
-	private NewCustomerQueue shopQueue;
-	private OrderQueue kitchenQueue;
-	private OrderQueue barQueue;
-	private Inventory inventory;
-	private Bookkeeping books;	
-	private Cashier cashier;
+	String ID;
+	Long delay;	
+	NewCustomerQueue onlineQueue;
+	NewCustomerQueue shopQueue;
+	OrderQueue kitchenQueue;
+	OrderQueue barQueue;
+	Inventory inventory;
+	Bookkeeping books;	
+	Cashier cashier;
 	
 	/**
 	 * Constructor for Cashier class 
@@ -56,17 +56,16 @@ public class CashierRunnable implements Runnable{
 	 * @param kitchenQueue Ordered items to be prepared by the kitchen staff
 	 * @param barQueue Ordered items to be prepared by the bar staff
 	 * @param inventory Inventory of items ordered 
-	 * @param books Storage for money gained 
+	 * @param books Storage for economically relevant values 
 	 * @param cashier Cashier object instance 
 	 */
 	public CashierRunnable(String name, Long delay, NewCustomerQueue onlineQueue,
 			NewCustomerQueue shopQueue, OrderQueue kitchenQueue, 
 			OrderQueue barQueue, Inventory inventory, Bookkeeping books, Cashier cashier) {
 		
-		currentCustomer = null;
+		this.currentCustomer = null;
 
 		this.name =name;
-
 		this.ID = ID;
 
 		this.delay = delay;
@@ -77,6 +76,8 @@ public class CashierRunnable implements Runnable{
 		this.inventory =inventory;
 		this.books = books;
 		this.cashier = cashier;
+		
+		log = Log.getInstance();
 
 	}
 	
@@ -86,7 +87,7 @@ public class CashierRunnable implements Runnable{
 	 */
 	public CashierRunnable(String ID, Long delay, NewCustomerQueue shopQueue,
 			OrderQueue kitchenQueue, OrderQueue barQueue) {
-		currentCustomer = null;
+		this.currentCustomer = null;
 		this.name =name;
 		this.delay = delay;
 		this.shopQueue = shopQueue;
@@ -122,15 +123,14 @@ public class CashierRunnable implements Runnable{
 			CustomerQueueOutput out = null;
 
 			
-			log.updateLog("Cashier " + ID + " checking in-shop queue -> current size: " + shopQueue.getQueue().size());
+			log.updateLog("Cashier " + name + " checking in-shop queue -> current size: " + shopQueue.getQueue().size());
 			
 			// check if online queue exists 
 			if (onlineQueue != null) {
-				log.updateLog("Cashier " + ID + " checking online queue -> current size: " + onlineQueue.getQueue().size());
+				log.updateLog("Cashier " + name + " checking online queue -> current size: " + onlineQueue.getQueue().size());
 				
 				// if online queue empty, go to in-shop queue 
 				if (onlineQueue.getQueue().isEmpty()) {
-					
 					out = shopQueue.removeFromQueue();
 					currentCustomer = out.getCustomer();
 					cashier.setCustomer(currentCustomer);
@@ -148,6 +148,7 @@ public class CashierRunnable implements Runnable{
 				out = shopQueue.removeFromQueue();
 				currentCustomer = out.getCustomer();
 				cashier.setCustomer(currentCustomer);
+				
 			}			
 			
 			/* Adds the removed customer's processed orders to queues for food preparation */
@@ -169,13 +170,10 @@ public class CashierRunnable implements Runnable{
 				System.out.println("Cashier " + name + " removed customer " + currentCustomer.getId() + " -> size: " + out.updatedSize);
 
 				// calculates total prices, taxes and discounts 
-				cashier.getCartSubtotalPrice();
-				cashier.getCartTax();
-				cashier.getDiscount();
-				cashier.getCartTotalPrice();
+
 				
-				// logs information and adds it to books and inventory 
-				log.updateLog("Cashier " + ID + " removed customer " + currentCustomer.getName() + " (ID: " +
+				//logs information and adds it to books and inventory 
+				log.updateLog("Cashier " + name + " removed customer " + currentCustomer.getName() + " (ID: " +
 						currentCustomer.getId() + ") from " + whichQueue + " queue -> updated size: " + 
 						out.getUpdatedSize());
 				
@@ -189,7 +187,7 @@ public class CashierRunnable implements Runnable{
 
 					System.out.println("Cashier " + name + " -> total# of customers: "+ out2.numberOfCustomers);
 
-					log.updateLog("Cashier " + ID + " -> total# of customers: "+ out2.numberOfCustomers);
+					//log.updateLog("Cashier " + name + " -> total# of customers: "+ out2.numberOfCustomers);
 
 				}
 			}	

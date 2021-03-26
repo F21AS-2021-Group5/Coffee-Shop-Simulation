@@ -274,7 +274,7 @@ public class CoffeeShop {
 	 */
    private void createHandler(int number) {
 	    // Create handler which adds to the customer queue
-	    Runnable handler = new QueueHandler(null, queue, 600L, number);
+	    Runnable handler = new QueueHandler(onlineQueue, shopQueue, 1000L, number);
 	    Thread h = new Thread(handler);
 	    // High priority since customers are the once who are deciding when they will arrive
 	    h.setPriority(8);                
@@ -339,15 +339,16 @@ public class CoffeeShop {
 		CoffeeShop shop = new CoffeeShop();
 		
 		shop.createHandler(15);
+		
 		shop.addCashier();
 		shop.addCashier();
 		
 
-		shop.addBarista();
-		shop.addBarista();
+		//shop.addBarista();
+		//shop.addBarista();
 		
-		shop.addCook();
-		shop.addCook();
+		//shop.addCook();
+		//shop.addCook();
 		
 		//shop.removeCashier();
 		

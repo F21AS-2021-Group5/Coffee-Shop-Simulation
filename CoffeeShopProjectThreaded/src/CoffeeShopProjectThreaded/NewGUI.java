@@ -18,35 +18,27 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
+
 import javax.swing.*;
+
+//import CaffeeShopProject.CoffeeShop;
 
 
 public class NewGUI{
 	
 	//Width and height of the window
 	//Components are scaled to width and height
-	int width = 600;
-	int height = 600;
+	private int width = 800;
+	private int height = 800;
 	
-	JFrame frame;
-	Customer currentCustomer;
-	JTextArea customerlist = new JTextArea("Customer Queue:");
-	JTextArea onlineCustomerlist = new JTextArea("Online Customer List");
-	JTextArea orders = new JTextArea("Order List");
-	JTextArea cashiers = new JTextArea("Active Cashiers:");
-	JTextArea baristas = new JTextArea("Active Baristas:");
-	JTextArea cooks = new JTextArea("Active Cooks:");
-
-	JTextArea temp = new JTextArea("temp");
-	JPanel cashier = new JPanel();
-	JTextField removeCashier = new JTextField(3);
-	JTextField removeBarista = new JTextField(3);
-	JTextField removeCook = new JTextField(3);
-	
+	//Frame
+	JFrame frame = new JFrame("Coffee Shop");
 	
 	// Buttons
 	JButton addCashier = new JButton("Add Cashier");
@@ -55,7 +47,35 @@ public class NewGUI{
 	JButton removecashiers = new JButton("Remove Cashier");
 	JButton removebaristas = new JButton("Remove Barista");
 	JButton removecooks = new JButton("Remove Cook");
+	JButton cashierTimeOK = new JButton("OK");
+	JButton cookTimeOK = new JButton("OK");
+	JButton baristaTimeOK = new JButton("OK");
 	
+	//Labels 
+	JLabel label = new JLabel();
+	JLabel delayLabel = new JLabel("Delay:");	//For spinner
+	JLabel customerLabel = new JLabel("In shop Customer queue:");
+	JLabel onlinecustomerlabel = new JLabel("Online Customer queue:");
+	JLabel activecashierLabel = new JLabel("Active Cashiers:");
+	JLabel activecookLabel = new JLabel("Active Cooks:");
+	JLabel activebaristaLabel = new JLabel("Active Baristas:");
+	JLabel cashierTimeLabel = new JLabel("Set Cashier Delay:");
+	JLabel cookTimeLabel = new JLabel("Set Cook Delay:");
+	JLabel baristaTimeLabel = new JLabel("Set Barista Delay:");
+		
+	//JList
+	JList shopcustomerlist = new JList();
+	JList onlinecustomerlist = new JList();
+	JList cashierlist = new JList();
+	JList cooklist = new JList();
+	JList baristalist = new JList();
+
+	//Text Filed (Enter names)
+	JTextField cashierTime = new JTextField(3);
+	JTextField baristaTime = new JTextField(3);
+	JTextField cookTime = new JTextField(3);	
+	
+	Customer currentCustomer;
 	CoffeeShop main;
 	CustomerQueue customerQueue;
 	private Queue<Customer> queue;
@@ -63,154 +83,231 @@ public class NewGUI{
 	String CustomerName;
 	String Items;
 	int queueSize;
+	
 	//GUI constructor
 	public NewGUI(CoffeeShop main) {
 		this.main = main;
 	}
 	
 	//Create and show GUI
-	public void DisplayGUI() {
-		//Create GUI
-		frame = new JFrame();
-		frame.setSize(width, height);
-		//Show GUI
-		frame.setVisible(true);
-		//Close when Exit
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+	public void initializeGUI() {
+		frame.setSize(800, 670);
+		frame.setLayout(null);
+		frame.setVisible(true); //Show GUI
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); //Close when Exit
 		
-		addCashier.setBounds(50, 155, 120, 40);
-		addBarista.setBounds(50, 205, 120, 40);
-		addCook.setBounds(50, 255, 120, 40);
-		removecashiers.setBounds(200, 155, 180, 40);
-		removebaristas.setBounds(200, 205, 180, 40);
-		removecooks.setBounds(200, 255, 180, 40);
-		removeCashier.setBounds(400, 155, 120, 40);
-		removeBarista.setBounds(400, 205, 120, 40);
-		removeCook.setBounds(400, 255, 120, 40);
+		setupListener();
+		
+		//Buttons
+		addCashier.setBounds(20, 270, 220, 40);
+		addCook.setBounds(280, 270, 220, 40);
+		addBarista.setBounds(540, 270, 220, 40);
+		removecashiers.setBounds(20, 460, 220, 40);
+		removecooks.setBounds(280, 460, 220, 40);
+		removebaristas.setBounds(540, 460, 220, 40);
+		cashierTimeOK.setBounds(180, 550, 60, 40);
+		baristaTimeOK.setBounds(440, 550, 60, 40);
+		cookTimeOK.setBounds(700, 550, 60, 40);
+		
+		//Labels
+		customerLabel.setBounds(10, 2, 150, 50);
+		onlinecustomerlabel.setBounds(400, 2, 150, 50); 
+		activecashierLabel.setBounds(10, 310, 150, 40);
+		activecookLabel.setBounds(270, 310, 150, 40);
+		activebaristaLabel.setBounds(530, 310, 150, 40);
+		cashierTimeLabel.setBounds(20, 520, 200, 40);
+		cookTimeLabel.setBounds(280, 520, 200, 40);
+		baristaTimeLabel.setBounds(540, 520, 200, 40);
+		
+		//JList
+		shopcustomerlist.setBounds(10, 50, 375, 200);
+		onlinecustomerlist.setBounds(400, 50, 375, 200);
+		cashierlist.setBounds(10, 340, 250, 100); 
+		cooklist.setBounds(270, 340, 250, 100);
+		baristalist.setBounds(530, 340, 250, 100);
+		
+		//Text fields
+		cashierTime.setBounds(20, 550, 150, 40);
+		cookTime.setBounds(280, 550, 150, 40);
+		baristaTime.setBounds(540, 550, 150, 40);
+			
+			
+		label.setText("Coffee Shop");
+		Font  f2 = new Font(Font.SANS_SERIF, Font.BOLD, 35);
+		label.setFont(f2);
+	}
+	
+	/**
+	 * Adds elements to the GUI 
+	 */
+	public void paintScreen() {
 		frame.getContentPane().add(addCashier);
 		frame.getContentPane().add(addBarista);
 		frame.getContentPane().add(addCook);
 		frame.getContentPane().add(removecashiers);
 		frame.getContentPane().add(removebaristas);
-		frame.getContentPane().add(removecooks);		
-		frame.getContentPane().add(removeCashier);
-		frame.getContentPane().add(removeBarista);
-		frame.getContentPane().add(removeCook);		
+		frame.getContentPane().add(removecooks);
+		frame.getContentPane().add(cashierTimeOK);
+		frame.getContentPane().add(cookTimeOK);
+		frame.getContentPane().add(baristaTimeOK);
 		
-	}
-	
-
-	
-	public synchronized void DisplayCustomers() {
-		//Clear customer list
-		customerlist.removeAll();
-		//Size is 1/4 of the height of the frame and half the height
+		frame.getContentPane().add(delayLabel);
+		frame.getContentPane().add(customerLabel);
+		frame.getContentPane().add(onlinecustomerlabel); 
+		frame.getContentPane().add(activecashierLabel);
+		frame.getContentPane().add(activecookLabel);
+		frame.getContentPane().add(activebaristaLabel);
+		frame.getContentPane().add(cashierTimeLabel);
+		frame.getContentPane().add(cookTimeLabel);
+		frame.getContentPane().add(baristaTimeLabel);
 		
-		int customerListWidth = width/2;
-		int customerListHeight = height / 4;
-		customerlist.setBounds(0, 0, customerListWidth, customerListHeight);
-		frame.getContentPane().add(customerlist);
+		frame.getContentPane().add(shopcustomerlist);
+		frame.getContentPane().add(onlinecustomerlist);
+		frame.getContentPane().add(cashierlist); 
+		frame.getContentPane().add(cooklist);
+		frame.getContentPane().add(baristalist);
 		
-		
-		//customerlist.setText("Customer Queue:");
-		
-	}
-	
-	public synchronized void DisplayOnlineCustomers() {
-		onlineCustomerlist.removeAll();
-		int onlineCustomerListWidth = width/2;
-		int onlineCustomerListHeight = height / 4;
-		onlineCustomerlist.setBounds(onlineCustomerListWidth, 0, onlineCustomerListWidth, onlineCustomerListHeight);
-		
-		frame.getContentPane().add(onlineCustomerlist);
-
-		//onlineCustomerlist.setText("online queue:");
-	}
-	
-	public void DisplayCashiers() {
-		int cashierWidth = width;
-		int cashierHeight = height / 8;
-		cashiers.setBounds(0, height/2, cashierWidth, cashierHeight);
-		
-		//System.out.println(customerQueue.customerNames);
-		
-		frame.getContentPane().add(cashiers);
-		//cashiers.setText("Active Cashiers:");
-	}
-	
-	public void DisplayBaristas() {
-		int baristaWidth = width;
-		int baristaHeight = height / 8;
-		baristas.setBounds(0, height/8*5, baristaWidth, baristaHeight);
+		frame.getContentPane().add(cashierTime);
+		frame.getContentPane().add(baristaTime);
+		frame.getContentPane().add(cookTime);
 				
-		frame.getContentPane().add(baristas);
-		//baristas.setText("Active Baristas:");
 	}
 	
-	public void DisplayCooks() {
-		int cookWidth = width;
-		int cookHeight = height / 8;
-		cooks.setBounds(0, height/4*3, cookWidth, cookHeight);
-				
-		frame.getContentPane().add(cooks);
-		//cooks.setText("Active Cooks:");
-	}
-	
-	
-	public void DisplayOrders() {
-		int orderWidth = width;
-		int orderHeight = height/4;
-		orders.setBounds(0, height/4, orderWidth, orderHeight);
-		//if cashier has a customer (currentCustomer not null)
-		// Orders cashierDisp = get Cashier ID handling current customer
-		// orders.setText 
-		//frame.getContentPane().add(orders);
-		orders.setText("orders:");
-		//orders.append("orders:");
-		orders.setVisible(true);
-		frame.add(orders);
-		
-	}
-	
-	public synchronized void DisplayTemp() {		
-
-		temp.setBounds(width, height, 0, 0);
-		
-		frame.getContentPane().add(temp);
-		//temp.setText("");
-	}
-	
-	
-	void CreateCashierDisplay(Cashier cash, int totalCashier, int currentCashier) {
-		int cashierWidth = width / totalCashier;
-		int cashierHeight = height / 4;
-		JTextArea cashierText = new JTextArea();
-		cashierText.setName("Cashier" + currentCashier);
-		cashierText.setBounds((cashierWidth*currentCashier) - cashierWidth, height / 4, cashierWidth, cashierHeight);
-		//if cashier has a customer
-		// cashierText.setText(cashier.currentCustomer.getName() + "ordered" + cashier.currentCustomer.order() + ".\ price of" + cashier.currentCustomer.orderCost()); 
-		
-		cashierText.setVisible(true);
-		cashier.add(cashierText);
-	}
-	
-	//Update GUI with new information
-	public void update() {
-		DisplayCustomers();
-		//DisplayOnlineCustomers();
-		DisplayCashiers();
-		DisplayBaristas();
-		DisplayCooks();
-		//DisplayOrders();
-		DisplayTemp();
-		
+	/**
+	 * Resets GUI to initial state 
+    */
+	private void reset() {
 		frame.repaint();
+		cashierTimeOK.setEnabled(false);
+		cookTimeOK.setEnabled(false);
+		baristaTimeOK.setEnabled(true);
+    }
+
+	/**
+	 * Set up once delay time is entered
+    */
+	private void set() {
+		cashierTimeOK.setEnabled(true);
+		cookTimeOK.setEnabled(true);
+		baristaTimeOK.setEnabled(true);
 	}
+	
+	/**
+	 * Sets up action listeners for all elements in the GUI 
+	 */
+	private void setupListener() {
+	
+		ActionListener Listener = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//Create new cashier
+				if (e.getSource() == addCashier) {
+					
+				}
+				//Create new cook
+				if (e.getSource() == addCook) {
+					
+				}
+				//Create new barista
+				if (e.getSource() == addBarista) {
+					
+				}
+				//Remove selected cashier
+				if (e.getSource() == removecashiers) {
+					String selectedcashier = (String) cashierlist.getSelectedValue();
+					selectedcashier = selectedcashier.substring(0, 60).trim(); //remove string from list
+				}
+				//Remove selected cook
+				if (e.getSource() == removecooks) {
+					String selectedcook = (String) cooklist.getSelectedValue();
+					selectedcook = selectedcook.substring(0, 60).trim(); //remove string from list
+				}
+				//Remove selected barista
+				if (e.getSource() == removebaristas) {
+					String selectedbarista = (String) baristalist.getSelectedValue();
+					selectedbarista = selectedbarista.substring(0, 60).trim(); //remove string from list
+				}
+				//Set Delay Time for selected cashier
+				if (e.getSource() == cashierTimeOK) {
+					String selectedcashier = (String) cashierlist.getSelectedValue();
+					String time = cashierTime.getText();
+					if(time.trim().isEmpty()) {	//If delay time empty, error
+						JOptionPane.showMessageDialog(null,
+						        "Error: you did not enter a delay time for cashier, please enter a delay time.", 
+						         "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					else {
+						//change delay time for selected cashier
+					}
+					
+				}
+				//Set Delay Time for selected cook
+				if (e.getSource() == cookTimeOK) {
+					String selectedcook = (String) cooklist.getSelectedValue();
+					String time = cookTime.getText();
+					if(time.trim().isEmpty()) {	//If delay time empty, error
+						JOptionPane.showMessageDialog(null,
+						        "Error: you did not enter a delay time for cook, please enter a delay time.", 
+						         "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					else {
+						//change delay time for selected cook
+					}
+					
+				}
+				//Set Delay Time for selected barista
+				if (e.getSource() == baristaTimeOK) {
+					String selectedbarista = (String) baristalist.getSelectedValue();
+					String time = baristaTime.getText();
+					if(time.trim().isEmpty()) {	//If delay time empty, error
+						JOptionPane.showMessageDialog(null,
+						        "Error: you did not enter a delay time for barista, please enter a delay time.", 
+						         "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					else {
+						//change delay time for selected barista
+					}
+				}
+			}
+		};
+		
+		addCashier.addActionListener(Listener);
+		addCook.addActionListener(Listener);
+		addBarista.addActionListener(Listener);
+		removecashiers.addActionListener(Listener);
+		removecooks.addActionListener(Listener);
+		removebaristas.addActionListener(Listener);
+		cashierTimeOK.addActionListener(Listener);
+		cookTimeOK.addActionListener(Listener);
+		baristaTimeOK.addActionListener(Listener);
+		
+	}
+
+	/**
+	 * Display the list of existent cashier
+	 */
+    private void displayCashier() {
+    	//Display their name + delay time
+    }
+    
+	/**
+	 * Display the list of existent cook
+	 */
+    private void displayCook() {
+    	//Display their name + delay time
+    }
+    
+	/**
+	 * Display the list of existent barista
+	 */
+    private void displayBarista() {
+    	//Display their name + delay time
+    }
+	
 	
 	//While GUI is running, keep updating
 	public void run() {
 		while(true) {
-			update();
+			//update();
 			try {
 				Thread.sleep(100);
 			}catch(InterruptedException e) {

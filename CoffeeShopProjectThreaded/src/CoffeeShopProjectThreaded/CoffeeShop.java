@@ -343,6 +343,9 @@ public class CoffeeShop {
 		shop.addCashier();
 		shop.addCashier();
 		
+		NewGUI gui = new NewGUI(shop);
+		gui.initializeGUI();
+		gui.paintScreen();
 
 		//shop.addBarista();
 		//shop.addBarista();

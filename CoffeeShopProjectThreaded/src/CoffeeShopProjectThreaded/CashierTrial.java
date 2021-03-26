@@ -23,48 +23,66 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import CoffeeShopProjectThreaded.NewCustomerQueue.OperationOutput;
+import CoffeeShopProjectThreaded.NewCustomerQueue.CustomerQueueOutput;
 import CoffeeShopProjectThreaded.Inventory.InventoryOutput;
 import CoffeeShopProjectThreaded.Bookkeeping.BookkeepingOutput;
 
 public class CashierTrial implements Runnable{
 	
+	// storage information for cashier 
 	public float subtotal;
 	public float tax;
 	public float discount;
 	public float total;
 	public String receipt;
-	public static Customer currentCustomer;
+	public Customer currentCustomer;
 	
-	private static String line = String.format("%1$" + 55 + "s", "- \n").replace(' ', '-');
-	private static DecimalFormat df2 = new DecimalFormat("#.##");
+	//private static String line = String.format("%1$" + 55 + "s", "- \n").replace(' ', '-');
+	//private static DecimalFormat df2 = new DecimalFormat("#.##");
+	
+	// possible discounts applied 
 	int discount1 = 0;
 	int discount2 = 0;
 	int discount3 = 0;
 	
-	String ID;
-	Long delay;
+	// used for logging data 
+	private Log log;
 	
-	EndOfDay report = new EndOfDay();
-	NewCustomerQueue onlineQueue;
-	NewCustomerQueue shopQueue;
-	OrderQueue kitchenQueue;
-	OrderQueue barQueue;
-	Inventory inventory;
-	Bookkeeping books;
-	Thread th;
+	// end of day report
+	private EndOfDay report = new EndOfDay();
 	
-	Cashier cashier;
+	// threading object to start 
+	private Thread th;	
+	
+	// constructor initialized variables 
+	private String ID;
+	private Long delay;	
+	private NewCustomerQueue onlineQueue;
+	private NewCustomerQueue shopQueue;
+	private OrderQueue kitchenQueue;
+	private OrderQueue barQueue;
+	private Inventory inventory;
+	private Bookkeeping books;	
+	private Cashier cashier;
 	
 	/**
-	 * Constructor for Cashier class
+	 * Constructor for Cashier class 
 	 * @param ID Cashier identifier
+	 * @param delay Time delay between each operation
+	 * @param onlineQueue Online queue of customers
+	 * @param shopQueue In-shop queue of customers
+	 * @param kitchenQueue Ordered items to be prepared by the kitchen staff
+	 * @param barQueue Ordered items to be prepared by the bar staff
+	 * @param inventory Inventory of items ordered 
+	 * @param books Storage for money gained 
+	 * @param cashier Cashier object instance 
 	 */
 	public CashierTrial(String ID, Long delay, NewCustomerQueue onlineQueue,
 			NewCustomerQueue shopQueue, OrderQueue kitchenQueue, 
 			OrderQueue barQueue, Inventory inventory, Bookkeeping books, Cashier cashier) {
+		
 		currentCustomer = null;
-		this.ID =ID;
+		this.ID = ID;
 		this.delay = delay;
 		this.onlineQueue = onlineQueue;
 		this.shopQueue = shopQueue;
@@ -73,20 +91,8 @@ public class CashierTrial implements Runnable{
 		this.inventory =inventory;
 		this.books = books;
 		this.cashier = cashier;
-	}
-	
-	/**
-	 * Constructor for Cashier class
-	 * @param ID Cashier identifier
-	 */
-	public CashierTrial(String ID, Long delay, NewCustomerQueue shopQueue,
-			OrderQueue kitchenQueue, OrderQueue barQueue) {
-		currentCustomer = null;
-		this.ID =ID;
-		this.delay = delay;
-		this.shopQueue = shopQueue;
-		this.kitchenQueue = kitchenQueue;
-		this.barQueue = barQueue;
+		
+		log = Log.getInstance();
 	}
 	
 	/**
@@ -99,16 +105,45 @@ public class CashierTrial implements Runnable{
 	@Override
 	public void run() {
 		
-		boolean stop = false;
+		// boolean used to stop the thread if exception is thrown 
+		boolean stop = false; 
+		
 		while (!stop) {
 			
-			System.out.println("Cashier " + ID + " checking queue -> size: " + shopQueue.getQueue().size());
+			/* Removes first customer from queues based on priorities */
 			
-			OperationOutput out = shopQueue.removeFromQueue();
-			currentCustomer = out.getCustomer();
-			cashier.setCustomer(currentCustomer);
+			String whichQueue = "in-shop";
+			CustomerQueueOutput out = null;
 			
-			///// ADDING ITEM TO QUEUE ////
+			log.updateLog("Cashier " + ID + " checking in-shop queue -> current size: " + shopQueue.getQueue().size());
+			
+			// check if online queue exists 
+			if (onlineQueue != null) {
+				log.updateLog("Cashier " + ID + " checking online queue -> current size: " + onlineQueue.getQueue().size());
+				
+				// if online queue empty, go to in-shop queue 
+				if (onlineQueue.getQueue().isEmpty()) {
+					
+					out = shopQueue.removeFromQueue();
+					currentCustomer = out.getCustomer();
+					cashier.setCustomer(currentCustomer);
+					
+				// if online queue not empty, go to it 
+				} else {
+					out = onlineQueue.removeFromQueue();
+					currentCustomer = out.getCustomer();
+					cashier.setCustomer(currentCustomer);
+					whichQueue = "online";
+				}
+			}
+			else {
+				// if no online queue, just process in-shop queue 
+				out = shopQueue.removeFromQueue();
+				currentCustomer = out.getCustomer();
+				cashier.setCustomer(currentCustomer);
+			}			
+			
+			/* Adds the removed customer's processed orders to queues for food preparation */
 			for (String item: currentCustomer.getCart().keySet()) {
 				try {
 					if (isBarFood(item))
@@ -119,38 +154,41 @@ public class CashierTrial implements Runnable{
 					e.printStackTrace();
 				}
 			}
-			/////////////////////////////
 			
+			// checks if output was successful 
 			if (out.isSuccess()) {
+				// calculates total prices, taxes and discounts 
 				cashier.getCartSubtotalPrice();
 				cashier.getCartTax();
 				cashier.getDiscount();
 				cashier.getCartTotalPrice();
-				System.out.println("Cashier " + ID + " removed customer " + currentCustomer.getId() + " -> size: " + out.updatedSize);
+				
+				// logs information and adds it to books and inventory 
+				log.updateLog("Cashier " + ID + " removed customer " + currentCustomer.getName() + " (ID: " +
+						currentCustomer.getId() + ") from " + whichQueue + " queue -> updated size: " + 
+						out.getUpdatedSize());
+				
 				InventoryOutput out1 = inventory.addToInventory(currentCustomer);
 				//if(out1.isSuccess()) {
 					//System.out.println("Cashier " + ID + " -> inventory size: "+ out1.updatedSize);
 				//}
 				BookkeepingOutput out2 = books.upDateBooks(cashier.returnSums());
 				if(out2.isSuccess()) {
-					System.out.println("Cashier " + ID + " -> total# of customers: "+ out2.numberOfCustomers);
+					log.updateLog("Cashier " + ID + " -> total# of customers: "+ out2.numberOfCustomers);
 				}
 			}	
 			//System.out.println(books.getCustomerNumber());
+			
+			// delays the thread for visualisation purposes 
 			try {
 				Thread.sleep(delay);
 			}catch(InterruptedException e) {
 				//Thread.currentThread().interrupt();
 				stop = true;  ///// KILLS THE THREAD //////
-				System.out.println(e.getMessage());
-				
+				System.out.println(e.getMessage());				
 			}	
 		}
-		
-		
-
 	}
-
 	
 	/**
 	 * Determines if item is prepared by barista or cook
@@ -194,8 +232,4 @@ public class CashierTrial implements Runnable{
 	public void generateFinalReportFile() {
 		report.generateFinalReport(); 
 	}
-	
-	
-	
-
 }

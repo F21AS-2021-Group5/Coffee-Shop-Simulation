@@ -37,11 +37,12 @@ public class CoffeeShop {
 	public static HashMap<String, Customer> customerList;
 	public static HashMap<String, ArrayList<String> > recipeBook; // stores recipes
 	public static Map<String, HashSet<String> > foodMap;
-	public static HashMap<String, Cashier> acctiveCashiers;
+	public static HashMap<String, Cashier> activeCashiers;
 	
 	Cashier cashier;
 	
-	NewCustomerQueue queue;
+	NewCustomerQueue shopQueue;
+	NewCustomerQueue onlineQueue;
 	Inventory inventory;
 	Bookkeeping books;
 	OrderQueue kitchenQueue;
@@ -52,10 +53,10 @@ public class CoffeeShop {
 	HashMap<String, Thread> baristaList;
 	HashMap<String, Thread> cookList;
 	
-	String[] cashierNames={"Ron","Leslie", "April", "Donna","Andy","Ann","Ben", 
-			"Tom", "Jerry", "Gerry", "Lerry"};  
-	String[] baristaNames={"Mac","Cahrlie", "Frank", "Deandra","Dennis"};  
-	String[] cookNames={"Dwight","Pam", "Jim", "Andy","Kelly", "Angela"};
+	String[] cashierNames={"Ron","Leslie","April","Donna","Andy","Ann","Ben", 
+			"Tom","Jerry","Gerry","Lerry"};  
+	String[] baristaNames={"Mac","Charlie","Frank","Deandra","Dennis"};  
+	String[] cookNames={"Dwight","Pam","Jim","Andy","Kelly", "Angela"};
 	
 	/**
 	 * Constructor for CoffeeShop class
@@ -69,7 +70,8 @@ public class CoffeeShop {
 		
 		fillMenu("MenuItems");
 		
-		queue = new NewCustomerQueue(false);   // Customer queue
+		shopQueue = new NewCustomerQueue(false);   // In-shop Customer queue
+		onlineQueue = new NewCustomerQueue(true);  // Online Customer queue
 		inventory = new Inventory();                  // Inventory of ordered items
 		books = new Bookkeeping();                  // Bookkeeping of earnings and other finances
 		
@@ -81,7 +83,7 @@ public class CoffeeShop {
 		baristaList = new HashMap<String, Thread>();
 		cookList = new HashMap<String, Thread>();
 		
-		acctiveCashiers = new HashMap<String, Cashier>();
+		activeCashiers = new HashMap<String, Cashier>();
 		
 		//fillCustomerList("CustomerList");	
 				
@@ -221,65 +223,103 @@ public class CoffeeShop {
 				break;
 			}
 		}		
-	}	
+	}
+	
+	/**
+    * Converts a string to LocalDateTime object
+    * @param timeString Time stamp in string format 
+    * @return Corresponding LocalDateTime object 
+    */
+   public static LocalDateTime stringToTimestamp(String timeString){
+	   LocalDateTime localDateTime = null;
+	   try {
+		   // set formatter and convert string to LocalDateTime 
+		   String pattern = "yyyy-MM-dd HH:mm:ss.SSSSSSSSS";
+		   DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+		   localDateTime = LocalDateTime.from(formatter.parse(timeString));
+		} catch(Exception e) { //this generic but you can control another types of exception
+		    // look the origin of exception 
+			System.out.println("Could't conver sting to time stamp");
+		}
+	    return localDateTime; // Fine to return 0 since catch in the Customer class 
+   }
    
-//Working on this 	
+   /**
+    * Creates cashier thread 
+    */
    private void addCashier() {
 	   Random rn = new Random();
 	   String name = cashierNames[rn.nextInt(cashierNames.length)];
+	   
 	   while(cashierList.containsKey(name)) {
 		   name = cashierNames[rn.nextInt(cashierNames.length)];
 	   }
-	   Cashier cash = new Cashier(name);
-	   acctiveCashiers.put(name, cash);
 	   
-	   Runnable cashier = new CashierTrial(name, 800L, null, queue, kitchenQueue, barQueue, inventory, books, cash); // or an anonymous class, or lambda...
+	   Cashier cash = new Cashier(name);
+	   activeCashiers.put(name, cash);
+	   
+	   Runnable cashier = new CashierTrial(name, 800L, onlineQueue, shopQueue, kitchenQueue, barQueue, inventory, books, cash); // or an anonymous class, or lambda...
 	   Thread t = new Thread(cashier);
 	   t.setPriority(2);
 	   cashierList.put(name, t);
-	   t.start();
-	   
-	
+	   t.start();	
    }
    
+   /**
+    * Creates queue handler thread
+    */
    private void createHandler() {
-	    Runnable handler = new QueueHandler(null, queue, 600L, 15);
+	    Runnable handler = new QueueHandler(onlineQueue, shopQueue, 600L, 15);
 	    Thread h = new Thread(handler);
 	    h.setPriority(8);
 	    //cashierList.put("Handler", h);
-		h.start();
-		
+		h.start();		
    }
    
+   /**
+    * Creates barista thread
+    */
    private void addBarista() {
 	   Random rn = new Random();
-	   String name = baristaNames[rn.nextInt(cashierNames.length)];
-	   while(cashierList.containsKey(name)) {
-		   name = baristaNames[rn.nextInt(cashierNames.length)];
-	   }
-	   Runnable barista = new Staff(name, barQueue, 2000L);
-	   Thread s = new Thread(barista);
-	   s.start();
-	   //baristaNames , cookNames
-   }
-   
-   private void addCook() {
+	   String name = baristaNames[rn.nextInt(baristaNames.length)];
 	   
+	   while(baristaList.containsKey(name)) {
+		   name = baristaNames[rn.nextInt(baristaNames.length)];
+	   }
+	   
+	   Runnable barista = new Staff(name, barQueue, 2000L);
+	   Thread b = new Thread(barista);
+	   b.start();
    }
    
+   /**
+    * Creates cook thread
+    */
+   private void addCook() {
+	   Random rn = new Random();
+	   String name = cookNames[rn.nextInt(cookNames.length)];
+	   
+	   while(cookList.containsKey(name)) {
+		   name = cookNames[rn.nextInt(cookNames.length)];
+	   }
+	   
+	   Runnable cook = new Staff(name, kitchenQueue, 2000L);
+	   Thread c = new Thread(cook);
+	   c.start();
+   }
+   
+   /**
+    * Remove cashier thread
+    * @param name Name of cashier thread to remove  
+    */
    private synchronized void removeCashier(String name) {
 	   //while(cashierList.get("Handler").isAlive()) {	   
 	   //}
 	   System.out.println("Cashier " + name + " has ended their shift");
 	   cashierList.get(name).interrupt();
 	   cashierList.remove(name);
-	   acctiveCashiers.remove(name);
-	   
-   }
-  
-   
-
-   
+	   activeCashiers.remove(name);	   
+   }  
    
    // main method 
 	public static void main(String[] args) {
@@ -290,6 +330,12 @@ public class CoffeeShop {
 		shop.createHandler();
 		shop.addCashier();
 		shop.addCashier();
+		
+		shop.addBarista();
+		shop.addBarista();
+		
+		shop.addCook();
+		shop.addCook();
 		
 		//shop.removeCashier();
 		
@@ -413,9 +459,9 @@ public class CoffeeShop {
 		//cook1.start();
 		//barista1.start();
 		
-		NewGUI gui = new NewGUI(shop);
-		gui.DisplayGUI();
-		gui.run();
+		//NewGUI gui = new NewGUI(shop);
+		//gui.DisplayGUI();
+		//gui.run();
 		
 	}
 

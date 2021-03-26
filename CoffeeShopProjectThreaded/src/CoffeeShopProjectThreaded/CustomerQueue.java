@@ -52,7 +52,7 @@ public class CustomerQueue implements Runnable{
 	/**
 	 * Constructor for CustomerQueue class
 	 */
-	/*
+	
 	public CustomerQueue(String shopQueueFile, String onlineQueueFile, long delay) {
 		// initialize queues 
 		shopQueue = new LinkedList<Customer>();

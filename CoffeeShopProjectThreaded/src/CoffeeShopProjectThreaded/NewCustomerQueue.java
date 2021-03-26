@@ -37,7 +37,7 @@ public class NewCustomerQueue {
 	public class CustomerQueueOutput {
 		private Customer customer;
 		private boolean success;
-		private int updatedSize;
+		public int updatedSize;
 		
 		/**
 		 * Constructor for CustomerQueueOutput

@@ -10,11 +10,10 @@ public class Inventory {
 	
 	private Hashtable<String,Integer> inventory;
 	
-	///////
+	// * Class to validate thread interaction on the Inventory object *
 	public class InventoryOutput{
 		boolean success;
 		int updatedSize;
-		
 		
 		public InventoryOutput( boolean success, int updatedSize) {
 			this.success = success;
@@ -25,37 +24,35 @@ public class Inventory {
 			return success;
 		}
 	}
-	///////
 	
 	public Inventory() {
-		inventory = new Hashtable<>();
+		inventory = new Hashtable<String,Integer>();
 	}
 	
+	 /**
+	  * Update the inventory after cashier has processed customer 
+	  * @param currentCustoemer 
+	  */
 	public synchronized InventoryOutput addToInventory(Customer curentCustomer) {
 		try {
-		    // create random customer 
-			Set<String> cartSet = curentCustomer.getCart().keySet();
+			// Create Set from the customers cart
+			Set<String> cartSet = curentCustomer.getCart().keySet(); 
   			for (String orderID: cartSet) {
-  				if (!inventory.containsKey(orderID)) { // If item dosen't exist in inventory add it and quantity
+  			    // If item dosen't exist in inventory add it and quantity
+  				if (!inventory.containsKey(orderID)) { 
   					inventory.put(orderID, curentCustomer.getCart().get(orderID).size());
   				}
-  				else { // If the item does exist update its quantity
+  				// If the item does exist update its quantity
+  				else {
   					inventory.put(orderID, inventory.get(orderID) + curentCustomer.getCart().get(orderID).size());
   				}
   			}
 	   		
 	   		notifyAll();
 	   		
-	   		// Add log here for new customer 
-		   		
 		} catch (Exception e) {
 			return new InventoryOutput(false,inventory.size());
 		}
 		return new InventoryOutput(true,inventory.size());
 	}
-	
-	
-	
-	//private void UpdateInventory
-
 }

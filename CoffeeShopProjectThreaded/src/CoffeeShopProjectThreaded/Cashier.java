@@ -36,22 +36,22 @@ public class Cashier {
 	int discount2 = 0;
 	int discount3 = 0;
 	
-	String ID;
+	String name;
 	
 	/**
 	 * Constructor for Cashier class
 	 * @param ID Cashier identifier
 	 */
-	public Cashier(String ID) {
+	public Cashier(String name) {
 		currentCustomer = null;
-		this.ID =ID;
+		this.name =name;
 	}
 	
 	/**
 	 * @return Cashier identifier 
 	 */
-	public String getID() {
-		return ID;
+	public String getName() {
+		return name;
 	}
   
 	/**
@@ -66,8 +66,6 @@ public class Cashier {
 	 * @return Cart tax 
 	 */
 	public float getCartTax() {
-		// loop through items in cart
-		// if item is taxable, add 20% of item price to tax 
 		tax = (float) (subtotal*0.25);
 		return tax;
 	}
@@ -157,7 +155,6 @@ public class Cashier {
 	 */
 	public float[] returnSums() {
 		float[] allValues = {subtotal, tax, discount, total, discount1, discount2, discount3};
-	
 		return allValues;
 	}
 	

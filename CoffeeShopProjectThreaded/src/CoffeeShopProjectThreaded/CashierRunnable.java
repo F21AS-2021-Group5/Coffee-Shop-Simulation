@@ -27,32 +27,20 @@ import CoffeeShopProjectThreaded.NewCustomerQueue.OperationOutput;
 import CoffeeShopProjectThreaded.Inventory.InventoryOutput;
 import CoffeeShopProjectThreaded.Bookkeeping.BookkeepingOutput;
 
-public class CashierTrial implements Runnable{
+public class CashierRunnable implements Runnable{
 	
-	public float subtotal;
-	public float tax;
-	public float discount;
-	public float total;
-	public String receipt;
 	public static Customer currentCustomer;
 	
-	private static String line = String.format("%1$" + 55 + "s", "- \n").replace(' ', '-');
-	private static DecimalFormat df2 = new DecimalFormat("#.##");
-	int discount1 = 0;
-	int discount2 = 0;
-	int discount3 = 0;
-	
-	String ID;
+	String name;
 	Long delay;
 	
-	EndOfDay report = new EndOfDay();
+	// 	Models
 	NewCustomerQueue onlineQueue;
 	NewCustomerQueue shopQueue;
 	OrderQueue kitchenQueue;
 	OrderQueue barQueue;
 	Inventory inventory;
 	Bookkeeping books;
-	Thread th;
 	
 	Cashier cashier;
 	
@@ -60,11 +48,11 @@ public class CashierTrial implements Runnable{
 	 * Constructor for Cashier class
 	 * @param ID Cashier identifier
 	 */
-	public CashierTrial(String ID, Long delay, NewCustomerQueue onlineQueue,
+	public CashierRunnable(String name, Long delay, NewCustomerQueue onlineQueue,
 			NewCustomerQueue shopQueue, OrderQueue kitchenQueue, 
 			OrderQueue barQueue, Inventory inventory, Bookkeeping books, Cashier cashier) {
 		currentCustomer = null;
-		this.ID =ID;
+		this.name =name;
 		this.delay = delay;
 		this.onlineQueue = onlineQueue;
 		this.shopQueue = shopQueue;
@@ -79,10 +67,10 @@ public class CashierTrial implements Runnable{
 	 * Constructor for Cashier class
 	 * @param ID Cashier identifier
 	 */
-	public CashierTrial(String ID, Long delay, NewCustomerQueue shopQueue,
+	public CashierRunnable(String ID, Long delay, NewCustomerQueue shopQueue,
 			OrderQueue kitchenQueue, OrderQueue barQueue) {
 		currentCustomer = null;
-		this.ID =ID;
+		this.name =name;
 		this.delay = delay;
 		this.shopQueue = shopQueue;
 		this.kitchenQueue = kitchenQueue;
@@ -93,7 +81,7 @@ public class CashierTrial implements Runnable{
 	 * @return Cashier identifier 
 	 */
 	public String getID() {
-		return ID;
+		return name;
 	}
 	
 	@Override
@@ -102,7 +90,7 @@ public class CashierTrial implements Runnable{
 		boolean stop = false;
 		while (!stop) {
 			
-			System.out.println("Cashier " + ID + " checking queue -> size: " + shopQueue.getQueue().size());
+			System.out.println("Cashier " + name + " checking queue -> size: " + shopQueue.getQueue().size());
 			
 			OperationOutput out = shopQueue.removeFromQueue();
 			currentCustomer = out.getCustomer();
@@ -122,18 +110,15 @@ public class CashierTrial implements Runnable{
 			/////////////////////////////
 			
 			if (out.isSuccess()) {
-				cashier.getCartSubtotalPrice();
-				cashier.getCartTax();
-				cashier.getDiscount();
-				cashier.getCartTotalPrice();
-				System.out.println("Cashier " + ID + " removed customer " + currentCustomer.getId() + " -> size: " + out.updatedSize);
+				cashier.runCashier();
+				System.out.println("Cashier " + name + " removed customer " + currentCustomer.getId() + " -> size: " + out.updatedSize);
 				InventoryOutput out1 = inventory.addToInventory(currentCustomer);
 				//if(out1.isSuccess()) {
 					//System.out.println("Cashier " + ID + " -> inventory size: "+ out1.updatedSize);
 				//}
 				BookkeepingOutput out2 = books.upDateBooks(cashier.returnSums());
 				if(out2.isSuccess()) {
-					System.out.println("Cashier " + ID + " -> total# of customers: "+ out2.numberOfCustomers);
+					System.out.println("Cashier " + name + " -> total# of customers: "+ out2.numberOfCustomers);
 				}
 			}	
 			//System.out.println(books.getCustomerNumber());
@@ -166,36 +151,5 @@ public class CashierTrial implements Runnable{
 			throw new NoMatchingMenuItemIDException();
 		return false;
 	}
-	
-	/**
-	 * @return Final report for customer 
-	 */
-	public String generateFinalReport() {
-		return report.generateFinalReportDisplay();
-	}
-	
-	/**
-	 * Writes report to text file 
-	 */
-	public void generateCustomerReport() {
-		   try {
-			   FileWriter customerWriter = new FileWriter("Receit " + currentCustomer.getId() + ".txt");
-			   customerWriter.write(receipt);
-			   customerWriter.close();
-		   } catch (IOException e) {
-			   System.out.println("An error occurred.");
-			   e.printStackTrace();
-		   }
-	}
-	
-	/**
-	 * Calls function that generates the final report text file 
-	 */
-	public void generateFinalReportFile() {
-		report.generateFinalReport(); 
-	}
-	
-	
-	
 
 }

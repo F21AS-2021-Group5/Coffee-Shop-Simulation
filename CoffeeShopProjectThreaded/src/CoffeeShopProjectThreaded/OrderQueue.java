@@ -26,99 +26,129 @@ import java.util.Map;
 
 public class OrderQueue {
 	
-	private Deque<QueueItem> queue; // stores customer ID and item ID
-	private boolean isBar;
+	private Deque<OrderQueueItem> queue; // stores customer ID and item ID
+	private boolean isBar; // bar or kitchen food boolean 
 	
-	public class OperationOutput {
-		QueueItem item;
+	/**
+	 * Constructor for OrderQueue class
+	 * @param isBar Whether queue stores bar or kitchen food 
+	 */
+	public OrderQueue(boolean isBar) {
+		this.isBar = isBar;	
+		
+		queue = new LinkedList<OrderQueueItem>();
+	}
+	
+	public class OrderQueueOutput {
+		OrderQueueItem item;
 		boolean success;
 		int updatedSize;
 		
 		/**
-		 * 
-		 * @param customer
-		 * @param success
+		 * Constructor for OrderQueueOutput class
+		 * @param item Order queue item object
+		 * @param success Successful operation or not
+		 * @param updatedSize Updated size of customer queue after operation
 		 */
-		public OperationOutput(QueueItem item, boolean success, int updatedSize) {
+		public OrderQueueOutput(OrderQueueItem item, boolean success, int updatedSize) {
 			this.item = item;
 			this.success = success;
 			this.updatedSize = updatedSize;
-		}
-		
+		}		
+
 		/**
-		 * 
-		 * @return
+		 * @return Order queue item object
 		 */
-		public QueueItem getItem() {
+		public OrderQueueItem getItem() {
 			return item;
 		}
 		
 		/**
-		 * 
-		 * @return
+		 * Sets the order queue item object
+		 * @param item Order queue item object
+		 */
+		public void setCustomer(OrderQueueItem item) {
+			this.item = item;
+		}
+		
+		/**
+		 * @return Successful operation or not 
 		 */
 		public boolean isSuccess() {
 			return success;
+		}		
+		
+		/**
+		 * Sets the success variable 
+		 * @param success Successful operation or not 
+		 */
+		public void setSuccess(boolean success) {
+			this.success = success;
 		}
-	}
-	
+		
+		/**
+		 * @return Updated size of customer queue 
+		 */
+		public int getUpdatedSize() {
+			return updatedSize;
+		}
+		
+		/**
+		 * Sets the updated size of the queue 
+		 * @param updatedSize Updated size of customer queue 
+		 */
+		public void setUpdatedSize(int updatedSize) {
+			this.updatedSize = updatedSize;
+		}
+	}	
 
 	/**
 	 * Class containing item object inside queue
 	 */
-	public class QueueItem {
-		private String item;
+	public class OrderQueueItem {
+		private String name;
 		private String customerID;
-		private boolean success;
 		
 		/**
 		 * Constructor for QueueItem class
 		 * @param customerID Customer identifier
-		 * @param itemID Item name
+		 * @param name Item name
 		 */
-		public QueueItem(String customerID, String item) {
-			this.item = item;
+		public OrderQueueItem(String customerID, String name) {
+			this.name = name;
 			this.customerID = customerID;
-			success = false;
 		}
 		
 		/**
-		 * Item name 
+		 * @return Item name 
 		 */
-		public String getItem() {
-			return item;
+		public String getName() {
+			return name;
 		}
 		
 		/**
-		 *	Customer identifier 
+		 * Sets the item name
+		 * @param name Item name 
+		 */
+		public void setItem(String name) {
+			this.name = name;
+		}
+		
+		/**
+		 *	@return Customer identifier 
 		 */
 		public String getCustomerID() {
 			return customerID;
 		}
 		
 		/**
-		 * State of item inside queue 
+		 * Sets the customer ID
+		 * @param customerID Customer identifier 
 		 */
-		public boolean isSuccess() {
-			return success;
+		public void setCustomerID(String customerID) {
+			this.customerID = customerID;
 		}
-	}
-	
-	/**
-	 * Constructor for OrderQueue class
-	 */
-	public OrderQueue(boolean isBar) {
-		this.isBar = isBar;	
-		
-		queue = new LinkedList<QueueItem>();
-		
-		/*
-		foodMap.put("FOOD", "Kitchen");
-	    foodMap.put("PASTRY", "Bar");
-	    foodMap.put("DRINK", "Bar");
-	    foodMap.put("SIDE", "Kitchen");	   
-	    */ 
-	}
+	}	
 	
 	/**
 	 * @return True if bar queue, false if kitchen queue 
@@ -130,7 +160,7 @@ public class OrderQueue {
 	/**
 	 * @return Food orders queue 
 	 */
-	public Deque<QueueItem> getQueue() {
+	public Deque<OrderQueueItem> getQueue() {
 		return queue;
 	}
 
@@ -138,7 +168,7 @@ public class OrderQueue {
 	 * Food orders queue 
 	 * @param queue Food orders queue 
 	 */
-	public void setQueue(Deque<QueueItem> queue) {
+	public void setQueue(Deque<OrderQueueItem> queue) {
 		this.queue = queue;
 	}	
 
@@ -148,26 +178,31 @@ public class OrderQueue {
 	 * @param itemID Item identifier
 	 * @return Queue item added, if successful or not, updated queue size 
 	 */
-	public synchronized OperationOutput addToQueue(String customerID, String itemID) {
-		QueueItem item = null;
+	public synchronized OrderQueueOutput addToQueue(String customerID, String itemID) {
+		OrderQueueItem item = null;
+		
+		// create instance based on parameters
 		try {
-			item = new QueueItem (customerID, itemID);
+			item = new OrderQueueItem (customerID, itemID);
+			
+			// add item and notify all threads that resource can be accessed again
 			queue.add(item);	
 			notifyAll();			
 		}
 		catch (Exception e) {
-			return new OperationOutput(item, false, queue.size());
+			return new OrderQueueOutput(item, false, queue.size());
 		}
-		return new OperationOutput(item, true, queue.size());
+		return new OrderQueueOutput(item, true, queue.size());
 	}
 	
 	/**
 	 * Removes item from queue one thread at a time 
 	 * @return Queue item added, if successful or not, updated queue size 
 	 */
-	public synchronized OperationOutput removeFromQueue() {
-		QueueItem item;
+	public synchronized OrderQueueOutput removeFromQueue() {
+		OrderQueueItem item;
 		
+		// thread waits until queue is not empty anymore
 		while (queue.isEmpty()) {
     		try { 
     			wait(); 
@@ -175,16 +210,16 @@ public class OrderQueue {
     		catch (InterruptedException e) {} 
 		}
 		
+		// removes item and notify all threads that resource can be accessed again
 		item = queue.pop();
 		notifyAll();
 		
+		// accordingly returns the output
 		if (item == null)
-			return new OperationOutput(item, false, queue.size());
+			return new OrderQueueOutput(item, false, queue.size());
 		else	
-			return new OperationOutput(item, true, queue.size());
+			return new OrderQueueOutput(item, true, queue.size());
 	}
-	
-
 	
 	public static void main(String[] args) {
 		

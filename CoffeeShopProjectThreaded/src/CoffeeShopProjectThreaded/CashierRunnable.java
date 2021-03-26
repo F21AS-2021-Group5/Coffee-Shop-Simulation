@@ -23,12 +23,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import CoffeeShopProjectThreaded.NewCustomerQueue.OperationOutput;
+import CoffeeShopProjectThreaded.NewCustomerQueue.CustomerQueueOutput;
 import CoffeeShopProjectThreaded.Inventory.InventoryOutput;
 import CoffeeShopProjectThreaded.Bookkeeping.BookkeepingOutput;
 
 public class CashierRunnable implements Runnable{
 	
+<<<<<<< HEAD:CoffeeShopProjectThreaded/src/CoffeeShopProjectThreaded/CashierRunnable.java
 	public static Customer currentCustomer;
 	
 	String name;
@@ -41,18 +42,66 @@ public class CashierRunnable implements Runnable{
 	OrderQueue barQueue;
 	Inventory inventory;
 	Bookkeeping books;
+=======
+	// storage information for cashier 
+	public float subtotal;
+	public float tax;
+	public float discount;
+	public float total;
+	public String receipt;
+	public Customer currentCustomer;
 	
-	Cashier cashier;
+	//private static String line = String.format("%1$" + 55 + "s", "- \n").replace(' ', '-');
+	//private static DecimalFormat df2 = new DecimalFormat("#.##");
+	
+	// possible discounts applied 
+	int discount1 = 0;
+	int discount2 = 0;
+	int discount3 = 0;
+	
+	// used for logging data 
+	private Log log;
+	
+	// end of day report
+	private EndOfDay report = new EndOfDay();
+	
+	// threading object to start 
+	private Thread th;	
+>>>>>>> aac438b270bf386eb08036bfde8ed6a33b61dbe6:CoffeeShopProjectThreaded/src/CoffeeShopProjectThreaded/CashierTrial.java
+	
+	// constructor initialized variables 
+	private String ID;
+	private Long delay;	
+	private NewCustomerQueue onlineQueue;
+	private NewCustomerQueue shopQueue;
+	private OrderQueue kitchenQueue;
+	private OrderQueue barQueue;
+	private Inventory inventory;
+	private Bookkeeping books;	
+	private Cashier cashier;
 	
 	/**
-	 * Constructor for Cashier class
+	 * Constructor for Cashier class 
 	 * @param ID Cashier identifier
+	 * @param delay Time delay between each operation
+	 * @param onlineQueue Online queue of customers
+	 * @param shopQueue In-shop queue of customers
+	 * @param kitchenQueue Ordered items to be prepared by the kitchen staff
+	 * @param barQueue Ordered items to be prepared by the bar staff
+	 * @param inventory Inventory of items ordered 
+	 * @param books Storage for money gained 
+	 * @param cashier Cashier object instance 
 	 */
 	public CashierRunnable(String name, Long delay, NewCustomerQueue onlineQueue,
 			NewCustomerQueue shopQueue, OrderQueue kitchenQueue, 
 			OrderQueue barQueue, Inventory inventory, Bookkeeping books, Cashier cashier) {
+		
 		currentCustomer = null;
+<<<<<<< HEAD:CoffeeShopProjectThreaded/src/CoffeeShopProjectThreaded/CashierRunnable.java
 		this.name =name;
+=======
+		this.ID = ID;
+>>>>>>> aac438b270bf386eb08036bfde8ed6a33b61dbe6:CoffeeShopProjectThreaded/src/CoffeeShopProjectThreaded/CashierTrial.java
 		this.delay = delay;
 		this.onlineQueue = onlineQueue;
 		this.shopQueue = shopQueue;
@@ -61,6 +110,7 @@ public class CashierRunnable implements Runnable{
 		this.inventory =inventory;
 		this.books = books;
 		this.cashier = cashier;
+<<<<<<< HEAD:CoffeeShopProjectThreaded/src/CoffeeShopProjectThreaded/CashierRunnable.java
 	}
 	
 	/**
@@ -75,6 +125,10 @@ public class CashierRunnable implements Runnable{
 		this.shopQueue = shopQueue;
 		this.kitchenQueue = kitchenQueue;
 		this.barQueue = barQueue;
+=======
+		
+		log = Log.getInstance();
+>>>>>>> aac438b270bf386eb08036bfde8ed6a33b61dbe6:CoffeeShopProjectThreaded/src/CoffeeShopProjectThreaded/CashierTrial.java
 	}
 	
 	/**
@@ -87,16 +141,49 @@ public class CashierRunnable implements Runnable{
 	@Override
 	public void run() {
 		
-		boolean stop = false;
+		// boolean used to stop the thread if exception is thrown 
+		boolean stop = false; 
+		
 		while (!stop) {
 			
+<<<<<<< HEAD:CoffeeShopProjectThreaded/src/CoffeeShopProjectThreaded/CashierRunnable.java
 			System.out.println("Cashier " + name + " checking queue -> size: " + shopQueue.getQueue().size());
+=======
+			/* Removes first customer from queues based on priorities */
 			
-			OperationOutput out = shopQueue.removeFromQueue();
-			currentCustomer = out.getCustomer();
-			cashier.setCustomer(currentCustomer);
+			String whichQueue = "in-shop";
+			CustomerQueueOutput out = null;
+>>>>>>> aac438b270bf386eb08036bfde8ed6a33b61dbe6:CoffeeShopProjectThreaded/src/CoffeeShopProjectThreaded/CashierTrial.java
 			
-			///// ADDING ITEM TO QUEUE ////
+			log.updateLog("Cashier " + ID + " checking in-shop queue -> current size: " + shopQueue.getQueue().size());
+			
+			// check if online queue exists 
+			if (onlineQueue != null) {
+				log.updateLog("Cashier " + ID + " checking online queue -> current size: " + onlineQueue.getQueue().size());
+				
+				// if online queue empty, go to in-shop queue 
+				if (onlineQueue.getQueue().isEmpty()) {
+					
+					out = shopQueue.removeFromQueue();
+					currentCustomer = out.getCustomer();
+					cashier.setCustomer(currentCustomer);
+					
+				// if online queue not empty, go to it 
+				} else {
+					out = onlineQueue.removeFromQueue();
+					currentCustomer = out.getCustomer();
+					cashier.setCustomer(currentCustomer);
+					whichQueue = "online";
+				}
+			}
+			else {
+				// if no online queue, just process in-shop queue 
+				out = shopQueue.removeFromQueue();
+				currentCustomer = out.getCustomer();
+				cashier.setCustomer(currentCustomer);
+			}			
+			
+			/* Adds the removed customer's processed orders to queues for food preparation */
 			for (String item: currentCustomer.getCart().keySet()) {
 				try {
 					if (isBarFood(item))
@@ -107,35 +194,50 @@ public class CashierRunnable implements Runnable{
 					e.printStackTrace();
 				}
 			}
-			/////////////////////////////
 			
+			// checks if output was successful 
 			if (out.isSuccess()) {
+<<<<<<< HEAD:CoffeeShopProjectThreaded/src/CoffeeShopProjectThreaded/CashierRunnable.java
 				cashier.runCashier();
 				System.out.println("Cashier " + name + " removed customer " + currentCustomer.getId() + " -> size: " + out.updatedSize);
+=======
+				// calculates total prices, taxes and discounts 
+				cashier.getCartSubtotalPrice();
+				cashier.getCartTax();
+				cashier.getDiscount();
+				cashier.getCartTotalPrice();
+				
+				// logs information and adds it to books and inventory 
+				log.updateLog("Cashier " + ID + " removed customer " + currentCustomer.getName() + " (ID: " +
+						currentCustomer.getId() + ") from " + whichQueue + " queue -> updated size: " + 
+						out.getUpdatedSize());
+				
+>>>>>>> aac438b270bf386eb08036bfde8ed6a33b61dbe6:CoffeeShopProjectThreaded/src/CoffeeShopProjectThreaded/CashierTrial.java
 				InventoryOutput out1 = inventory.addToInventory(currentCustomer);
 				//if(out1.isSuccess()) {
 					//System.out.println("Cashier " + ID + " -> inventory size: "+ out1.updatedSize);
 				//}
 				BookkeepingOutput out2 = books.upDateBooks(cashier.returnSums());
 				if(out2.isSuccess()) {
+<<<<<<< HEAD:CoffeeShopProjectThreaded/src/CoffeeShopProjectThreaded/CashierRunnable.java
 					System.out.println("Cashier " + name + " -> total# of customers: "+ out2.numberOfCustomers);
+=======
+					log.updateLog("Cashier " + ID + " -> total# of customers: "+ out2.numberOfCustomers);
+>>>>>>> aac438b270bf386eb08036bfde8ed6a33b61dbe6:CoffeeShopProjectThreaded/src/CoffeeShopProjectThreaded/CashierTrial.java
 				}
 			}	
 			//System.out.println(books.getCustomerNumber());
+			
+			// delays the thread for visualisation purposes 
 			try {
 				Thread.sleep(delay);
 			}catch(InterruptedException e) {
 				//Thread.currentThread().interrupt();
 				stop = true;  ///// KILLS THE THREAD //////
-				System.out.println(e.getMessage());
-				
+				System.out.println(e.getMessage());				
 			}	
 		}
-		
-		
-
 	}
-
 	
 	/**
 	 * Determines if item is prepared by barista or cook
@@ -151,5 +253,36 @@ public class CashierRunnable implements Runnable{
 			throw new NoMatchingMenuItemIDException();
 		return false;
 	}
+<<<<<<< HEAD:CoffeeShopProjectThreaded/src/CoffeeShopProjectThreaded/CashierRunnable.java
 
+=======
+	
+	/**
+	 * @return Final report for customer 
+	 */
+	public String generateFinalReport() {
+		return report.generateFinalReportDisplay();
+	}
+	
+	/**
+	 * Writes report to text file 
+	 */
+	public void generateCustomerReport() {
+		   try {
+			   FileWriter customerWriter = new FileWriter("Receit " + currentCustomer.getId() + ".txt");
+			   customerWriter.write(receipt);
+			   customerWriter.close();
+		   } catch (IOException e) {
+			   System.out.println("An error occurred.");
+			   e.printStackTrace();
+		   }
+	}
+	
+	/**
+	 * Calls function that generates the final report text file 
+	 */
+	public void generateFinalReportFile() {
+		report.generateFinalReport(); 
+	}
+>>>>>>> aac438b270bf386eb08036bfde8ed6a33b61dbe6:CoffeeShopProjectThreaded/src/CoffeeShopProjectThreaded/CashierTrial.java
 }

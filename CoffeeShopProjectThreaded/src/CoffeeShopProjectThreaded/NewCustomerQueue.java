@@ -9,63 +9,95 @@ import java.util.Map.Entry;
 
 public class NewCustomerQueue {
 	
-	private Deque<Customer> queue;
-	private boolean isOnline;
-	private Log log;
+	private Deque<Customer> queue; // customer queue
+	private boolean isOnline; // states whether queue is online or in-shop
+	private Log log; // used for logging data 
 	
-	HashMap<Integer, String> menuList;
-	String[] customerNames={"Adam","Anna","Lora","Ben", 
+	// stores all items in the menu in the form of a hashmap 
+	private HashMap<Integer, String> menuList;
+	
+	// possible names of customers to choose from for random generation 
+	private String[] customerNames = {"Adam","Anna","Lora","Ben", 
 			"James", "Ema", "Lena", "Mike", "Natasha", 
-			"Sindy", "Ben", "Connor", "Steve", "Greg"};  
+			"Sindy", "Ben", "Connor", "Steve", "Greg"}; 
 	
-	public class OperationOutput {
-		Customer customer;
-		boolean success;
-		int updatedSize;
+	/**
+	 * Constructor for CustomerQueue class
+	 * @param isOnline Online or in-shop queue 
+	 */
+	public NewCustomerQueue(boolean isOnline) {
+		this.isOnline = isOnline;
+		
+		queue = new LinkedList<Customer>();		
+		log = Log.getInstance();
+		menuList = new HashMap<Integer, String>();
+		fillMenuList();	
+	}
+	
+	public class CustomerQueueOutput {
+		private Customer customer;
+		private boolean success;
+		private int updatedSize;
 		
 		/**
-		 * 
-		 * @param customer
-		 * @param success
+		 * Constructor for CustomerQueueOutput
+		 * @param customer Customer object
+		 * @param success Successful operation or not
+		 * @param updatedSize Updated size of customer queue after operation
 		 */
-		public OperationOutput(Customer customer, boolean success, int updatedSize) {
+		public CustomerQueueOutput(Customer customer, boolean success, int updatedSize) {
 			this.customer = customer;
 			this.success = success;
 			this.updatedSize = updatedSize;
+			
 		}
 		
 		/**
-		 * 
-		 * @return
+		 * @return Customer object
 		 */
 		public Customer getCustomer() {
 			return customer;
 		}
 		
 		/**
-		 * 
-		 * @return
+		 * Sets the customer object
+		 * @param customer Customer object 
+		 */
+		public void setCustomer(Customer customer) {
+			this.customer = customer;
+		}
+		
+		/**
+		 * @return Successful operation or not 
 		 */
 		public boolean isSuccess() {
 			return success;
 		}
-	}
-	
-	
-	public NewCustomerQueue(boolean isOnline) {
-		this.isOnline = isOnline;
-		menuList = new HashMap<Integer, String>();
 		
-		int number = 1;
-	    for (Entry<String, MenuItem> mapElement : CoffeeShop.menu.entrySet()) { 
-		   String key = (String)mapElement.getKey();
-		   menuList.put(number, key);
-		   number ++;		   
-	    }
-		 
-		queue = new LinkedList<Customer>();		
-		log = Log.getInstance();
-	}
+		
+		/**
+		 * Sets the success variable 
+		 * @param success Successful operation or not 
+		 */
+		public void setSuccess(boolean success) {
+			this.success = success;
+		}
+		
+		/**
+		 * @return Updated size of customer queue 
+		 */
+		public int getUpdatedSize() {
+			return updatedSize;
+		}
+		
+		/**
+		 * Sets the updated size of the queue 
+		 * @param updatedSize Updated size of customer queue 
+		 */
+		public void setUpdatedSize(int updatedSize) {
+			this.updatedSize = updatedSize;
+		}
+	}	
 
 	/**
 	 * @return Customer queue
@@ -96,12 +128,24 @@ public class NewCustomerQueue {
 	public void setType(boolean isOnline) {
 		this.isOnline = isOnline;
 	}
+	
+	/**
+	 * Fills a list made of all the menu items 
+	 */
+	void fillMenuList() {
+		int number = 1;
+		for (Entry<String, MenuItem> mapElement : CoffeeShop.menu.entrySet()) { 
+			   String key = (String)mapElement.getKey();
+			   menuList.put(number, key);
+			   number ++;
+		}
+	}
 		
 	/**
 	* Adds customer to queue
 	* @return Added customer and if operation was successful
 	*/
-    public synchronized OperationOutput addToQueue() {
+    public synchronized CustomerQueueOutput addToQueue() {
     	Customer customer = null;
     	try {
 		    // create random customer 
@@ -110,6 +154,7 @@ public class NewCustomerQueue {
 		    String name = customerNames[rn.nextInt(customerNames.length)];
 	   		customer = new Customer(name, lt); // find a way to generate random name or remove name all together 
 	   		
+	   		// create random items inside cart
 	   		int amount = rn.nextInt(10);	   		
 	   		for(int i =0; i<=amount; i++) {
 	   			int itemNr = rn.nextInt(CoffeeShop.menu.size()) + 1;
@@ -117,39 +162,45 @@ public class NewCustomerQueue {
 	   			customer.addItem(menuList.get(itemNr), 1, lt1);
 	   		}
 	   		
+	   		// add customer and notify all threads that resource can be accessed again
 	   		queue.add(customer);
 	   		notifyAll();
-	   		
-	   		// Add log here for new customer 
 		   		
 		} catch (Exception e) {
-			return new OperationOutput(customer, false,queue.size());
+			return new CustomerQueueOutput(customer, false,queue.size());
 		}
-    	return new OperationOutput(customer,true,queue.size());
+    	return new CustomerQueueOutput(customer,true,queue.size());
     }
     
     /**
      * Removes customer from queue
      * @return Removed customer and if operation was successful
      */
-    public synchronized OperationOutput removeFromQueue() {
+    public synchronized CustomerQueueOutput removeFromQueue() {
     	Customer customer = null;
+    	
+    	// thread waits until queue is not empty anymore
     	while(queue.isEmpty()) { 
     		try { 
     			wait(); 
     		} 
     		catch (InterruptedException e) {}  
     	}
+    	
+    	// removes customer and notify all threads that resource can be accessed again
 		customer = queue.pop();
 		notifyAll(); 
 		
+		// accordingly returns the output
 		if (customer == null)
-			return new OperationOutput(customer, false, queue.size());
+			return new CustomerQueueOutput(customer, false, queue.size());
 		else
-			return new OperationOutput(customer, true, queue.size());
+			return new CustomerQueueOutput(customer, true, queue.size());
     }
     
+    /*
     public String endOfDayReport() {
     	return "str";
     }
+    */
 }

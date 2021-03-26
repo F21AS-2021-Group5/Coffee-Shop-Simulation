@@ -15,8 +15,7 @@ package CoffeeShopProjectThreaded;
 
 import java.util.ArrayList;
 
-import CoffeeShopProjectThreaded.OrderQueue.OperationOutput;
-import CoffeeShopProjectThreaded.OrderQueue.QueueItem;
+import CoffeeShopProjectThreaded.OrderQueue.OrderQueueOutput;
 
 public class Staff implements Runnable{
 
@@ -111,13 +110,16 @@ public class Staff implements Runnable{
 	@Override
 	public void run() {
 		while (true) {	
-
-			OrderQueue.OperationOutput out = queue.removeFromQueue();
+			
+			// remove item from queue 
+			OrderQueueOutput out = queue.removeFromQueue();
 			
 			String status = "";
+			
+			// check if operation successful
 			if (out.isSuccess())
 			{
-				currentItem = out.getItem().getItem();
+				currentItem = out.getItem().getName();
 				currentCustomer = out.getItem().getCustomerID();		
 				
 				// get recipe of current item 
@@ -133,6 +135,7 @@ public class Staff implements Runnable{
 					status = "[PREPARATION] " + type+ " " + name + ": " + instruction;
 					log.updateLog(status);
 					
+					// delay for visualisation purposes 
 					try {
 						Thread.sleep(delay);
 					} catch (InterruptedException e) {
@@ -142,18 +145,10 @@ public class Staff implements Runnable{
 				
 				// update status				
 				status = "[FINISHED] " + type + " " + name + ": " + currentItem + 
-						" for customer " + CoffeeShop.customerList.get(out.getItem().getCustomerID()).getName() + " prepared.";			
+						" for customer " + CoffeeShop.customerList.get(out.getItem().getCustomerID()).getName() + 
+						" (ID: " + out.getItem().getCustomerID() + ") prepared.";			
 				log.updateLog(status);				
-			}
-			/*	
-			try {
-				Thread.sleep(delay);
-			}catch(InterruptedException e) {
-				//Thread.currentThread().interrupt();
-				System.out.println(e.getMessage());
-			}	
-			*/
-		
+			}		
 		}
 	}
 }

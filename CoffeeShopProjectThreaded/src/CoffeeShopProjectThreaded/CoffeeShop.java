@@ -37,8 +37,21 @@ public class CoffeeShop {
 	public static HashMap<String, ArrayList<String> > recipeBook; // Stores recipes
 	public static Map<String, HashSet<String> > foodMap;          // Map
 	
+<<<<<<< HEAD
 	// Data MODELS 
 	NewCustomerQueue queue;
+=======
+	public static HashMap<String, MenuItem> menu;
+	public static HashMap<String, Customer> customerList;
+	public static HashMap<String, ArrayList<String> > recipeBook; // stores recipes
+	public static Map<String, HashSet<String> > foodMap;
+	public static HashMap<String, Cashier> activeCashiers;
+	
+	Cashier cashier;
+	
+	NewCustomerQueue shopQueue;
+	NewCustomerQueue onlineQueue;
+>>>>>>> aac438b270bf386eb08036bfde8ed6a33b61dbe6
 	Inventory inventory;
 	Bookkeeping books;
 	OrderQueue kitchenQueue;
@@ -50,6 +63,7 @@ public class CoffeeShop {
 	HashMap<String, Thread> baristaList;
 	HashMap<String, Thread> cookList;
 	
+<<<<<<< HEAD
 	String[] cashierNames={"Ron","Leslie", "April", "Donna","Andy","Ann","Ben", 
 			"Tom", "Jerry", "Gerry", "Lerry"};   // -
 	String[] baristaNames={"Mac","Cahrlie", "Frank", "Deandra","Dennis"};   // -
@@ -57,6 +71,12 @@ public class CoffeeShop {
 	
 	public static HashMap<String, Cashier> acctiveCashiers;  // - 
 	public static HashMap<String, Customer> customerList;   // -
+=======
+	String[] cashierNames={"Ron","Leslie","April","Donna","Andy","Ann","Ben", 
+			"Tom","Jerry","Gerry","Lerry"};  
+	String[] baristaNames={"Mac","Charlie","Frank","Deandra","Dennis"};  
+	String[] cookNames={"Dwight","Pam","Jim","Andy","Kelly", "Angela"};
+>>>>>>> aac438b270bf386eb08036bfde8ed6a33b61dbe6
 	
 	/**
 	 * Constructor for CoffeeShop class
@@ -69,9 +89,15 @@ public class CoffeeShop {
 		
 		fillMenu("MenuItems");                      // Fills the menu with all the items 
 		
+<<<<<<< HEAD
 		// Model, all the data used by different components
 		queue = new NewCustomerQueue(false);        // Customer queue
 		inventory = new Inventory();                // Inventory of ordered items
+=======
+		shopQueue = new NewCustomerQueue(false);   // In-shop Customer queue
+		onlineQueue = new NewCustomerQueue(true);  // Online Customer queue
+		inventory = new Inventory();                  // Inventory of ordered items
+>>>>>>> aac438b270bf386eb08036bfde8ed6a33b61dbe6
 		books = new Bookkeeping();                  // Bookkeeping of earnings and other finances
 		employees = new Employees();                // Currently working employees 
 		
@@ -82,6 +108,13 @@ public class CoffeeShop {
 		cashierThreads = new HashMap<String, Thread>();
 		baristaList = new HashMap<String, Thread>();
 		cookList = new HashMap<String, Thread>();
+<<<<<<< HEAD
+=======
+		
+		activeCashiers = new HashMap<String, Cashier>();
+		
+		//fillCustomerList("CustomerList");	
+>>>>>>> aac438b270bf386eb08036bfde8ed6a33b61dbe6
 				
 		// Fill recipe book 
 		recipeBook = new HashMap<String, ArrayList<String> >();
@@ -230,8 +263,28 @@ public class CoffeeShop {
 				break;
 			}
 		}		
-	}	
+	}
+	
+	/**
+    * Converts a string to LocalDateTime object
+    * @param timeString Time stamp in string format 
+    * @return Corresponding LocalDateTime object 
+    */
+   public static LocalDateTime stringToTimestamp(String timeString){
+	   LocalDateTime localDateTime = null;
+	   try {
+		   // set formatter and convert string to LocalDateTime 
+		   String pattern = "yyyy-MM-dd HH:mm:ss.SSSSSSSSS";
+		   DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+		   localDateTime = LocalDateTime.from(formatter.parse(timeString));
+		} catch(Exception e) { //this generic but you can control another types of exception
+		    // look the origin of exception 
+			System.out.println("Could't conver sting to time stamp");
+		}
+	    return localDateTime; // Fine to return 0 since catch in the Customer class 
+   }
    
+<<<<<<< HEAD
 //Working on this 	
 	/**
 	 * Adds new cashier and creates a thread for it  
@@ -290,21 +343,97 @@ public class CoffeeShop {
 		   name = list[rn.nextInt(list.length)];
 	   }
 	   return name;
+=======
+   /**
+    * Creates cashier thread 
+    */
+   private void addCashier() {
+	   Random rn = new Random();
+	   String name = cashierNames[rn.nextInt(cashierNames.length)];
 	   
+	   while(cashierList.containsKey(name)) {
+		   name = cashierNames[rn.nextInt(cashierNames.length)];
+	   }
+	   
+	   Cashier cash = new Cashier(name);
+	   activeCashiers.put(name, cash);
+	   
+	   Runnable cashier = new CashierTrial(name, 800L, onlineQueue, shopQueue, kitchenQueue, barQueue, inventory, books, cash); // or an anonymous class, or lambda...
+	   Thread t = new Thread(cashier);
+	   t.setPriority(2);
+	   cashierList.put(name, t);
+	   t.start();	
    }
    
    /**
+    * Creates queue handler thread
+    */
+   private void createHandler() {
+	    Runnable handler = new QueueHandler(onlineQueue, shopQueue, 600L, 15);
+	    Thread h = new Thread(handler);
+	    h.setPriority(8);
+	    //cashierList.put("Handler", h);
+		h.start();		
+   }
+   
+   /**
+    * Creates barista thread
+    */
+   private void addBarista() {
+	   Random rn = new Random();
+	   String name = baristaNames[rn.nextInt(baristaNames.length)];
+	   
+	   while(baristaList.containsKey(name)) {
+		   name = baristaNames[rn.nextInt(baristaNames.length)];
+	   }
+	   
+	   Runnable barista = new Staff(name, barQueue, 2000L);
+	   Thread b = new Thread(barista);
+	   b.start();
+   }
+   
+   /**
+    * Creates cook thread
+    */
+   private void addCook() {
+	   Random rn = new Random();
+	   String name = cookNames[rn.nextInt(cookNames.length)];
+	   
+	   while(cookList.containsKey(name)) {
+		   name = cookNames[rn.nextInt(cookNames.length)];
+	   }
+>>>>>>> aac438b270bf386eb08036bfde8ed6a33b61dbe6
+	   
+	   Runnable cook = new Staff(name, kitchenQueue, 2000L);
+	   Thread c = new Thread(cook);
+	   c.start();
+   }
+   
+   /**
+<<<<<<< HEAD
 	 * Kills the given cashier thread and removes it from the active cashier map
 	 * @param name of the cashier to end their shift
 	 */
+=======
+    * Remove cashier thread
+    * @param name Name of cashier thread to remove  
+    */
+>>>>>>> aac438b270bf386eb08036bfde8ed6a33b61dbe6
    private synchronized void removeCashier(String name) {
 	   System.out.println("Cashier " + name + " has ended their shift");
+<<<<<<< HEAD
 	   cashierThreads.get(name).interrupt();  // Interrupt the thread causing it to finalise their run 
 	   cashierThreads.remove(name);  // Remove the thread from the list
 	   employees.removeCashier(name); // Remove active cashier from the model 
    }
    
    
+=======
+	   cashierList.get(name).interrupt();
+	   cashierList.remove(name);
+	   activeCashiers.remove(name);	   
+   }  
+>>>>>>> aac438b270bf386eb08036bfde8ed6a33b61dbe6
    
    // main method 
 	public static void main(String[] args) {
@@ -314,6 +443,140 @@ public class CoffeeShop {
 		shop.addCashier();
 		shop.addCashier();
 		
+<<<<<<< HEAD
+=======
+		shop.addBarista();
+		shop.addBarista();
+		
+		shop.addCook();
+		shop.addCook();
+		
+		//shop.removeCashier();
+		
+		//System.out.println("AFTHER");
+		//System.out.println(shop.books.getCustomerNumber());
+		//shop.removeCashier("Barbara");
+		
+		
+		//long time = 400L;
+		//long time1 = 800L;
+		//long time2 = 1000L;
+		
+		/*
+		NewCustomerQueue queue = new NewCustomerQueue(false);   // Customer queue
+		Inventory inventory = new Inventory();                  // Inventory of ordered items
+		Bookkeeping books = new Bookkeeping();                  // Bookkeeping of earnings and other finances
+		
+		OrderQueue kitchenQueue = new OrderQueue(false);
+		OrderQueue barQueue = new OrderQueue(true);
+		
+		Runnable handler = new QueueHandler(null, queue, 700L, 6);
+		Thread h = new Thread(handler);
+		h.setPriority(8);
+		h.start();		
+		
+		
+		Runnable cashierOne = new CashierTrial("Adam", 800L, null, queue, kitchenQueue, barQueue, inventory, books); // or an anonymous class, or lambda...
+		Thread t1 = new Thread(cashierOne);
+		t1.setPriority(2);
+		t1.start();
+		
+		
+		
+		Runnable cashierTwo = new CashierTrial("Barbara", 900L, null, queue, kitchenQueue, barQueue, inventory, books);; // or an anonymous class, or lambda...
+		Thread t2 = new Thread(cashierTwo);
+		t2.setPriority(2);
+		t2.start();
+		*/ 
+		 
+		
+		/*
+
+		Runnable cashierThree = new CashierTrial("Mindy", 1000L, queue);; // or an anonymous class, or lambda...
+		Thread t3 = new Thread(cashierThree);
+		t3.start();
+		 */
+		
+		
+		
+		//cashier2.start();
+		//cashier2.run();
+		/*
+		while(true) {
+			try {
+		          Thread.sleep(1000);
+		          System.out.println(CustomerQueue.shopQueue.size());
+		    } catch(InterruptedException e) {
+		          
+		    }
+		}
+		*/
+		//System.out.println(CustomerQueue.shopQueue.pop().cart);
+	
+	    //System.out.println(CustomerQueue.shopQueue.pop().cart);
+		
+		//Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+		//System.out.println(threadSet);
+		//custQue1.run();
+
+
+		//custQue.randCustomerToQueue();
+		
+		
+		// Each cashier has their own GUI 
+//		GUIcaffee GUI = new GUIcaffee(shop.cashier);
+//		GUI.initializeGUI(); 
+//		GUI.paintScreen();		
+		
+		//Thread addCustomerThread = new Thread(new CustomerQueue("CustomerList", "CustomerListOnline", 1500));
+		//addCustomerThread.start();
+		/*
+		OrderQueue kitchenQueue = new OrderQueue(false);
+		OrderQueue barQueue = new OrderQueue(true);
+		
+		kitchenQueue.addToQueue("Marco", "Toastie");
+		barQueue.addToQueue("Matteo", "Espresso");
+		barQueue.addToQueue("Alessandro", "Croissant");
+		kitchenQueue.addToQueue("Fabrizio", "Fries");
+		barQueue.addToQueue("Francesca", "Cappuccino");	
+		*/	
+		 ///THIIIIIS
+		/*
+		Runnable baristaOne = new Staff("Paolo", barQueue, 2000L);
+		Thread s1 = new Thread(baristaOne);
+		s1.start();
+		
+		Runnable baristaTwo = new Staff("Lavinia", barQueue, 1500L);
+		Thread s2 = new Thread(baristaTwo);
+		s2.start();
+		
+		
+		Runnable cookOne = new Staff("Giulia", kitchenQueue, 2000L);
+		Thread s3 = new Thread(cookOne);
+		s3.start();
+		
+		Runnable cookTwo = new Staff("Francesco", kitchenQueue, 2000L);
+		Thread s4 = new Thread(cookTwo);
+		s4.start();
+        */
+		
+		//orderQueue.addToQueue(1, "FOOD001", false);
+		//orderQueue.addToQueue(1, "DRINK003", true);
+		//orderQueue.addToQueue(2, "PASTRY001", false);
+		//orderQueue.addToQueue(3, "DRINK005", true);
+		
+		//System.out.println(orderQueue.barQueue);
+		
+		//Thread cook1 = new Thread(new Cook(orderQueue));
+		//Thread barista1 = new Thread(new Barista(orderQueue));
+		
+		//cook1.start();
+		//barista1.start();
+>>>>>>> aac438b270bf386eb08036bfde8ed6a33b61dbe6
+		
+		//NewGUI gui = new NewGUI(shop);
+		//gui.DisplayGUI();
+		//gui.run();
 		
 	}
 

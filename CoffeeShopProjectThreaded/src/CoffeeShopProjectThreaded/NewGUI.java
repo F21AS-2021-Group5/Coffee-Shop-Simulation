@@ -31,12 +31,6 @@ import javax.swing.*;
 
 
 public class NewGUI{
-	
-	//Width and height of the window
-	//Components are scaled to width and height
-	private int width = 800;
-	private int height = 800;
-	
 	//Frame
 	JFrame frame = new JFrame("Coffee Shop");
 	
@@ -76,17 +70,18 @@ public class NewGUI{
 	JTextField cookTime = new JTextField(3);	
 	
 	Customer currentCustomer;
-	CoffeeShop main;
-	CustomerQueue customerQueue;
+	CoffeeShop coffeeshop;
+	Employees employees;
+	NewCustomerQueue newCustomerQueue;
 	private Queue<Customer> queue;
 	
-	String CustomerName;
-	String Items;
-	int queueSize;
+	//Min & Max value for delay
+	int min = 200;
+	int max = 2000;
 	
 	//GUI constructor
 	public NewGUI(CoffeeShop main) {
-		this.main = main;
+		this.coffeeshop = main;
 	}
 	
 	//Create and show GUI
@@ -230,10 +225,17 @@ public class NewGUI{
 				if (e.getSource() == cashierTimeOK) {
 					String selectedcashier = (String) cashierlist.getSelectedValue();
 					String time = cashierTime.getText();
+					int itime = Integer.parseInt(time);
 					if(time.trim().isEmpty()) {	//If delay time empty, error
 						JOptionPane.showMessageDialog(null,
 						        "Error: you did not enter a delay time for cashier, please enter a delay time.", 
 						         "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					else if(itime<200 || itime>2000) {
+						JOptionPane.showMessageDialog(null,
+						        "Error: you did not enter a valid delay time, please enter a delay time between 200 and 2000.", 
+						         "Error", JOptionPane.ERROR_MESSAGE); //error message
+						cashierTime.setText("");	//empty text box
 					}
 					else {
 						//change delay time for selected cashier
@@ -244,10 +246,17 @@ public class NewGUI{
 				if (e.getSource() == cookTimeOK) {
 					String selectedcook = (String) cooklist.getSelectedValue();
 					String time = cookTime.getText();
+					int itime = Integer.parseInt(time);
 					if(time.trim().isEmpty()) {	//If delay time empty, error
 						JOptionPane.showMessageDialog(null,
 						        "Error: you did not enter a delay time for cook, please enter a delay time.", 
 						         "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					else if(itime<200 || itime>2000) {
+						JOptionPane.showMessageDialog(null,
+						        "Error: you did not enter a valid delay time, please enter a delay time between 200 and 2000.", 
+						         "Error", JOptionPane.ERROR_MESSAGE);
+						cookTime.setText("");	//empty text box
 					}
 					else {
 						//change delay time for selected cook
@@ -258,10 +267,17 @@ public class NewGUI{
 				if (e.getSource() == baristaTimeOK) {
 					String selectedbarista = (String) baristalist.getSelectedValue();
 					String time = baristaTime.getText();
+					int itime = Integer.parseInt(time);
 					if(time.trim().isEmpty()) {	//If delay time empty, error
 						JOptionPane.showMessageDialog(null,
 						        "Error: you did not enter a delay time for barista, please enter a delay time.", 
 						         "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					else if(itime<200 || itime>2000) {
+						JOptionPane.showMessageDialog(null,
+						        "Error: you did not enter a valid delay time, please enter a delay time between 200 and 2000.", 
+						         "Error", JOptionPane.ERROR_MESSAGE);
+						baristaTime.setText("");	//empty text box
 					}
 					else {
 						//change delay time for selected barista
@@ -281,6 +297,14 @@ public class NewGUI{
 		baristaTimeOK.addActionListener(Listener);
 		
 	}
+	
+	/**
+	 * Display the list of in shop customer queue
+	 */
+    private void displayCustomer() {
+    	//Display their name + delay time
+    	newCustomerQueue.getQueue();
+    }
 
 	/**
 	 * Display the list of existent cashier

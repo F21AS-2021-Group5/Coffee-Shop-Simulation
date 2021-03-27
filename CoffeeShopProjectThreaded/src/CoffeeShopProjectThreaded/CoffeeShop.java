@@ -61,7 +61,7 @@ public class CoffeeShop {
 	String[] baristaNames={"Mac","Cahrlie", "Frank", "Deandra","Dennis"};   // -
 	String[] cookNames={"Dwight","Pam", "Jim", "Andy","Kelly", "Angela"};   // - 
 	
-	public static HashMap<String, Cashier> acctiveCashiers;  // - 
+	//public static HashMap<String, Cashier> acctiveCashiers;  // - 
 	public static HashMap<String, Customer> customerList;   // -
 
 
@@ -251,9 +251,7 @@ public class CoffeeShop {
 			}
 		}		
 	}
-	
-
-
+   
 //Working on this 	
 	/**
 	 * Adds new cashier and creates a thread for it  
@@ -266,7 +264,6 @@ public class CoffeeShop {
 	   t.setPriority(2);                      // Sets priority
 	   cashierThreads.put(cash.getName(), t);   // Holds active cashier threads
 	   t.start();                             // Starts the thread
-	
    }
    /**
 	 * Creates customer queue handler which adds customers to the queue  
@@ -285,11 +282,14 @@ public class CoffeeShop {
 	 * Adds new barista and creates a thread for it  
 	 */
    private void addBarista() {
-	   String name = getRandomName( baristaNames, baristaList);
-	   System.out.println("Cashier " + name + " has started their shift");
-	   // Create barista object which processes orders related to Drinks and Pastry
-	   Runnable barista = new Staff(name, barQueue, 2000L);
+	   FoodStaff barStaff = employees.addBarista(); // Add cashier to the employees model
+	   //String name = getRandomName( baristaNames, baristaList);
+	   //System.out.println("Cashier " + name + " has started their shift");
+	   
+	   // Create barista object which processes orders related to Drinks and Pastry	   
+	   Runnable barista = new FoodStaffRunnable(barStaff, barQueue, 2000L);
 	   Thread s = new Thread(barista);
+	   baristaList.put(barStaff.getName(), s);
 	   s.start();
    }
    
@@ -297,10 +297,12 @@ public class CoffeeShop {
 	 * Adds new cook and creates a thread for it  
 	 */
    private void addCook() {
-	   String name = getRandomName( cookNames, cookList);
+	   FoodStaff kitchenStaff = employees.addCook(); // Add cashier to the employees model
+	   
 	   // Creates cook object which processes orders related to Food and Sides
-	   Runnable cook = new Staff(name, kitchenQueue, 2000L);
+	   Runnable cook = new FoodStaffRunnable(kitchenStaff, barQueue, 2000L);
 	   Thread s2 = new Thread(cook);
+	   baristaList.put(kitchenStaff.getName(), s2);
 	   s2.start();
    }
    
@@ -315,24 +317,38 @@ public class CoffeeShop {
 
    }
 	
-   
-   
    /**
-
 	 * Kills the given cashier thread and removes it from the active cashier map
 	 * @param name of the cashier to end their shift
 	 */
-
-   private synchronized void removeCashier(String name) {
+   public synchronized void removeCashier(String name) {
 	   System.out.println("Cashier " + name + " has ended their shift");
 	   cashierThreads.get(name).interrupt();  // Interrupt the thread causing it to finalise their run 
 	   cashierThreads.remove(name);  // Remove the thread from the list
 	   employees.removeCashier(name); // Remove active cashier from the model 
    }
    
+   /**
+	 * Kills the given barista thread and removes it from the active barista map
+	 * @param name of the barista to end their shift
+	 */
+   public synchronized void removeBarista(String name) {
+	   System.out.println("Barista " + name + " has ended their shift");
+	   baristaList.get(name).interrupt();  // Interrupt the thread causing it to finalise their run 
+	   baristaList.remove(name);  // Remove the thread from the list
+	   employees.removeBarista(name); // Remove active barista from the model 
+   }
    
-
-   
+   /**
+	 * Kills the given cook thread and removes it from the active cook map
+	 * @param name of the cook to end their shift
+	 */
+   public synchronized void removeCook(String name) {
+	   System.out.println("Cook " + name + " has ended their shift");
+	   cookList.get(name).interrupt();  // Interrupt the thread causing it to finalise their run 
+	   cookList.remove(name);  // Remove the thread from the list
+	   employees.removeCook(name); // Remove active cook from the model 
+   }
 
    // main method 
 	public static void main(String[] args) {
@@ -347,11 +363,11 @@ public class CoffeeShop {
 		gui.initializeGUI();
 		gui.paintScreen();
 
-		//shop.addBarista();
-		//shop.addBarista();
+		shop.addBarista();
+		shop.addBarista();
 		
-		//shop.addCook();
-		//shop.addCook();
+		shop.addCook();
+		shop.addCook();
 		
 		//shop.removeCashier();
 		

@@ -1,5 +1,5 @@
 /**
- * Staff.java - class to implement a staff for the coffeeshop
+ * FoodStaffRunnable.java - class to implement a barista/cook staff thread
  * 
  * @author Esther Rayssiguie 
  * @author Jake Marrocco
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 import CoffeeShopProjectThreaded.OrderQueue.OrderQueueOutput;
 
-public class Staff implements Runnable{
+public class FoodStaffRunnable implements Runnable{
 
 	private String currentItem;
 	private String currentCustomer;
@@ -27,37 +27,35 @@ public class Staff implements Runnable{
 	
 	private long delay;
 	
-	private String name;
-	private String type;
+	private FoodStaff foodStaff;
 	
 	/**
 	 * Constructor for Staff class
 	 * @param queue Queue of orders 
 	 */
-	public Staff(String name, OrderQueue queue, long delay) { 
-		this.name = name;
+	public FoodStaffRunnable(FoodStaff foodStaff, OrderQueue queue, long delay) { 
+		this.foodStaff = foodStaff;
 		this.queue = queue;
 		this.delay = delay;
 		
-		type = (queue.isBar()) ? "Barista" : "Cook";
 		log = Log.getInstance();
 	}
 	
 	/**
-	 * @return Staff name
+	 * @return Food staff object
 	 */
-	public String getName() {
-		return name;
+	public FoodStaff getFoodStaff() {
+		return foodStaff;
 	}
 	
 	/**
-	 * Set name of staff 
-	 * @param name Staff name
+	 * Sets the food staff object
+	 * @param foodStaff Food staff object
 	 */
-	public void setName(String name) {
-		this.name = name;
+	public void setFoodStaff(FoodStaff foodStaff) {
+		this.foodStaff = foodStaff;
 	}
-	
+
 	/**
 	 * @return Current item identifier
 	 */
@@ -122,6 +120,9 @@ public class Staff implements Runnable{
 				currentItem = out.getItem().getName();
 				currentCustomer = out.getItem().getCustomerID();		
 				
+				foodStaff.setCurrentCustomer(CoffeeShop.customerList.get(currentCustomer));
+				foodStaff.setCurrentItem(out.getItem());
+				
 				// get recipe of current item 
 				ArrayList<String> recipe = CoffeeShop.recipeBook.get(currentItem);
 				
@@ -132,7 +133,8 @@ public class Staff implements Runnable{
 				for (String instruction: recipe) {
 					
 					// update status 
-					status = "[PREPARATION] " + type+ " " + name + ": " + instruction;
+					status = "[PREPARATION] " + foodStaff.getType() + " " + foodStaff.getName() 
+						+ ": " + instruction;
 					log.updateLog(status);
 					
 					// delay for visualisation purposes 
@@ -144,9 +146,9 @@ public class Staff implements Runnable{
 				}
 				
 				// update status				
-				status = "[FINISHED] " + type + " " + name + ": " + currentItem + 
-						" for customer " + CoffeeShop.customerList.get(out.getItem().getCustomerID()).getName() + 
-						" (ID: " + out.getItem().getCustomerID() + ") prepared.";			
+				status = "[FINISHED] " + foodStaff.getType() + " " + foodStaff.getName() + ": " + currentItem + 
+						" for customer " + foodStaff.getCurrentCustomer().getName() + 
+						" (ID: " + currentCustomer + ") prepared.";			
 				log.updateLog(status);				
 			}		
 		}

@@ -300,9 +300,9 @@ public class CoffeeShop {
 	   FoodStaff kitchenStaff = employees.addCook(); // Add cashier to the employees model
 	   
 	   // Creates cook object which processes orders related to Food and Sides
-	   Runnable cook = new FoodStaffRunnable(kitchenStaff, barQueue, 2000L);
+	   Runnable cook = new FoodStaffRunnable(kitchenStaff, kitchenQueue, 2000L);
 	   Thread s2 = new Thread(cook);
-	   baristaList.put(kitchenStaff.getName(), s2);
+	   cookList.put(kitchenStaff.getName(), s2);
 	   s2.start();
    }
    

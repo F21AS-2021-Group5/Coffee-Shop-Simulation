@@ -256,7 +256,7 @@ public class CoffeeShop {
 	/**
 	 * Adds new cashier and creates a thread for it  
 	 */
-   private void addCashier() {
+   public void addCashier() {
 	   Cashier cash = employees.addCashier(); // Add cashier to the employees model
 	   // Create runnable for cashier object
 	   Runnable cashier = new CashierRunnable(cash.getName(), 800L, onlineQueue, shopQueue, kitchenQueue, barQueue, inventory, books, cash); // or an anonymous class, or lambda...
@@ -281,7 +281,7 @@ public class CoffeeShop {
    /**
 	 * Adds new barista and creates a thread for it  
 	 */
-   private void addBarista() {
+   public void addBarista() {
 	   FoodStaff barStaff = employees.addBarista(); // Add cashier to the employees model
 	   //String name = getRandomName( baristaNames, baristaList);
 	   //System.out.println("Cashier " + name + " has started their shift");
@@ -296,7 +296,7 @@ public class CoffeeShop {
    /**
 	 * Adds new cook and creates a thread for it  
 	 */
-   private void addCook() {
+   public void addCook() {
 	   FoodStaff kitchenStaff = employees.addCook(); // Add cashier to the employees model
 	   
 	   // Creates cook object which processes orders related to Food and Sides
@@ -362,6 +362,7 @@ public class CoffeeShop {
 		NewGUI gui = new NewGUI(shop);
 		gui.initializeGUI();
 		gui.paintScreen();
+		gui.run();
 
 		shop.addBarista();
 		shop.addBarista();

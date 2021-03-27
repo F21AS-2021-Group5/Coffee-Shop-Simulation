@@ -20,14 +20,15 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Queue;
 import java.util.Set;
 
 import javax.swing.*;
-
-//import CaffeeShopProject.CoffeeShop;
 
 
 public class NewGUI{
@@ -56,13 +57,19 @@ public class NewGUI{
 	JLabel cashierTimeLabel = new JLabel("Set Cashier Delay:");
 	JLabel cookTimeLabel = new JLabel("Set Cook Delay:");
 	JLabel baristaTimeLabel = new JLabel("Set Barista Delay:");
-		
+	
+	//Model
+	DefaultListModel shopModel = new DefaultListModel();
+	DefaultListModel cashierModel = new DefaultListModel();
+	DefaultListModel cookModel = new DefaultListModel();
+	DefaultListModel baristaModel = new DefaultListModel();
+	
 	//JList
-	JList shopcustomerlist = new JList();
+	JList shopcustomerlist = new JList(shopModel);
 	JList onlinecustomerlist = new JList();
-	JList cashierlist = new JList();
-	JList cooklist = new JList();
-	JList baristalist = new JList();
+	JList cashierlist = new JList(cashierModel);
+	JList cooklist = new JList(cookModel);
+	JList baristalist = new JList(baristaModel);
 
 	//Text Filed (Enter names)
 	JTextField cashierTime = new JTextField(3);
@@ -73,7 +80,11 @@ public class NewGUI{
 	CoffeeShop coffeeshop;
 	Employees employees;
 	NewCustomerQueue newCustomerQueue;
-	private Queue<Customer> queue;
+	NewCustomerQueue onlineQueue;
+	NewCustomerQueue shopQueue;
+	CashierRunnable cashierRunnable;
+	FoodStaffRunnable foodStaffRun;
+	Log log;
 	
 	//Min & Max value for delay
 	int min = 200;
@@ -176,6 +187,7 @@ public class NewGUI{
 		cashierTimeOK.setEnabled(false);
 		cookTimeOK.setEnabled(false);
 		baristaTimeOK.setEnabled(true);
+		cashierlist.setModel(cashierModel);
     }
 
 	/**
@@ -191,47 +203,121 @@ public class NewGUI{
 	 * Sets up action listeners for all elements in the GUI 
 	 */
 	private void setupListener() {
-	
+		
+		
 		ActionListener Listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//Create new cashier
 				if (e.getSource() == addCashier) {
-					
+					int cashierSize = coffeeshop.cashierThreads.size(); //Store number of existent cashier
+					if (cashierSize == 11 || cashierSize>11) {	//Cannot have more than 11 cashiers
+						JOptionPane.showMessageDialog(null,
+						        "Error: you cannot create more than eleven cashiers", 
+						         "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					else {
+						//coffeeshop.addCashier();
+						//create new window with cashier and customer handled with their order
+						newCashierFrame();
+					}
 				}
 				//Create new cook
 				if (e.getSource() == addCook) {
+					int cookSize = coffeeshop.cookList.size();	//Store number of existent cook
+					if (cookSize == 6) {
+						JOptionPane.showMessageDialog(null,
+						        "Error: you cannot create more than six cooks", 
+						         "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					else {
+						coffeeshop.addCook();
+						//create new window with cook and orders handled and customer
+						newCookFrame();
+					}
 					
 				}
 				//Create new barista
 				if (e.getSource() == addBarista) {
+					int baristaSize = coffeeshop.baristaList.size();
+					if (baristaSize == 5) {
+						JOptionPane.showMessageDialog(null,
+						        "Error: you cannot create more than five baristas", 
+						         "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					else {
+						coffeeshop.addBarista();
+						newBaristaFrame();
+						//create new window with barista and orders handles and customer
+					}
+
 					
 				}
 				//Remove selected cashier
 				if (e.getSource() == removecashiers) {
 					String selectedcashier = (String) cashierlist.getSelectedValue();
-					selectedcashier = selectedcashier.substring(0, 60).trim(); //remove string from list
+					selectedcashier = selectedcashier.substring(0, 20).trim(); //remove string from list
+					int cashierSize = coffeeshop.cashierThreads.size(); //Store number of existent cashier
+					if(cashierSize == 1) {	//Cannot remove cashier if size less than 1
+						JOptionPane.showMessageDialog(null,
+						        "Error: you cannot have less than one cashier", 
+						         "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					else {
+						coffeeshop.removeCashier(selectedcashier);
+						//close window
+					}
+					
 				}
 				//Remove selected cook
 				if (e.getSource() == removecooks) {
 					String selectedcook = (String) cooklist.getSelectedValue();
-					selectedcook = selectedcook.substring(0, 60).trim(); //remove string from list
+					selectedcook = selectedcook.substring(0, 20).trim(); //remove string from list
+					int cookSize = coffeeshop.cookList.size(); //Store number of existent barista
+					if(cookSize == 1) { //Cannot remove barista if size less than 1
+						JOptionPane.showMessageDialog(null,
+						        "Error: you cannot have less than one cook", 
+						         "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					else {
+						coffeeshop.removeCook(selectedcook);
+						//close window
+					}
 				}
 				//Remove selected barista
 				if (e.getSource() == removebaristas) {
 					String selectedbarista = (String) baristalist.getSelectedValue();
-					selectedbarista = selectedbarista.substring(0, 60).trim(); //remove string from list
+					selectedbarista = selectedbarista.substring(0, 20).trim(); //remove string from list
+					int baristaSize = coffeeshop.baristaList.size(); //Store number of existent barista
+					if(baristaSize == 1) { //Cannot remove barista if size less than 1
+						JOptionPane.showMessageDialog(null,
+						        "Error: you cannot have less than one barista", 
+						         "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					else {
+						coffeeshop.removeBarista(selectedbarista);
+						//close window
+					}
 				}
 				//Set Delay Time for selected cashier
 				if (e.getSource() == cashierTimeOK) {
 					String selectedcashier = (String) cashierlist.getSelectedValue();
 					String time = cashierTime.getText();
-					int itime = Integer.parseInt(time);
-					if(time.trim().isEmpty()) {	//If delay time empty, error
+					try {
+						int itime = Integer.parseInt(time);
+					}
+					catch(NumberFormatException e1){	//Check if entered text is an int and not null
+						e1.printStackTrace();
 						JOptionPane.showMessageDialog(null,
-						        "Error: you did not enter a delay time for cashier, please enter a delay time.", 
+						        "Error: Invalid or null int entered", 
 						         "Error", JOptionPane.ERROR_MESSAGE);
 					}
-					else if(itime<200 || itime>2000) {
+					int itime = Integer.parseInt(time);
+//					if(time.trim().isEmpty()) {	//If delay time empty, error
+//						JOptionPane.showMessageDialog(null,
+//						        "Error: you did not enter a delay time for cashier, please enter a delay time.", 
+//						         "Error", JOptionPane.ERROR_MESSAGE);
+//					}
+					if(itime<200 || itime>2000) { //Check delay time valid
 						JOptionPane.showMessageDialog(null,
 						        "Error: you did not enter a valid delay time, please enter a delay time between 200 and 2000.", 
 						         "Error", JOptionPane.ERROR_MESSAGE); //error message
@@ -246,13 +332,17 @@ public class NewGUI{
 				if (e.getSource() == cookTimeOK) {
 					String selectedcook = (String) cooklist.getSelectedValue();
 					String time = cookTime.getText();
-					int itime = Integer.parseInt(time);
-					if(time.trim().isEmpty()) {	//If delay time empty, error
+					try {
+						int itime = Integer.parseInt(time);
+					}
+					catch(NumberFormatException e1){	//Check if entered text is an int and not null
+						e1.printStackTrace();
 						JOptionPane.showMessageDialog(null,
-						        "Error: you did not enter a delay time for cook, please enter a delay time.", 
+						        "Error: Invalid or null int entered", 
 						         "Error", JOptionPane.ERROR_MESSAGE);
 					}
-					else if(itime<200 || itime>2000) {
+					int itime = Integer.parseInt(time);
+					if(itime<200 || itime>2000) {	//Check delay time valid
 						JOptionPane.showMessageDialog(null,
 						        "Error: you did not enter a valid delay time, please enter a delay time between 200 and 2000.", 
 						         "Error", JOptionPane.ERROR_MESSAGE);
@@ -267,13 +357,18 @@ public class NewGUI{
 				if (e.getSource() == baristaTimeOK) {
 					String selectedbarista = (String) baristalist.getSelectedValue();
 					String time = baristaTime.getText();
-					int itime = Integer.parseInt(time);
-					if(time.trim().isEmpty()) {	//If delay time empty, error
-						JOptionPane.showMessageDialog(null,
-						        "Error: you did not enter a delay time for barista, please enter a delay time.", 
-						         "Error", JOptionPane.ERROR_MESSAGE);
+					try {
+						int itime = Integer.parseInt(time);
 					}
-					else if(itime<200 || itime>2000) {
+					catch(NumberFormatException e1){	//Check if entered text is an int and not null
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(null,
+						        "Error: Invalid or null int entered", 
+						         "Error", JOptionPane.ERROR_MESSAGE);
+						
+					}
+					int itime = Integer.parseInt(time);
+					if(itime<200 || itime>2000) { //Check delay time valid
 						JOptionPane.showMessageDialog(null,
 						        "Error: you did not enter a valid delay time, please enter a delay time between 200 and 2000.", 
 						         "Error", JOptionPane.ERROR_MESSAGE);
@@ -281,6 +376,7 @@ public class NewGUI{
 					}
 					else {
 						//change delay time for selected barista
+						
 					}
 				}
 			}
@@ -298,12 +394,33 @@ public class NewGUI{
 		
 	}
 	
+	public void update() {
+		System.out.println("I AM HEREEEEEEEE HELLOO");
+		displayCustomer();
+		displayCashier();
+		displayCook();
+		displayBarista();
+	}
+	
 	/**
 	 * Display the list of in shop customer queue
 	 */
     private void displayCustomer() {
     	//Display their name + delay time
-    	newCustomerQueue.getQueue();
+    	Deque<Customer> q = shopQueue.getQueue();
+    	if(!(q.isEmpty())) {
+        	for(int i = 0; i<q.size(); i++) {
+        		shopModel.addElement(q.toString());
+        		shopcustomerlist.setModel(shopModel);
+        	}
+    	}
+    	shopcustomerlist.setVisible(true);
+//    	if(!shopQueue.getQueue().isEmpty()){
+//    		for(Object name : shopQueue.getQueue()) {
+//    			shopModel.addElement(name.toString());
+//    			shopcustomerlist.setModel(shopModel);
+//    		}
+//    	}   
     }
 
 	/**
@@ -311,6 +428,37 @@ public class NewGUI{
 	 */
     private void displayCashier() {
     	//Display their name + delay time
+    	//for each cashier entry
+//    	for (Map.Entry m: coffeeshop.cashierThreads.entrySet()) {
+//    		String Cname = m.toString();
+//    		String display = String.format("%-40s %-4s", coffeeshop.cashierThreads.toString()); // Format the display
+//    		CASHIERLIST.addElement(display);
+//    	}
+//    	cashierlist.setModel(CASHIERLIST);
+//    	while(true) {
+//			while(employees.getActiveCashiers().isEmpty()) {
+//				try{
+//					wait();
+//				}
+//				catch(InterruptedException e) {
+//					log.updateLog("cashier empty");
+//				}
+//				for (Map.Entry m: employees.getActiveCashiers().entrySet()) {
+//		    		String Cname = m.toString();
+//		    		String display = String.format("%-40s %-4s", Cname); // Format the display
+//		    		CASHIERLIST.addElement(display);
+//		    	}
+//		    	cashierlist.setModel(CASHIERLIST);
+//			}
+//			
+//    	}	
+    	
+    	for (Map.Entry m: employees.getActiveCashiers().entrySet()) {
+    		String Cname = m.toString();
+    		String display = String.format("%-40s %-4s", Cname); // Format the display
+    		cashierModel.addElement(display);
+    	}
+    	cashierlist.setModel(cashierModel);
     }
     
 	/**
@@ -318,6 +466,12 @@ public class NewGUI{
 	 */
     private void displayCook() {
     	//Display their name + delay time
+    	for (Map.Entry m: employees.getActiveCooks().entrySet()) {
+    		String Cname = m.toString();
+    		String display = String.format("%-40s %-4s", Cname); // Format the display
+    		cookModel.addElement(display);
+    	}
+    	cooklist.setModel(cookModel);
     }
     
 	/**
@@ -325,13 +479,130 @@ public class NewGUI{
 	 */
     private void displayBarista() {
     	//Display their name + delay time
+    	for (Map.Entry m: employees.getActiveBaristas().entrySet()) {
+    		String Cname = m.toString();
+    		String display = String.format("%-40s %-4s", Cname); // Format the display
+    		baristaModel.addElement(display);
+    	}
+    	baristalist.setModel(baristaModel);
+    }
+    
+    /**
+	 * Create New frame and Display cashier orders handled
+	 */
+    private void newCashierFrame() {
+    	//Display their name + delay time
+		JFrame frame1 = new JFrame();
+		frame1.setSize(400, 400);
+		frame1.setTitle("New Cashier");
+		frame1.setLayout(null);
+		frame1.setVisible(true); //Show GUI
+		
+		//Display name of cashier
+		JLabel CashierName = new JLabel("Cashier: "); //+ cashierRunnable.cashier.getName() //HOW DO I ACCESS NAME OF CREATED CASHIER???
+		CashierName.setBounds(50, 5, 200, 20);
+		frame1.getContentPane().add(CashierName);
+		
+		//Display name of customer
+		JLabel custName = new JLabel("Customer: " + cashierRunnable.currentCustomer.getName());
+		custName.setBounds(10, 50, 150, 30);
+		frame1.getContentPane().add(custName);
+		
+		//Display customer orders + total price
+		JTextArea custList = new JTextArea("");
+		custList.setBounds(10, 90, 300, 200);
+		frame1.getContentPane().add(custList);
+		String output = " ";
+		String out2 = " ";
+		Set<String> customerCart = cashierRunnable.currentCustomer.cart.keySet();
+		for (String orderID: customerCart) {
+			output += String.format("%-10s %-10s %-10s %-10s\n", String.valueOf(cashierRunnable.currentCustomer.cart.get(orderID).size()), 
+					    coffeeshop.menu.get(orderID).getName(), String.valueOf(coffeeshop.menu.get(orderID).getCost()), "£");
+			out2 = String.format("%-10s %-10s %-10s\n", "Total price: ", String.valueOf(cashierRunnable.currentCustomer.getCartTotalPrice()), "£");
+		}
+		custList.setText(output + out2);
+		
+    }
+    
+    /**
+	 * Create New frame and Display cook orders handled
+	 */
+    private void newCookFrame() {
+    	//Display their name + delay time
+		JFrame frame1 = new JFrame();
+		frame1.setSize(400, 400);
+		frame1.setTitle("New Cook");
+		frame1.setLayout(null);
+		frame1.setVisible(true); //Show GUI
+		
+		//Display name of cook
+		JLabel CookName = new JLabel("Cook: "); //+ foodStaffRun.getFoodStaff().getName() //HOW DO I ACCESS NAME OF CREATED COOK???
+		CookName.setBounds(50, 5, 200, 20);
+		frame1.getContentPane().add(CookName);
+				
+		//Display name of customer
+		JLabel custName = new JLabel("Customer Processed: " + cashierRunnable.currentCustomer.getName());
+		custName.setBounds(10, 40, 250, 30);
+		frame1.getContentPane().add(custName);
+				
+		//Display ordered Food and Pastry handled by cook for current customer
+		JTextArea custList = new JTextArea("");
+		custList.setBounds(10, 80, 300, 200);
+		frame1.getContentPane().add(custList);
+		String output = " ";
+		Set<String> customerCart = cashierRunnable.currentCustomer.cart.keySet();
+		for (String orderID: customerCart) {
+			String category = coffeeshop.menu.get(orderID).getCategory();
+			if(category.equals("Pastry") || category.equals("Food")) {
+				output += String.format("%-10s %-10s %-10s %10s\n", String.valueOf(cashierRunnable.currentCustomer.cart.get(orderID).size()), 
+						   coffeeshop.menu.get(orderID).getName(), String.valueOf(coffeeshop.menu.get(orderID).getCost()), "£");
+			}
+		}
+		custList.setText(output);
+    }
+    
+    /**
+	 * Create New frame and Display barista orders handled
+	 */
+    private void newBaristaFrame() {
+    	//Display their name + delay time
+		JFrame frame1 = new JFrame();
+		frame1.setSize(400, 400);
+		frame1.setTitle("New Barista");
+		frame1.setLayout(null);
+		frame1.setVisible(true); //Show GUI
+		
+		//Display name of barista
+		JLabel BaristaName = new JLabel("Barista: "); //HOW DO I ACCESS NAME OF CREATED BARISTA???
+		BaristaName.setBounds(50, 5, 200, 20);
+		frame1.getContentPane().add(BaristaName);
+		
+		//Display name of customer
+		JLabel custName = new JLabel("Customer Processed: " + cashierRunnable.currentCustomer.getName());
+		custName.setBounds(10, 40, 250, 30);
+		frame1.getContentPane().add(custName);
+		
+		//Display ordered Drink handled by barista for current customer
+		JTextArea custList = new JTextArea("");
+		custList.setBounds(10, 80, 300, 200);
+		frame1.getContentPane().add(custList);
+		String output = " ";
+		Set<String> customerCart = cashierRunnable.currentCustomer.cart.keySet();
+		for (String orderID: customerCart) {
+			String category = coffeeshop.menu.get(orderID).getCategory();
+			if(category.equals("Drink")) {
+				output += String.format("%-10s %-10s %-10s %10s\n", String.valueOf(cashierRunnable.currentCustomer.cart.get(orderID).size()), 
+							coffeeshop.menu.get(orderID).getName(), String.valueOf(coffeeshop.menu.get(orderID).getCost()), "£");
+			}
+		}
+		custList.setText(output);
     }
 	
 	
 	//While GUI is running, keep updating
 	public void run() {
 		while(true) {
-			//update();
+			update();
 			try {
 				Thread.sleep(100);
 			}catch(InterruptedException e) {

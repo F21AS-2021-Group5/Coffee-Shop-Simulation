@@ -87,11 +87,7 @@ public class NewGUI{
 	CashierRunnable cashierRunnable;
 	FoodStaffRunnable foodStaffRun;
 	Log log;
-	
-	//Min & Max value for delay
-	int min = 200;
-	int max = 2000;
-	
+		
 	//GUI constructor
 	public NewGUI(CoffeeShop main) {
 		this.coffeeshop = main;
@@ -603,8 +599,7 @@ public class NewGUI{
 		}
 		custList.setText(output);
     }
-	
-	
+
 	//While GUI is running, keep updating
 	public void run() {
 		while(true) {
@@ -616,5 +611,4 @@ public class NewGUI{
 			}
 		}
 	}
-
 }

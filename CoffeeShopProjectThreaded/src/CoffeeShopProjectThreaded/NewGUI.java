@@ -22,6 +22,7 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -60,13 +61,14 @@ public class NewGUI{
 	
 	//Model
 	DefaultListModel shopModel = new DefaultListModel();
+	DefaultListModel onlineModel = new DefaultListModel();
 	DefaultListModel cashierModel = new DefaultListModel();
 	DefaultListModel cookModel = new DefaultListModel();
 	DefaultListModel baristaModel = new DefaultListModel();
 	
 	//JList
 	JList shopcustomerlist = new JList(shopModel);
-	JList onlinecustomerlist = new JList();
+	JList onlinecustomerlist = new JList(onlineModel);
 	JList cashierlist = new JList(cashierModel);
 	JList cooklist = new JList(cookModel);
 	JList baristalist = new JList(baristaModel);
@@ -80,8 +82,8 @@ public class NewGUI{
 	CoffeeShop coffeeshop;
 	Employees employees;
 	NewCustomerQueue newCustomerQueue;
-	NewCustomerQueue onlineQueue;
-	NewCustomerQueue shopQueue;
+	CustomerQueue onlineQueue;
+	CustomerQueue shopQueue;
 	CashierRunnable cashierRunnable;
 	FoodStaffRunnable foodStaffRun;
 	Log log;
@@ -216,9 +218,8 @@ public class NewGUI{
 						         "Error", JOptionPane.ERROR_MESSAGE);
 					}
 					else {
-						//coffeeshop.addCashier();
-						//create new window with cashier and customer handled with their order
-						newCashierFrame();
+						//coffeeshop.addCashier(); //Create New cashier
+						newCashierFrame(); //create new window for cashier showing customer handled and their order
 					}
 				}
 				//Create new cook
@@ -230,9 +231,8 @@ public class NewGUI{
 						         "Error", JOptionPane.ERROR_MESSAGE);
 					}
 					else {
-						coffeeshop.addCook();
-						//create new window with cook and orders handled and customer
-						newCookFrame();
+						coffeeshop.addCook();  //Create new cook
+						newCookFrame();  //create new window with cook and orders handled and customer
 					}
 					
 				}
@@ -245,11 +245,9 @@ public class NewGUI{
 						         "Error", JOptionPane.ERROR_MESSAGE);
 					}
 					else {
-						coffeeshop.addBarista();
-						newBaristaFrame();
-						//create new window with barista and orders handles and customer
+						coffeeshop.addBarista();  //Create new Barista
+						newBaristaFrame();  //create new window with barista and orders handles and customer
 					}
-
 					
 				}
 				//Remove selected cashier
@@ -264,7 +262,7 @@ public class NewGUI{
 					}
 					else {
 						coffeeshop.removeCashier(selectedcashier);
-						//close window
+						//close window ??how
 					}
 					
 				}
@@ -300,7 +298,6 @@ public class NewGUI{
 				}
 				//Set Delay Time for selected cashier
 				if (e.getSource() == cashierTimeOK) {
-					String selectedcashier = (String) cashierlist.getSelectedValue();
 					String time = cashierTime.getText();
 					try {
 						int itime = Integer.parseInt(time);
@@ -325,12 +322,12 @@ public class NewGUI{
 					}
 					else {
 						//change delay time for selected cashier
+						String selectedcashier = (String) cashierlist.getSelectedValue();
 					}
 					
 				}
 				//Set Delay Time for selected cook
 				if (e.getSource() == cookTimeOK) {
-					String selectedcook = (String) cooklist.getSelectedValue();
 					String time = cookTime.getText();
 					try {
 						int itime = Integer.parseInt(time);
@@ -350,13 +347,14 @@ public class NewGUI{
 					}
 					else {
 						//change delay time for selected cook
+						String selectedcook = (String) cooklist.getSelectedValue();
 					}
 					
 				}
 				//Set Delay Time for selected barista
 				if (e.getSource() == baristaTimeOK) {
-					String selectedbarista = (String) baristalist.getSelectedValue();
 					String time = baristaTime.getText();
+					//Try-Catch exception: Error message if entered time is invalid
 					try {
 						int itime = Integer.parseInt(time);
 					}
@@ -367,6 +365,7 @@ public class NewGUI{
 						         "Error", JOptionPane.ERROR_MESSAGE);
 						
 					}
+					//Error message is time entered is too short or too long
 					int itime = Integer.parseInt(time);
 					if(itime<200 || itime>2000) { //Check delay time valid
 						JOptionPane.showMessageDialog(null,
@@ -374,9 +373,10 @@ public class NewGUI{
 						         "Error", JOptionPane.ERROR_MESSAGE);
 						baristaTime.setText("");	//empty text box
 					}
+					//If time is valid, change barista delay time
 					else {
-						//change delay time for selected barista
-						
+						String selectedbarista = (String) baristalist.getSelectedValue();
+						//foodStaffRun.getFoodStaff().
 					}
 				}
 			}
@@ -397,6 +397,7 @@ public class NewGUI{
 	public void update() {
 		System.out.println("I AM HEREEEEEEEE HELLOO");
 		displayCustomer();
+		displayOnlineCustomer();
 		displayCashier();
 		displayCook();
 		displayBarista();
@@ -405,83 +406,88 @@ public class NewGUI{
 	/**
 	 * Display the list of in shop customer queue
 	 */
-    private void displayCustomer() {
-    	//Display their name + delay time
-    	Deque<Customer> q = shopQueue.getQueue();
+    private void displayCustomer() {    	
+    	Deque<Customer> q = shopQueue.getShopQueue();
+    	//TEST: display works. but need observer to show
+//    	Queue q = new LinkedList();
+//    	q.add("Mark");
+//    	q.add("Jean");
+//    	q.add("Lola");
+//    	q.add("Luke");
     	if(!(q.isEmpty())) {
+    		String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", q.size(), " in shop customers waiting\n\n");
+    		shopModel.addElement(display1);
         	for(int i = 0; i<q.size(); i++) {
-        		shopModel.addElement(q.toString());
-        		shopcustomerlist.setModel(shopModel);
+        		String display = String.format("%-10s\n", q.toString());
+        		shopModel.addElement(display);
         	}
     	}
+		shopcustomerlist.setModel(shopModel);
     	shopcustomerlist.setVisible(true);
-//    	if(!shopQueue.getQueue().isEmpty()){
-//    		for(Object name : shopQueue.getQueue()) {
-//    			shopModel.addElement(name.toString());
-//    			shopcustomerlist.setModel(shopModel);
-//    		}
-//    	}   
+    }
+    
+	/**
+	 * Display the list of online customer queue
+	 */
+    private void displayOnlineCustomer() {    	
+    	Deque<Customer> q = shopQueue.getOnlineQueue();
+    	if(!(q.isEmpty())) {
+    		String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", q.size(), " online customers waiting\n\n");
+    		onlineModel.addElement(display1);
+        	for(int i = 0; i<q.size(); i++) {
+        		String display = String.format("%-10s\n", q.toString());
+        		onlineModel.addElement(display);
+        	}
+    	}
+		onlinecustomerlist.setModel(onlineModel);
+		onlinecustomerlist.setVisible(true);
     }
 
 	/**
-	 * Display the list of existent cashier
+	 * Display the list of existent cashiers
 	 */
     private void displayCashier() {
-    	//Display their name + delay time
-    	//for each cashier entry
-//    	for (Map.Entry m: coffeeshop.cashierThreads.entrySet()) {
-//    		String Cname = m.toString();
-//    		String display = String.format("%-40s %-4s", coffeeshop.cashierThreads.toString()); // Format the display
-//    		CASHIERLIST.addElement(display);
-//    	}
-//    	cashierlist.setModel(CASHIERLIST);
-//    	while(true) {
-//			while(employees.getActiveCashiers().isEmpty()) {
-//				try{
-//					wait();
-//				}
-//				catch(InterruptedException e) {
-//					log.updateLog("cashier empty");
-//				}
-//				for (Map.Entry m: employees.getActiveCashiers().entrySet()) {
-//		    		String Cname = m.toString();
-//		    		String display = String.format("%-40s %-4s", Cname); // Format the display
-//		    		CASHIERLIST.addElement(display);
-//		    	}
-//		    	cashierlist.setModel(CASHIERLIST);
-//			}
-//			
-//    	}	
-    	
-    	for (Map.Entry m: employees.getActiveCashiers().entrySet()) {
-    		String Cname = m.toString();
-    		String display = String.format("%-40s %-4s", Cname); // Format the display
-    		cashierModel.addElement(display);
+    	HashMap<String, Cashier> q = employees.getActiveCashiers();	//Access List of cashiers
+    	String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", q.size(), " active cashiers.");	
+		cashierModel.addElement(display1);	//Display number of active cashiers
+		
+    	for (Map.Entry m: q.entrySet()) {	//For each cashiers
+    		if(!(q.isEmpty())) {
+    			String Cname = m.toString();
+        		String display = String.format("%-10s\n", Cname);  //Display their name
+        		cashierModel.addElement(display);
+    		}
     	}
     	cashierlist.setModel(cashierModel);
     }
     
 	/**
-	 * Display the list of existent cook
+	 * Display the list of existent cooks
 	 */
     private void displayCook() {
-    	//Display their name + delay time
-    	for (Map.Entry m: employees.getActiveCooks().entrySet()) {
+    	HashMap<String, FoodStaff> q = employees.getActiveCooks();	//Access List of cooks
+    	String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", q.size(), " active cooks.");	
+    	cookModel.addElement(display1);	//Display number of active cooks
+		
+    	for (Map.Entry m: q.entrySet()) {  //For each cooks
     		String Cname = m.toString();
-    		String display = String.format("%-40s %-4s", Cname); // Format the display
+    		String display = String.format("%-40s %-4s", Cname);  //Display their name
     		cookModel.addElement(display);
     	}
     	cooklist.setModel(cookModel);
     }
     
 	/**
-	 * Display the list of existent barista
+	 * Display the list of existent baristas
 	 */
     private void displayBarista() {
-    	//Display their name + delay time
-    	for (Map.Entry m: employees.getActiveBaristas().entrySet()) {
-    		String Cname = m.toString();
-    		String display = String.format("%-40s %-4s", Cname); // Format the display
+    	HashMap<String, FoodStaff> q = employees.getActiveBaristas();	//Access List of baristas
+    	String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", q.size(), " active baristas.");	
+    	baristaModel.addElement(display1);	//Display number of active baristas
+    	
+    	for (Map.Entry m: q.entrySet()) {  //For each baristas
+    		String Bname = m.toString();
+    		String display = String.format("%-40s %-4s", Bname);  //Format the display
     		baristaModel.addElement(display);
     	}
     	baristalist.setModel(baristaModel);

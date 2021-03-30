@@ -328,7 +328,7 @@ public class CoffeeShop {
 	 * Kills the given cashier thread and removes it from the active cashier map
 	 * @param name of the cashier to end their shift
 	 */
-   public synchronized void removeCashier(String name) {
+   public static synchronized void removeCashier(String name) {
 	   System.out.println("Cashier " + name + " has ended their shift");
 	   cashierThreads.get(name).interrupt();  // Interrupt the thread causing it to finalise their run 
 	   cashierThreads.remove(name);  // Remove the thread from the list
@@ -339,7 +339,7 @@ public class CoffeeShop {
 	 * Kills the given barista thread and removes it from the active barista map
 	 * @param name of the barista to end their shift
 	 */
-   public synchronized void removeBarista(String name) {
+   public static synchronized void removeBarista(String name) {
 	   System.out.println("Barista " + name + " has ended their shift");
 	   baristaList.get(name).interrupt();  // Interrupt the thread causing it to finalise their run 
 	   baristaList.remove(name);  // Remove the thread from the list
@@ -350,7 +350,7 @@ public class CoffeeShop {
 	 * Kills the given cook thread and removes it from the active cook map
 	 * @param name of the cook to end their shift
 	 */
-   public synchronized void removeCook(String name) {
+   public static synchronized void removeCook(String name) {
 	   System.out.println("Cook " + name + " has ended their shift");
 	   cookList.get(name).interrupt();  // Interrupt the thread causing it to finalise their run 
 	   cookList.remove(name);  // Remove the thread from the list

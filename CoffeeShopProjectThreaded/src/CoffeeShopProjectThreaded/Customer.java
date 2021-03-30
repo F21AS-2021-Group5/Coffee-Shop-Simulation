@@ -33,6 +33,8 @@ public class Customer {
 	private LocalDateTime timestamp;
 	private float cartTotalPrice;
 	
+	private String cashierServing;
+	
 	HashMap<String, ArrayList<LocalDateTime>> cart;
 
 	/**
@@ -175,6 +177,14 @@ public class Customer {
 		return calendar.getActualMaximum(Calendar.DAY_OF_MONTH); 
 	}
 	
+	public String getCashierServing() {
+		return cashierServing;
+	}
+
+	public void setCashierServing(String cashierServing) {
+		this.cashierServing = cashierServing;
+	}
+
 	/**
 	 * Checks if the date and time input is valid
 	 * @param ldt The local date/time

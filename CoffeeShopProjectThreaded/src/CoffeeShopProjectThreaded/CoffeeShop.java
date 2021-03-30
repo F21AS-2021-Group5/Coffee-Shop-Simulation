@@ -37,6 +37,8 @@ public class CoffeeShop {
 	public static HashMap<String, ArrayList<String> > recipeBook; // Stores recipes
 	public static Map<String, HashSet<String> > foodMap;          // Map
 	
+	static NewGUI gui;
+	
 
 	// Data MODELS 
 	NewCustomerQueue queue;
@@ -44,16 +46,16 @@ public class CoffeeShop {
 	public static NewCustomerQueue shopQueue;
 	public static NewCustomerQueue onlineQueue;
 
-	Inventory inventory;
-	Bookkeeping books;
-	OrderQueue kitchenQueue;
-	OrderQueue barQueue;
-	Employees employees;
+	public static Inventory inventory;
+	public static Bookkeeping books;
+	public static OrderQueue kitchenQueue;
+	public static OrderQueue barQueue;
+	public static Employees employees;
 	
 	//ArrayList<Thread> cashierThreads = new ArrayList<Thread>(); 
-	HashMap<String, Thread> cashierThreads;
-	HashMap<String, Thread> baristaList;
-	HashMap<String, Thread> cookList;
+	public static HashMap<String, Thread> cashierThreads;
+	public static HashMap<String, Thread> baristaList;
+	public static HashMap<String, Thread> cookList;
 	
 
 	String[] cashierNames={"Ron","Leslie", "April", "Donna","Andy","Ann","Ben", 
@@ -258,14 +260,17 @@ public class CoffeeShop {
 	/**
 	 * Adds new cashier and creates a thread for it  
 	 */
-   public void addCashier() {
+   public static Cashier addCashier() {
 	   Cashier cash = employees.addCashier(); // Add cashier to the employees model
+	   cash.addPropertyChangeListener(gui);
 	   // Create runnable for cashier object
 	   Runnable cashier = new CashierRunnable(cash.getName(), 800L, onlineQueue, shopQueue, kitchenQueue, barQueue, inventory, books, cash); // or an anonymous class, or lambda...
 	   Thread t = new Thread(cashier);
 	   t.setPriority(2);                      // Sets priority
 	   cashierThreads.put(cash.getName(), t);   // Holds active cashier threads
 	   t.start();                             // Starts the thread
+	   
+	   return cash;
    }
    /**
 	 * Creates customer queue handler which adds customers to the queue  
@@ -298,7 +303,7 @@ public class CoffeeShop {
    /**
 	 * Adds new cook and creates a thread for it  
 	 */
-   public void addCook() {
+   public static void addCook() {
 	   FoodStaff kitchenStaff = employees.addCook(); // Add cashier to the employees model
 	   
 	   // Creates cook object which processes orders related to Food and Sides
@@ -357,7 +362,7 @@ public class CoffeeShop {
 		CoffeeShop shop = new CoffeeShop();
 		shop.createHandler(15);
 		
-		shop.addCashier();
+		//shop.addCashier();
 		//shop.addCashier();
 		
 		//Subject subject = null;
@@ -369,16 +374,17 @@ public class CoffeeShop {
 		
 		
 		
-		//NewGUI gui = new NewGUI(shop.shopQueue);
+		gui = new NewGUI(shop.shopQueue);
 		//shopQueue.addPropertyChangeListener(gui);
-		MyPropertyChange observer = new MyPropertyChange();
+		//MyPropertyChange observer = new MyPropertyChange();
 
 		//observable.addPropertyChangeListener(observer);
-		CoffeeShop.shopQueue.addPropertyChangeListener(observer);
+		CoffeeShop.shopQueue.addPropertyChangeListener(gui);
+	
 		
-		//gui.initializeGUI();
-		//gui.paintScreen();
-		//gui.run();
+		gui.initializeGUI();
+		gui.paintScreen();
+		gui.run();
 
 		//shop.addBarista();
 		//shop.addBarista();

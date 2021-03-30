@@ -131,9 +131,12 @@ public class CashierRunnable implements Runnable{
 				
 				// if online queue empty, go to in-shop queue 
 				if (onlineQueue.getQueue().isEmpty()) {
-					out = shopQueue.removeFromQueue();
-					currentCustomer = out.getCustomer();
-					cashier.setCustomer(currentCustomer);
+					if (!shopQueue.getQueue().isEmpty())
+					{
+						out = shopQueue.removeFromQueue();
+						currentCustomer = out.getCustomer();
+						cashier.setCustomer(currentCustomer);
+					}
 					
 				// if online queue not empty, go to it 
 				} else {
@@ -152,19 +155,22 @@ public class CashierRunnable implements Runnable{
 			}			
 			
 			/* Adds the removed customer's processed orders to queues for food preparation */
-			for (String item: currentCustomer.getCart().keySet()) {
-				try {
-					if (isBarFood(item))
-						barQueue.addToQueue(currentCustomer.getId(), item);
-					else 
-						kitchenQueue.addToQueue(currentCustomer.getId(), item);
-				} catch (NoMatchingMenuItemIDException e) {
-					e.printStackTrace();
+			if (currentCustomer != null) {
+				for (String item: currentCustomer.getCart().keySet()) {
+					try {
+						if (isBarFood(item))
+							barQueue.addToQueue(currentCustomer.getId(), item);
+						else 
+							kitchenQueue.addToQueue(currentCustomer.getId(), item);
+					} catch (NoMatchingMenuItemIDException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			
+			
 			// checks if output was successful 
-			if (out.isSuccess()) {
+			if (out != null && out.isSuccess()) {
 
 				cashier.runCashier();
 				System.out.println("Cashier " + name + " removed customer " + currentCustomer.getId() + " -> size: " + out.updatedSize);

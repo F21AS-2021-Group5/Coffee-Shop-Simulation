@@ -179,8 +179,11 @@ public class NewCustomerQueue{
 	   		}
 	   		
 	   		// add customer and notify all threads that resource can be accessed again
+	   		int oldSize = queue.size();
 	   		queue.add(customer);
-	   		setMessage(queue);
+	   		Deque<Customer> queue1  =new LinkedList<Customer>();
+	   		//setMessage(queue, "test2");
+	   		setMessage(null, customer, isOnline, "added");
 	   		notifyAll();
 	   		
 		   		
@@ -206,8 +209,12 @@ public class NewCustomerQueue{
     	}
     	
     	// removes customer and notify all threads that resource can be accessed again
+    	int oldSize = queue.size();
 		customer = queue.pop();
-		setMessage(queue);
+		//setMessage(queue, "test");
+		System.out.println(customer);
+		System.out.println(isOnline);
+		setMessage(null, customer, isOnline, "removed");
 		notifyAll(); 
 		
 		// accordingly returns the output
@@ -225,12 +232,13 @@ public class NewCustomerQueue{
     	support.removePropertyChangeListener(pcl);
     }
     
-    public void setMessage(Deque<Customer> custVal) {
-    	Deque<Customer> oldVal = this.queue;
-    	
-    	this.queue = custVal;
-    	support.firePropertyChange("Anything", oldVal, custVal);
+
     
+    public void setMessage(Customer oldVal, Customer newVal, boolean online, String message) {
+    	if (online)
+    		support.firePropertyChange(message + " online", oldVal, newVal);
+    	else
+    		support.firePropertyChange(message + " inshop", oldVal, newVal);    
     }
     
     

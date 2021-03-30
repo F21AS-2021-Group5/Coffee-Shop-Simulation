@@ -15,6 +15,8 @@ package CoffeeShopProjectThreaded;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -35,6 +37,7 @@ public class Cashier {
 	int discount1 = 0;
 	int discount2 = 0;
 	int discount3 = 0;
+	private PropertyChangeSupport support;
 	
 	String name;
 	
@@ -43,6 +46,7 @@ public class Cashier {
 	 * @param ID Cashier identifier
 	 */
 	public Cashier(String name) {
+		support = new PropertyChangeSupport(this);
 		currentCustomer = null;
 		this.name =name;
 	}
@@ -146,8 +150,16 @@ public class Cashier {
 	 * @param customer Customer object 
 	 */
 	public void setCustomer(Customer customer) {
+		System.out.println("inside cashier class");
+		
+		
 		// For values that are initialised at the initialisation of coffeeShop
+		customer.setCashierServing(name);
+		System.out.println(customer.getCashierServing());
+		System.out.println(customer.getName());
 		currentCustomer = customer;
+		setMessage(null, customer,"newCustomer");
+
 	}
 	
 	/**
@@ -181,6 +193,22 @@ public class Cashier {
 		getCartTotalPrice();
 		
 	}
+	
+	 public void addPropertyChangeListener(PropertyChangeListener pcl) {
+	    	support.addPropertyChangeListener(pcl);
+	    }
+	    
+	    public void removePropertyChangeListener(PropertyChangeListener pcl) {
+	    	support.removePropertyChangeListener(pcl);
+	    }
+	    
+
+	    
+	    public void setMessage(Customer oldVal, Customer newVal,  String message) {
+	    	
+	    		support.firePropertyChange(message, oldVal, newVal);
+	    	  
+	    }
 	
 
 }

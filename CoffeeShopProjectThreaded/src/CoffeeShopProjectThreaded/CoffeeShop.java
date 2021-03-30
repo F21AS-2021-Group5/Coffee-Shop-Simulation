@@ -366,10 +366,19 @@ public class CoffeeShop {
 		//NewCustomerQueue q = new NewCustomerQueue(true);
 //		q.registerObserver(obj1);
 //		System.out.println();
-		NewGUI gui = new NewGUI(shop.shopQueue);
-		gui.initializeGUI();
-		gui.paintScreen();
-		gui.run();
+		
+		
+		
+		//NewGUI gui = new NewGUI(shop.shopQueue);
+		//shopQueue.addPropertyChangeListener(gui);
+		MyPropertyChange observer = new MyPropertyChange();
+
+		//observable.addPropertyChangeListener(observer);
+		CoffeeShop.shopQueue.addPropertyChangeListener(observer);
+		
+		//gui.initializeGUI();
+		//gui.paintScreen();
+		//gui.run();
 
 		//shop.addBarista();
 		//shop.addBarista();

@@ -15,6 +15,8 @@ package CoffeeShopProjectThreaded;
 
 //import org.omg.PortableServer.THREAD_POLICY_ID;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -32,7 +34,9 @@ import java.util.Set;
 import javax.swing.*;
 
 
-public class NewGUI implements Observer{
+
+
+public class NewGUI implements PropertyChangeListener{
 	//Frame
 	JFrame frame = new JFrame("Coffee Shop");
 	
@@ -99,12 +103,20 @@ public class NewGUI implements Observer{
 //	private int observerID;	//Track observers
 	private Subject subject;	//Holds reference to NewGUI object
 	NewCustomerQueue shopQueue;	
+	Deque<Customer> shopQueueObse;
 	
 	//GUI constructor
 	public NewGUI(NewCustomerQueue shopQueue) { //CoffeeShop main, 
 		//this.coffeeshop = main;
+		//shopQueueObse = new 
 		this.shopQueue = shopQueue;
-		shopQueue.registerObserver(this);
+		shopcustomerlist.setVisible(true);
+	
+		CoffeeShop.shopQueue.addPropertyChangeListener(this);//(e -> System.out.println("HERE")); //setQueue((Deque<Customer>) e.getNewValue())
+		shopcustomerlist.setModel(shopModel);
+    	
+		//propertyChange();
+		//shopQueue.registerObserver(this);
 //		this.newCustomerQueue = custQ;	//remember clock object
 //		custQ.registerObserver(this);
 		//update();	//set initial customer queue
@@ -120,6 +132,13 @@ public class NewGUI implements Observer{
 
 		
 	}
+	
+	public void setQueue(	Deque<Customer> queue) {
+		System.out.println("GUI");
+		this.shopQueueObse = queue;
+	}
+	
+
 	
 	//Create and show GUI
 	public void initializeGUI() {
@@ -440,6 +459,7 @@ public class NewGUI implements Observer{
     	NewCustomerQueue q = CoffeeShop.shopQueue;			//newCustomerQueue.getQueue();		//shopQueue.getShopQueue();
     	//NewCustomerQueue q = (NewCustomerQueue) tes.clone();
     	//HERE
+    
 
     	//Customer customer = coffeeshop.shopQueue.getQueue()
     	shopModel.clear();
@@ -451,15 +471,17 @@ public class NewGUI implements Observer{
 //    	}
     	
         //shopModel.addElement(shopQueue.getQueue().size());
+    	if(shopQueueObse!=null) {
+    	String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", shopQueueObse.size(), " in shop customers waiting\n\n");
     	
-    	String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", q.getQueue().size(), " in shop customers waiting\n\n");
     	shopModel.addElement(display1);
-        //for(int i = 0; i<q.getQueue().size(); i++) {
-    	if(!(q.getQueue().isEmpty())) {
-    		for(Customer customer : q.getQueue()){
+        
+    	
+    		for(Customer customer : shopQueueObse){
             	String display = String.format("%-10s\n", customer.getName());
             	shopModel.addElement(display);
             }
+
     	}
     	
         
@@ -666,13 +688,19 @@ public class NewGUI implements Observer{
 
 	public void run() {
 		while(true) {
-			update();
-			try {
-				Thread.sleep(100);
-			}catch(InterruptedException e) {
-				e.printStackTrace();
-			}
+			//displayCustomer();
+			//this.propertyChange(syso);
+			//CoffeeShop.shopQueue.();
+		
 		}
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		CoffeeShop.shopQueue.setMessage((Deque<Customer>) evt.getNewValue());
+		System.out.println(evt.getNewValue());
+		//setNews((Deque<Customer>) evt.getNewValue());
+		
 	}
     
     

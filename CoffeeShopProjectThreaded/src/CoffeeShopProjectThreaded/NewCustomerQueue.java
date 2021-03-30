@@ -8,11 +8,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.Map.Entry;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
-public class NewCustomerQueue implements Subject{
+public class NewCustomerQueue{
 	
 	//List of observers
 	private List<Observer> observers;
+	private PropertyChangeSupport support;
 	
 	private Deque<Customer> queue; // customer queue
 	private boolean isOnline; // states whether queue is online or in-shop
@@ -33,6 +37,7 @@ public class NewCustomerQueue implements Subject{
 	public NewCustomerQueue(boolean isOnline) {
 		this.isOnline = isOnline;
 		
+		support = new PropertyChangeSupport(this);
 		observers = new ArrayList<Observer>();
 		queue = new LinkedList<Customer>();		
 		log = Log.getInstance();
@@ -102,7 +107,7 @@ public class NewCustomerQueue implements Subject{
 		 */
 		public void setUpdatedSize(int updatedSize) {
 			this.updatedSize = updatedSize;
-			notifyObservers();
+			//notifyObservers();
 		}
 	}	
 
@@ -118,8 +123,10 @@ public class NewCustomerQueue implements Subject{
 	 * @param queue Customer queue
 	 */
 	public void setQueue(Deque<Customer> queue) {
+		support.firePropertyChange("queue", this.queue, queue);
 		this.queue = queue;
-		notifyObservers();  //All observers will be notified
+		
+		//notifyObservers();  //All observers will be notified
 	}
 
 	/**
@@ -173,7 +180,9 @@ public class NewCustomerQueue implements Subject{
 	   		
 	   		// add customer and notify all threads that resource can be accessed again
 	   		queue.add(customer);
+	   		setMessage(queue);
 	   		notifyAll();
+	   		
 		   		
 		} catch (Exception e) {
 			return new CustomerQueueOutput(customer, false,queue.size());
@@ -198,6 +207,7 @@ public class NewCustomerQueue implements Subject{
     	
     	// removes customer and notify all threads that resource can be accessed again
 		customer = queue.pop();
+		setMessage(queue);
 		notifyAll(); 
 		
 		// accordingly returns the output
@@ -206,29 +216,47 @@ public class NewCustomerQueue implements Subject{
 		else
 			return new CustomerQueueOutput(customer, true, queue.size());
     }
+    
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+    	support.addPropertyChangeListener(pcl);
+    }
+    
+    public void removePropertyChangeListener(PropertyChangeListener pcl) {
+    	support.removePropertyChangeListener(pcl);
+    }
+    
+    public void setMessage(Deque<Customer> custVal) {
+    	Deque<Customer> oldVal = this.queue;
+    	
+    	this.queue = custVal;
+    	support.firePropertyChange("Anything", oldVal, custVal);
+    
+    }
+    
+    
 
-	@Override
-	public void registerObserver(Observer newObserver) {
-		observers.add(newObserver);
-		System.out.println("New Observer added");
-		
-	}
-
-	@Override
-	public void removeObserver(Observer deleteObserver) {
-		int observerIndex = observers.indexOf(deleteObserver);
-		System.out.println("Observer " + (observerIndex+1) + " has been deleted");
-		
-		observers.remove(observerIndex);  //Delete observers from Arraylist
-		
-	}
-
-	@Override
-	public void notifyObservers() {
-		for(Observer observer : observers) {	
-		observer.update();
-		}	
-	}
+//	@Override
+//	public void registerObserver(Observer newObserver) {
+//		observers.add(newObserver);
+//		System.out.println("New Observer added");
+//		
+//	}
+//
+//	@Override
+//	public void removeObserver(Observer deleteObserver) {
+//		int observerIndex = observers.indexOf(deleteObserver);
+//		System.out.println("Observer " + (observerIndex+1) + " has been deleted");
+//		
+//		observers.remove(observerIndex);  //Delete observers from Arraylist
+//		
+//	}
+//
+//	@Override
+//	public void notifyObservers() {
+//		for(Observer observer : observers) {	
+//		observer.update();
+//		}	
+//	}
     
     /*
     public String endOfDayReport() {

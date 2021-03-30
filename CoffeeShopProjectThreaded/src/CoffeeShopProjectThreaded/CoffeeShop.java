@@ -41,8 +41,8 @@ public class CoffeeShop {
 	// Data MODELS 
 	NewCustomerQueue queue;
 	
-	NewCustomerQueue shopQueue;
-	NewCustomerQueue onlineQueue;
+	public static NewCustomerQueue shopQueue;
+	public static NewCustomerQueue onlineQueue;
 
 	Inventory inventory;
 	Bookkeeping books;
@@ -63,6 +63,7 @@ public class CoffeeShop {
 	
 	//public static HashMap<String, Cashier> acctiveCashiers;  // - 
 	public static HashMap<String, Customer> customerList;   // -
+	//public static NewCustomerQueue inshopQueue;
 
 
 
@@ -75,6 +76,7 @@ public class CoffeeShop {
 	{
 		menu = new HashMap<>(); 
 		customerList = new HashMap<>();
+		//inshopQueue = new NewCustomerQueue(false);
 		
 		fillMenu("MenuItems");                      // Fills the menu with all the items 
 		
@@ -353,22 +355,27 @@ public class CoffeeShop {
    // main method 
 	public static void main(String[] args) {
 		CoffeeShop shop = new CoffeeShop();
-		
 		shop.createHandler(15);
 		
 		shop.addCashier();
-		shop.addCashier();
+		//shop.addCashier();
 		
-		NewGUI gui = new NewGUI(shop);
+		//Subject subject = null;
+		
+//		Observer obj1 = new NewGUI(shop, subject);
+		//NewCustomerQueue q = new NewCustomerQueue(true);
+//		q.registerObserver(obj1);
+//		System.out.println();
+		NewGUI gui = new NewGUI(shop.shopQueue);
 		gui.initializeGUI();
 		gui.paintScreen();
 		gui.run();
 
-		shop.addBarista();
-		shop.addBarista();
+		//shop.addBarista();
+		//shop.addBarista();
 		
-		shop.addCook();
-		shop.addCook();
+		//shop.addCook();
+		//shop.addCook();
 		
 		//shop.removeCashier();
 		

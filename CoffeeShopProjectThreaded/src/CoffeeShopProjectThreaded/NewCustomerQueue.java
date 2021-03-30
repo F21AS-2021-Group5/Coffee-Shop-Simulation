@@ -1,13 +1,18 @@
 package CoffeeShopProjectThreaded;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import java.util.Map.Entry;
 
-public class NewCustomerQueue {
+public class NewCustomerQueue implements Subject{
+	
+	//List of observers
+	private List<Observer> observers;
 	
 	private Deque<Customer> queue; // customer queue
 	private boolean isOnline; // states whether queue is online or in-shop
@@ -28,6 +33,7 @@ public class NewCustomerQueue {
 	public NewCustomerQueue(boolean isOnline) {
 		this.isOnline = isOnline;
 		
+		observers = new ArrayList<Observer>();
 		queue = new LinkedList<Customer>();		
 		log = Log.getInstance();
 		menuList = new HashMap<Integer, String>();
@@ -96,6 +102,7 @@ public class NewCustomerQueue {
 		 */
 		public void setUpdatedSize(int updatedSize) {
 			this.updatedSize = updatedSize;
+			notifyObservers();
 		}
 	}	
 
@@ -112,6 +119,7 @@ public class NewCustomerQueue {
 	 */
 	public void setQueue(Deque<Customer> queue) {
 		this.queue = queue;
+		notifyObservers();  //All observers will be notified
 	}
 
 	/**
@@ -127,6 +135,7 @@ public class NewCustomerQueue {
 	 */
 	public void setType(boolean isOnline) {
 		this.isOnline = isOnline;
+		//notifyObservers();	//All observers will be notified
 	}
 	
 	/**
@@ -197,6 +206,29 @@ public class NewCustomerQueue {
 		else
 			return new CustomerQueueOutput(customer, true, queue.size());
     }
+
+	@Override
+	public void registerObserver(Observer newObserver) {
+		observers.add(newObserver);
+		System.out.println("New Observer added");
+		
+	}
+
+	@Override
+	public void removeObserver(Observer deleteObserver) {
+		int observerIndex = observers.indexOf(deleteObserver);
+		System.out.println("Observer " + (observerIndex+1) + " has been deleted");
+		
+		observers.remove(observerIndex);  //Delete observers from Arraylist
+		
+	}
+
+	@Override
+	public void notifyObservers() {
+		for(Observer observer : observers) {	
+		observer.update();
+		}	
+	}
     
     /*
     public String endOfDayReport() {

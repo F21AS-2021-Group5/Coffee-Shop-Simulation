@@ -16,17 +16,31 @@ package CoffeeShopProjectThreaded;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Keeps list of all the observers that needs to know
+ * if information has changed
+ * 
+ */
 public interface Subject {
-	List<Observer> observers = new ArrayList<Observer>();
-	
-	//methods to register/unregister and remove observers
-	public void registerObserver(Observer obj);
-	public void unregister(Observer obj);
-	public void removeObserver(Observer obj);
-	
+	//Add new Observer
+	public void registerObserver(Observer newObserver);
+	//Remove Observer
+	public void removeObserver(Observer deleteObserver);
 	//Notify all Observers
-	public void notifyObservers();
-	
-	//method to get updates from subject
-	public Object getUpdate(Observer obj);
+	public void notifyObservers();	
 }
+
+
+//private List<Observer> observers = new ArrayList<Observer>();
+
+//observers.add(newObserver);
+//System.out.println("New Observer added");
+
+//int observerIndex = observers.indexOf(deleteObserver);
+//System.out.println("Observer " + (observerIndex+1) + " has been deleted");
+//
+//observers.remove(observerIndex);  //Delete observers from Arraylist
+
+//for(Observer observer : observers) {	
+//observer.update();
+//}	

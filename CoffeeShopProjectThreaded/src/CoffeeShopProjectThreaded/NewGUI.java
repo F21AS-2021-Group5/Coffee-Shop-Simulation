@@ -32,7 +32,7 @@ import java.util.Set;
 import javax.swing.*;
 
 
-public class NewGUI{
+public class NewGUI implements Observer{
 	//Frame
 	JFrame frame = new JFrame("Coffee Shop");
 	
@@ -81,16 +81,44 @@ public class NewGUI{
 	Customer currentCustomer;
 	CoffeeShop coffeeshop;
 	Employees employees;
-	NewCustomerQueue newCustomerQueue;
+	NewCustomerQueue newCustomerQueue;	//Subject class
 	CustomerQueue onlineQueue;
-	CustomerQueue shopQueue;
+	//CustomerQueue shopQueue;
 	CashierRunnable cashierRunnable;
 	FoodStaffRunnable foodStaffRun;
 	Log log;
-		
+	
+	NewCustomerQueue inshopqueue;
+	
+	//For observer
+	private Deque<Customer> shopQueueObserver;
+	private Deque<Customer> onlineQueueObserver;
+	private long delayObserver;
+	
+	private static int observerIDTracker = 0;	//Used as counter
+//	private int observerID;	//Track observers
+	private Subject subject;	//Holds reference to NewGUI object
+	NewCustomerQueue shopQueue;	
+	
 	//GUI constructor
-	public NewGUI(CoffeeShop main) {
-		this.coffeeshop = main;
+	public NewGUI(NewCustomerQueue shopQueue) { //CoffeeShop main, 
+		//this.coffeeshop = main;
+		this.shopQueue = shopQueue;
+		shopQueue.registerObserver(this);
+//		this.newCustomerQueue = custQ;	//remember clock object
+//		custQ.registerObserver(this);
+		//update();	//set initial customer queue
+		
+		
+//		this.subject = subject;
+		//subject.registerObserver(this); //Stores reference to NewGUI object
+		
+		//this.newGui = newGui;	
+		//this.observerID = ++observerIDTracker;	//Assign an observerID and increment static counter
+		//System.out.println("New Observer " + this.observerID);	//Notify of new observer
+		//newGui.registerObserver(this);	//Add observer to Subjects ArrayList
+
+		
 	}
 	
 	//Create and show GUI
@@ -205,6 +233,7 @@ public class NewGUI{
 		
 		ActionListener Listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//newCustomerQueue.setQueue(shopQueueObserver); //Set queue
 				//Create new cashier
 				if (e.getSource() == addCashier) {
 					int cashierSize = coffeeshop.cashierThreads.size(); //Store number of existent cashier
@@ -214,7 +243,7 @@ public class NewGUI{
 						         "Error", JOptionPane.ERROR_MESSAGE);
 					}
 					else {
-						//coffeeshop.addCashier(); //Create New cashier
+						coffeeshop.addCashier(); //Create New cashier
 						newCashierFrame(); //create new window for cashier showing customer handled and their order
 					}
 				}
@@ -390,54 +419,87 @@ public class NewGUI{
 		
 	}
 	
-	public void update() {
-		System.out.println("I AM HEREEEEEEEE HELLOO");
+
+	public synchronized void update() {
+		//System.out.println("I AM HEREEEEEEEE HELLOO");
 		displayCustomer();
-		displayOnlineCustomer();
-		displayCashier();
-		displayCook();
-		displayBarista();
+		//paintScreen();
+//		displayOnlineCustomer();
+//		displayCashier();
+//		displayCook();
+//		displayBarista();
+		
+		//observerIDTracker++;	//Increment counter
+		//System.out.println("GUI has been updated " + observerIDTracker + " times.");
 	}
 	
 	/**
 	 * Display the list of in shop customer queue
 	 */
-    private void displayCustomer() {    	
-    	Deque<Customer> q = shopQueue.getShopQueue();
-    	//TEST: display works. but need observer to show
-//    	Queue q = new LinkedList();
-//    	q.add("Mark");
-//    	q.add("Jean");
-//    	q.add("Lola");
-//    	q.add("Luke");
-    	if(!(q.isEmpty())) {
-    		String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", q.size(), " in shop customers waiting\n\n");
-    		shopModel.addElement(display1);
-        	for(int i = 0; i<q.size(); i++) {
-        		String display = String.format("%-10s\n", q.toString());
-        		shopModel.addElement(display);
-        	}
+    private synchronized void displayCustomer() {    	
+    	NewCustomerQueue q = CoffeeShop.shopQueue;			//newCustomerQueue.getQueue();		//shopQueue.getShopQueue();
+    	//NewCustomerQueue q = (NewCustomerQueue) tes.clone();
+    	//HERE
+
+    	//Customer customer = coffeeshop.shopQueue.getQueue()
+    	shopModel.clear();
+//    	for(Customer customer : CoffeeShop.shopQueue.getQueue()){
+//    	//for(int i = 0; i<coffeeshop.shopQueue.getQueue().size(); i++) {
+//    		String display = String.format("%-10s %-5s %-10s %-5s %-5s\n", customer.getTimestamp(), " Name: ",customer.getName(), "  Cart: ", customer.getCart().size() );
+//    		//String display = String.format("%-10s\n", "hello");
+//    		shopModel.addElement(display);
+//    	}
+    	
+        //shopModel.addElement(shopQueue.getQueue().size());
+    	
+    	String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", q.getQueue().size(), " in shop customers waiting\n\n");
+    	shopModel.addElement(display1);
+        //for(int i = 0; i<q.getQueue().size(); i++) {
+    	if(!(q.getQueue().isEmpty())) {
+    		for(Customer customer : q.getQueue()){
+            	String display = String.format("%-10s\n", customer.getName());
+            	shopModel.addElement(display);
+            }
     	}
+    	
+        
+       
+    	//}
+        //shopModel.addElement(shopQueue.getQueue().size());
 		shopcustomerlist.setModel(shopModel);
     	shopcustomerlist.setVisible(true);
+    	
+    	
+//    	HashMap<String, Customer> q = coffeeshop.q
+//    	String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", q.size(), " active customers");
+//    	shopModel.addElement(display1);	//Display number of active cashiers
+//		
+//    	for (Map.Entry m: q.entrySet()) {	//For each cashiers
+//    		if(!(q.isEmpty())) {
+//    			String Cname = m.toString();
+//        		String display = String.format("%-10s\n", Cname);  //Display their name
+//        		shopModel.addElement(display);
+//    		}
+//    	}
+//    	shopcustomerlist.setModel(shopModel);
     }
     
 	/**
 	 * Display the list of online customer queue
 	 */
-    private void displayOnlineCustomer() {    	
-    	Deque<Customer> q = shopQueue.getOnlineQueue();
-    	if(!(q.isEmpty())) {
-    		String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", q.size(), " online customers waiting\n\n");
-    		onlineModel.addElement(display1);
-        	for(int i = 0; i<q.size(); i++) {
-        		String display = String.format("%-10s\n", q.toString());
-        		onlineModel.addElement(display);
-        	}
-    	}
-		onlinecustomerlist.setModel(onlineModel);
-		onlinecustomerlist.setVisible(true);
-    }
+//    private void displayOnlineCustomer() {    	
+//    	Deque<Customer> q = shopQueue;
+//    	if(!(q.isEmpty())) {
+//    		String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", q.size(), " online customers waiting\n\n");
+//    		onlineModel.addElement(display1);
+//        	for(int i = 0; i<q.size(); i++) {
+//        		String display = String.format("%-10s\n", q.toString());
+//        		onlineModel.addElement(display);
+//        	}
+//    	}
+//		onlinecustomerlist.setModel(onlineModel);
+//		onlinecustomerlist.setVisible(true);
+//    }
 
 	/**
 	 * Display the list of existent cashiers
@@ -599,8 +661,9 @@ public class NewGUI{
 		}
 		custList.setText(output);
     }
-
+	
 	//While GUI is running, keep updating
+
 	public void run() {
 		while(true) {
 			update();
@@ -611,4 +674,8 @@ public class NewGUI{
 			}
 		}
 	}
+    
+    
+
+
 }

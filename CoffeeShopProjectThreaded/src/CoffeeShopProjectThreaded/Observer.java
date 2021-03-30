@@ -13,9 +13,9 @@
 
 package CoffeeShopProjectThreaded;
 
+import java.util.Deque;
+
 public interface Observer {
 	//protected Subject subject;
-	
-	public void update();  //method to update the observer, used by subject
-	public void setSubject(Subject sub);  //attach with subject to observe
+	public void update();
 }

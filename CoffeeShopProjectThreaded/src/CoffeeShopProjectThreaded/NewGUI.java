@@ -694,8 +694,7 @@ public class NewGUI implements PropertyChangeListener {
 		custList.setBounds(10, 40, 300, 100);
 		frame.getContentPane().add(custList);
 		String output = " ";
-		output += String.format("%-10s\n", "Customer: " + barista.getName());
-		String out2 = " ";
+		//output += String.format("%-10s\n", "Customer: " + barista.getName());
 		output += String.format("%-10s\n", "Barista is preparing drink for customer:  "  + barista.getCurrentCustomer().getName());
 		output += String.format("%-10s\n",  "Preparing item: " + barista.getCurrentItem().getName());
 		output += String.format("%-10s\n",  "Currently doing: ");

@@ -291,40 +291,55 @@ public class NewGUI implements PropertyChangeListener {
 				// Remove selected cashier
 				if (e.getSource() == removecashiers) {
 					String selectedcashier = (String) cashierlist.getSelectedValue();
-					selectedcashier = selectedcashier.trim(); // remove string from list  
-					int cashierSize = CoffeeShop.employees.activeCashiers.size(); // Store number of existent cashier
-					if (cashierSize == 1) { // Cannot remove cashier if size less than 1
-						JOptionPane.showMessageDialog(null, "Error: you cannot have less than one cashier", "Error",
+					if(selectedcashier == null) {
+						JOptionPane.showMessageDialog(null, "Error: please select a cashier to remove", "Error",
 								JOptionPane.ERROR_MESSAGE);
-					} else {
-						cashierFrames.get(selectedcashier).dispose();  // CLOSE WINDOW 
-						CoffeeShop.removeCashier(selectedcashier);
+					}else {
+						selectedcashier = selectedcashier.trim(); // remove string from list  
+						int cashierSize = CoffeeShop.employees.activeCashiers.size(); // Store number of existent cashier
+						if (cashierSize == 1) { // Cannot remove cashier if size less than 1
+							JOptionPane.showMessageDialog(null, "Error: you cannot have less than one cashier", "Error",
+									JOptionPane.ERROR_MESSAGE);
+						}else{
+							cashierFrames.get(selectedcashier).dispose();  // CLOSE WINDOW 
+							CoffeeShop.removeCashier(selectedcashier);
+						}
 					}
 				}
 				// Remove selected cook
 				if (e.getSource() == removecooks) {
 					String selectedcook = (String) cooklist.getSelectedValue();
-					selectedcook = selectedcook.trim(); // remove string from list
-					int cookSize = CoffeeShop.employees.activeCooks.size(); // Store number of existent barista
-					if (cookSize == 1) { // Cannot remove barista if size less than 1
-						JOptionPane.showMessageDialog(null, "Error: you cannot have less than one cook", "Error",
+					if(selectedcook == null) {
+						JOptionPane.showMessageDialog(null, "Error: please select a cook to remove", "Error",
 								JOptionPane.ERROR_MESSAGE);
-					} else {
-						cookFrames.get(selectedcook).dispose(); //Close Window
-						CoffeeShop.removeCook(selectedcook);	//Interrupt selected thread cook 
+					}else {
+						selectedcook = selectedcook.trim(); // remove string from list
+						int cookSize = CoffeeShop.employees.activeCooks.size(); // Store number of existent barista
+						if (cookSize == 1) { // Cannot remove barista if size less than 1
+							JOptionPane.showMessageDialog(null, "Error: you cannot have less than one cook", "Error",
+									JOptionPane.ERROR_MESSAGE);
+						} else {
+							cookFrames.get(selectedcook).dispose(); //Close Window
+							CoffeeShop.removeCook(selectedcook);	//Interrupt selected thread cook 
+						}
 					}
 				}
 				// Remove selected barista
 				if (e.getSource() == removebaristas) {
 					String selectedbarista = (String) baristalist.getSelectedValue();
-					selectedbarista = selectedbarista.trim(); // remove string from list
-					int baristaSize = CoffeeShop.employees.activeBaristas.size(); // Store number of existent barista
-					if (baristaSize == 1) { // Cannot remove barista if size less than 1
-						JOptionPane.showMessageDialog(null, "Error: you cannot have less than one barista", "Error",
+					if(selectedbarista == null) {
+						JOptionPane.showMessageDialog(null, "Error: please select a barista to remove", "Error",
 								JOptionPane.ERROR_MESSAGE);
-					} else {
-						baristaFrames.get(selectedbarista).dispose(); //Close Window
-						CoffeeShop.removeBarista(selectedbarista);
+					}else {
+						selectedbarista = selectedbarista.trim(); // remove string from list
+						int baristaSize = CoffeeShop.employees.activeBaristas.size(); // Store number of existent barista
+						if (baristaSize == 1) { // Cannot remove barista if size less than 1
+							JOptionPane.showMessageDialog(null, "Error: you cannot have less than one barista", "Error",
+									JOptionPane.ERROR_MESSAGE);
+						}else{
+							baristaFrames.get(selectedbarista).dispose(); //Close Window
+							CoffeeShop.removeBarista(selectedbarista);
+						}	
 					}
 				}
 				

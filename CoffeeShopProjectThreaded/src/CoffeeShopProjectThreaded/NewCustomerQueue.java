@@ -22,6 +22,8 @@ public class NewCustomerQueue{
 	private boolean isOnline; // states whether queue is online or in-shop
 	private Log log; // used for logging data 
 	
+	private boolean locked;
+	
 	// stores all items in the menu in the form of a hashmap 
 	private HashMap<Integer, String> menuList;
 	
@@ -43,6 +45,7 @@ public class NewCustomerQueue{
 		log = Log.getInstance();
 		menuList = new HashMap<Integer, String>();
 		fillMenuList();	
+		locked = false;
 	}
 	
 	public class CustomerQueueOutput {
@@ -146,6 +149,22 @@ public class NewCustomerQueue{
 	}
 	
 	/**
+	 * 
+	 * @return
+	 */
+	public boolean isLocked() {
+		return locked;
+	}
+
+	/**
+	 * 
+	 * @param locked
+	 */
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+	}
+
+	/**
 	 * Fills a list made of all the menu items 
 	 */
 	void fillMenuList() {
@@ -198,6 +217,7 @@ public class NewCustomerQueue{
      * @return Removed customer and if operation was successful
      */
     public synchronized CustomerQueueOutput removeFromQueue() {
+    	locked = true;
     	Customer customer = null;
     	
     	// thread waits until queue is not empty anymore
@@ -215,6 +235,7 @@ public class NewCustomerQueue{
 		System.out.println(customer);
 		System.out.println(isOnline);
 		setMessage(null, customer, isOnline, "removed");
+		locked = false;
 		notifyAll(); 
 		
 		// accordingly returns the output

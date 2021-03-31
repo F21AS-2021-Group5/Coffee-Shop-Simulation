@@ -131,11 +131,31 @@ public class CashierRunnable implements Runnable{
 				
 				// if online queue empty, go to in-shop queue 
 				if (onlineQueue.getQueue().isEmpty()) {
+					
+					// shop queue is not empty, online is empty
 					if (!shopQueue.getQueue().isEmpty())
 					{
 						out = shopQueue.removeFromQueue();
 						currentCustomer = out.getCustomer();
 						cashier.setCustomer(currentCustomer);
+						
+					// both queues are empty 
+					} else {
+						// if online queue is not locked by other thread, go wait in its queue
+						if (!onlineQueue.isLocked()) {
+							out = onlineQueue.removeFromQueue();
+							currentCustomer = out.getCustomer();
+							cashier.setCustomer(currentCustomer);
+							whichQueue = "online";
+							
+						} else {
+							// if online is locked, and shop is not locked, go wait in its queue
+							if (!shopQueue.isLocked()) {
+								out = shopQueue.removeFromQueue();
+								currentCustomer = out.getCustomer();
+								cashier.setCustomer(currentCustomer);
+							}
+						}		
 					}
 					
 				// if online queue not empty, go to it 
@@ -143,15 +163,14 @@ public class CashierRunnable implements Runnable{
 					out = onlineQueue.removeFromQueue();
 					currentCustomer = out.getCustomer();
 					cashier.setCustomer(currentCustomer);
-					whichQueue = "online";
+					whichQueue = "online";							
 				}
 			}
 			else {
 				// if no online queue, just process in-shop queue 
 				out = shopQueue.removeFromQueue();
 				currentCustomer = out.getCustomer();
-				cashier.setCustomer(currentCustomer);
-				
+				cashier.setCustomer(currentCustomer);				
 			}			
 			
 			/* Adds the removed customer's processed orders to queues for food preparation */

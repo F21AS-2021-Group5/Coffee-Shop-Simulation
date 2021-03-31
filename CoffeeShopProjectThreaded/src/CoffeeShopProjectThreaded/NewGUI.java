@@ -27,11 +27,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.HashMap;
 import java.util.Queue;
 import java.util.Set;
 
 import javax.swing.*;
+
+
 
 public class NewGUI implements PropertyChangeListener {
 	// Frame
@@ -127,6 +130,7 @@ public class NewGUI implements PropertyChangeListener {
 		shopcustomerlist.setModel(shopModel);
 		onlinecustomerlist.setModel(onlineModel);
 		cashierlist.setModel(cashierModel);
+		
 		
 		cashierFrames = new HashMap<String, JFrame>();
 		cookFrames = new HashMap<String, JFrame>();
@@ -276,63 +280,59 @@ public class NewGUI implements PropertyChangeListener {
 
 		ActionListener Listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				/////////////// Creates employees ////////////////
 				// Create new cashier
 				if (e.getSource() == addCashier) {
-					int cashierSize = CoffeeShop.cashierThreads.size(); // Store number of existent cashier
+					int cashierSize = CoffeeShop.employees.activeCashiers.size(); // Store number of existent cashier
 					if (cashierSize == 11 || cashierSize > 11) { // Cannot have more than 11 cashiers
 						JOptionPane.showMessageDialog(null, "Error: you cannot create more than eleven cashiers",
 								"Error", JOptionPane.ERROR_MESSAGE);
 					} else {
-						Cashier cashier = CoffeeShop.addCashier(); // Create New cashier
+						Cashier cashier = CoffeeShop.addCashier(2000L); // Create New cashier
 						newCashierFrame(cashier); // create new window for cashier showing customer handled and their order
 					}
 				}
 				// Create new cook
 				if (e.getSource() == addCook) {
-					int cookSize = coffeeshop.cookList.size(); // Store number of existent cook
+					int cookSize = CoffeeShop.employees.activeCooks.size(); // Store number of existent cook
 					if (cookSize == 6) {
 						JOptionPane.showMessageDialog(null, "Error: you cannot create more than six cooks", "Error",
 								JOptionPane.ERROR_MESSAGE);
 					} else {
-						FoodStaff cook = CoffeeShop.addCook(); // Create new cook
+						FoodStaff cook = CoffeeShop.addCook(2000L); // Create new cook
 						newCookFrame(cook); // create new window with cook and orders handled and customer
 					}
-
 				}
 				// Create new barista
 				if (e.getSource() == addBarista) {
-					int baristaSize = coffeeshop.baristaList.size();
+					int baristaSize = CoffeeShop.employees.activeBaristas.size();
 					if (baristaSize == 5) {
 						JOptionPane.showMessageDialog(null, "Error: you cannot create more than five baristas", "Error",
 								JOptionPane.ERROR_MESSAGE);
 					} else {
-						FoodStaff barista = CoffeeShop.addBarista(); // Create new Barista
+						FoodStaff barista = CoffeeShop.addBarista(2000L); // Create new Barista
 						newBaristaFrame(barista); // create new window with barista and orders handles and customer
 					}
-
 				}
+				/////////////// Removes employees ////////////////
 				// Remove selected cashier
 				if (e.getSource() == removecashiers) {
 					String selectedcashier = (String) cashierlist.getSelectedValue();
-					selectedcashier = selectedcashier.substring(0, 20).trim(); // remove string from list
-					int cashierSize = coffeeshop.cashierThreads.size(); // Store number of existent cashier
+					selectedcashier = selectedcashier.trim(); // remove string from list  
+					int cashierSize = CoffeeShop.employees.activeCashiers.size(); // Store number of existent cashier
 					if (cashierSize == 1) { // Cannot remove cashier if size less than 1
 						JOptionPane.showMessageDialog(null, "Error: you cannot have less than one cashier", "Error",
 								JOptionPane.ERROR_MESSAGE);
 					} else {
-						CoffeeShop.cashierThreads.remove(selectedcashier);
-						System.out.println("I Remove THE cashier thread");
-						
-						//coffeeshop.removeCashier(selectedcashier);
-						// close window ??how
+						cashierFrames.get(selectedcashier).dispose();  // CLOSE WINDOW 
+						CoffeeShop.removeCashier(selectedcashier);
 					}
-
 				}
 				// Remove selected cook
 				if (e.getSource() == removecooks) {
 					String selectedcook = (String) cooklist.getSelectedValue();
 					selectedcook = selectedcook.substring(0, 20).trim(); // remove string from list
-					int cookSize = coffeeshop.cookList.size(); // Store number of existent barista
+					int cookSize = CoffeeShop.employees.activeCooks.size(); // Store number of existent barista
 					if (cookSize == 1) { // Cannot remove barista if size less than 1
 						JOptionPane.showMessageDialog(null, "Error: you cannot have less than one cook", "Error",
 								JOptionPane.ERROR_MESSAGE);
@@ -345,7 +345,7 @@ public class NewGUI implements PropertyChangeListener {
 				if (e.getSource() == removebaristas) {
 					String selectedbarista = (String) baristalist.getSelectedValue();
 					selectedbarista = selectedbarista.substring(0, 20).trim(); // remove string from list
-					int baristaSize = coffeeshop.baristaList.size(); // Store number of existent barista
+					int baristaSize = CoffeeShop.employees.activeBaristas.size(); // Store number of existent barista
 					if (baristaSize == 1) { // Cannot remove barista if size less than 1
 						JOptionPane.showMessageDialog(null, "Error: you cannot have less than one barista", "Error",
 								JOptionPane.ERROR_MESSAGE);
@@ -354,6 +354,8 @@ public class NewGUI implements PropertyChangeListener {
 						// close window
 					}
 				}
+				
+				/////////////// Set time delays ////////////////
 				// Set Delay Time for selected cashier
 				if (e.getSource() == cashierTimeOK) {
 					String time = cashierTime.getText();
@@ -370,7 +372,7 @@ public class NewGUI implements PropertyChangeListener {
 //						        "Error: you did not enter a delay time for cashier, please enter a delay time.", 
 //						         "Error", JOptionPane.ERROR_MESSAGE);
 //					}
-					if (itime < 200 || itime > 2000) { // Check delay time valid
+					if (itime < 200 || itime > 8000) { // Check delay time valid
 						JOptionPane.showMessageDialog(null,
 								"Error: you did not enter a valid delay time, please enter a delay time between 200 and 2000.",
 								"Error", JOptionPane.ERROR_MESSAGE); // error message
@@ -378,6 +380,12 @@ public class NewGUI implements PropertyChangeListener {
 					} else {
 						// change delay time for selected cashier
 						String selectedcashier = (String) cashierlist.getSelectedValue();
+						selectedcashier = selectedcashier.trim();
+				
+						Long l = Long.valueOf(itime);
+
+						CoffeeShop.employees.activeCashiers.get(selectedcashier).setSpeed(l);
+						
 					}
 
 				}
@@ -454,7 +462,7 @@ public class NewGUI implements PropertyChangeListener {
 		// System.out.println("I AM HEREEEEEEEE HELLOO");
 		displayCustomer();
 		displayOnlineCustomer();
-		displayCashier();
+		//displayCashier();
 		displayCook();
 		displayBarista();
 	}
@@ -541,17 +549,21 @@ public class NewGUI implements PropertyChangeListener {
 	 */
 	private synchronized void displayCashier() {
 		//HashMap<String, Cashier> q = employees.getActiveCashiers(); // Access List of cashiers
+		System.out.println("----HERE -----------");
 		cashierModel.clear();
-		if (cashierT != null) {
-			String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", cashierT.size(), " active cashiers\n\n");
+		HashMap<String, Cashier>  cashiers = CoffeeShop.employees.activeCashiers;
+		if (!cashiers.isEmpty()) {
+			String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", cashiers.size(), " active cashiers\n\n");
 			cashierModel.addElement(display1); // Display number of active cashiers
-	
-			for(Map.Entry<String, Thread> m : cashierT.entrySet()) {
+		
+	       
+			for(Entry<String, Cashier> m : cashiers.entrySet()) {
 				//System.out.println("THEIR NAME IS  " + n);
 				String key = m.getKey();
 				String display = String.format("%-10s\n", key);
 				cashierModel.addElement(display);
 			}
+			
 		}
 		cashierlist.setModel(cashierModel);
 		cashierlist.setVisible(true);
@@ -616,7 +628,7 @@ public class NewGUI implements PropertyChangeListener {
 		CashierName.setBounds(50, 5, 200, 20);
 		frame1.getContentPane().add(CashierName);
 		
-		if (cashier.currentCustomer != null) {
+		if (cashier.currentCustomer != null ) {
 			JTextArea custList = new JTextArea("");
 			custList.setBounds(10, 40, 250, 300);
 			frame1.getContentPane().add(custList);
@@ -633,12 +645,14 @@ public class NewGUI implements PropertyChangeListener {
 						String.valueOf(cashier.currentCustomer.getCartTotalPrice()), "£");
 			}
 			custList.setText(output + out2);		
-			cashierFrames.put(cashier.getName(), frame1);
+			
 		} else {
 			JOptionPane.showMessageDialog(null,
 					"Error: New cashiers cannot be added. Still waiting for customer.",
 					"Error", JOptionPane.ERROR_MESSAGE);
 		}	
+		
+		cashierFrames.put(cashier.getName(), frame1);
 	}
 	
 	/**
@@ -649,12 +663,7 @@ public class NewGUI implements PropertyChangeListener {
 		JFrame frame = cashierFrames.get(name);
 		if (frame == null)
 			return;
-		for(String n: cashierFrames.keySet()) {
-			System.out.println(n);
-		}
-		System.out.println(frame);
 	
-
 		// Display customer orders + total price
 		JTextArea custList = new JTextArea("");
 		custList.setBounds(10, 40, 250, 300);
@@ -682,79 +691,45 @@ public class NewGUI implements PropertyChangeListener {
 	private void newCookFrame(FoodStaff cook) { //Employees cook
 		// Display their name + delay time
 		JFrame frame1 = new JFrame();
-		frame1.setSize(350, 400);
+		frame1.setSize(350, 200); //350, 400
 		frame1.setTitle("New Cook");
 		frame1.setLayout(null);
 		frame1.setVisible(true); // Show GUI
 
 		// Display name of cook
 		JLabel CookName = new JLabel("Cook: " + cook.getName()); // + getcooksNames. 
-		CookName.setBounds(50, 5, 200, 20);
+		CookName.setBounds(10, 5, 200, 20); //50, 5, 200, 20
 		frame1.getContentPane().add(CookName);
-
-//		// Display name of customer
-//		JLabel custName = new JLabel("Customer Processed: " + cashierRunnable.currentCustomer.getName());
-//		custName.setBounds(10, 40, 250, 30);
-//		frame1.getContentPane().add(custName);
 		
-		if (cashierRunnable.currentCustomer != null) {
-			// Display ordered Food and Pastry handled by cook for current customer
-			JTextArea custList = new JTextArea("");
-			custList.setBounds(10, 40, 250, 300);
-			frame1.getContentPane().add(custList);
-			String output = " ";
-			output += String.format("%-10s\n", "Customer: " + cashierRunnable.currentCustomer.getName());
-			Set<String> customerCart = cashierRunnable.currentCustomer.cart.keySet();
-			for (String orderID : customerCart) {
-				String category = coffeeshop.menu.get(orderID).getCategory();
-				if (category.equals("Pastry") || category.equals("Food")) {
-					output += String.format("%-10s %-10s %-10s %10s\n",
-							String.valueOf(cashierRunnable.currentCustomer.cart.get(orderID).size()),
-							coffeeshop.menu.get(orderID).getName(), String.valueOf(coffeeshop.menu.get(orderID).getCost()),
-							"£");
-				}
-		}
+		JTextArea custList = new JTextArea("");
+		custList.setBounds(10, 40, 300, 80); //10, 40, 250, 300
+		frame1.getContentPane().add(custList);
+		String output = " ";
+		output += String.format("%-10s\n", "Cooks is preparing food for customer:  "  + cook.getCurrentCustomer().getName());
+		output += String.format("%-10s\n",  cook.getInstruction());
 		custList.setText(output);
 		cookFrames.put(cook.getName(), frame1);
-		
-		}else {
-			JOptionPane.showMessageDialog(null,
-					"Error: New cashiers cannot be added. Still waiting for customer.",
-					"Error", JOptionPane.ERROR_MESSAGE);
-		}
-
 	}
 	
 	/**
 	 * Update cashier frames with their orders handled
 	 */
-	public void updateCookFrame(String name, Customer customer) {		
+	public void updateCookFrame(String name, FoodStaff cook) {		
 		// get Jframe
 		JFrame frame = cookFrames.get(name);
 		if (frame == null)
 			return;
-		for(String n: cookFrames.keySet()) {
-			System.out.println(n);
-		}
-		System.out.println(frame);
 
 		// Display customer orders + total price
 		JTextArea custList = new JTextArea("");
-		custList.setBounds(10, 40, 250, 300);
+		custList.setBounds(10, 40, 300, 80);
 		frame.getContentPane().add(custList);
 		String output = " ";
-		output += String.format("%-10s\n", "Customer: " + customer.getName());
-		String out2 = " ";
-		Set<String> customerCart = customer.cart.keySet();
-		for (String orderID : customerCart) {
-			output += String.format("%-10s %-10s %-10s %-10s\n",
-					String.valueOf(customer.cart.get(orderID).size()),
-					coffeeshop.menu.get(orderID).getName(), String.valueOf(coffeeshop.menu.get(orderID).getCost()),
-					"£");
-			out2 = String.format("%-10s %-10s %-10s\n", "Total price: ",
-					String.valueOf(customer.getCartTotalPrice()), "£");
-		}
-		custList.setText(output + out2);		
+		output += String.format("%-10s\n", "Cooks is preparing food for customer:  "  + cook.getCurrentCustomer().getName());
+		output += String.format("%-10s\n",  "Preparing item: " + cook.getCurrentItem().getName());
+		output += String.format("%-10s\n",  "Currently doing: ");
+		output += String.format("%-10s\n",  cook.getInstruction());
+		custList.setText(output);
 	}
 
 	/**
@@ -853,21 +828,35 @@ public class NewGUI implements PropertyChangeListener {
 			// System.out.println("Old Value = " + ((Customer)
 			// evt.getOldValue()).getName());
 
-			System.out.println("New Value = " + ((Customer) evt.getNewValue()).getName());
+			//System.out.println("New Value = " + ((Customer) evt.getNewValue()).getName());
 
-			System.out.println("**********************************");
+			//System.out.println("**********************************");
 
 			String type = (String) evt.getPropertyName();
+			System.out.println("}}}}}}}}}}}" +type);
 			
 			if (type == "newCustomer") {
 				Customer customer = (Customer) evt.getNewValue();
-				System.out.println("*******************************");
 				System.out.println("Cashier " + customer.getCashierServing() + "added customer " + customer.getName());
-				System.out.println("*******************************");
 				updateCashierFrame(customer.getCashierServing(), customer);
-				updateCookFrame(customer.getCookServing(), customer);	//Don't know how to access customer dealt with cook/barista
-				updateBaristaFrame(cashierRunnable.currentCustomer.getName(), customer);
 			}
+			
+			if(type == "cashierAdded" || type == "cashierRemoved") {
+				displayCashier();
+				
+			}
+			
+			if(type.equals("instructionCook")) {
+				String cook = (String) evt.getNewValue();
+				FoodStaff Cook = CoffeeShop.employees.activeCooks.get(cook);
+				updateCookFrame(Cook.getName(), Cook);
+			}
+			if(type.equals("instructionBarista")) {
+				String barista = (String) evt.getNewValue();
+				FoodStaff Barista = CoffeeShop.employees.activeCooks.get(barista);
+				//updateCookFrame(Barista.getName(), Barista);
+			}
+			
 			
 			
 			String[] split = type.split(" ");
@@ -922,9 +911,9 @@ public class NewGUI implements PropertyChangeListener {
 				}
 
 			}
-			displayCashier();
-			displayCook();
-			displayBarista();
+			
+			//displayCook();
+			//displayBarista();
 			customerLabel.setText("In shop Customer queue Number of Customers :" + shopModel.size()); 
 			onlinecustomerlabel.setText("Online Customer queue Number of Customers :" + onlineModel.size());
 
@@ -941,7 +930,7 @@ public class NewGUI implements PropertyChangeListener {
 			// shopcustomerlist.setVisible(true);
 			shopcustomerlist.setModel(shopModel);
 			onlinecustomerlist.setModel(onlineModel);
-			cashierlist.setModel(cashierModel);
+			//cashierlist.setModel(cashierModel);
 		}
 
 	}

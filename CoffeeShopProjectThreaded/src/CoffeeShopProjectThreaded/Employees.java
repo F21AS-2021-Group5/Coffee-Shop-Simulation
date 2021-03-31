@@ -1,5 +1,7 @@
 package CoffeeShopProjectThreaded;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -10,9 +12,11 @@ public class Employees {
 	private final String[] baristaNames={"Mac","Cahrlie", "Frank", "Deandra","Dennis"};  
 	private final String[] cookNames={"Dwight","Pam", "Jim", "Andy","Kelly", "Angela"};
 	
-	private HashMap<String, Cashier> activeCashiers;
-	private HashMap<String, FoodStaff> activeBaristas;
-	private HashMap<String, FoodStaff> activeCooks;
+	public static HashMap<String, Cashier> activeCashiers;
+	public static  HashMap<String, FoodStaff> activeBaristas;
+	public static  HashMap<String, FoodStaff> activeCooks;
+	
+	private PropertyChangeSupport support;
 	
 	/**
 	 * Constructor for Employees class 
@@ -21,6 +25,7 @@ public class Employees {
 		activeCashiers = new HashMap<String, Cashier>();
 		activeBaristas = new HashMap<String, FoodStaff>();
 		activeCooks = new HashMap<String, FoodStaff>();
+		support = new PropertyChangeSupport(this);
 	}
 	
 	/**
@@ -93,10 +98,13 @@ public class Employees {
 	 * Adds cashier to cashier list 
 	 * @return Cashier added
 	 */
-	public Cashier addCashier() {
+	public Cashier addCashier(Long delay) {
 		String name = getRandomName(cashierNames, "cashier");
-		Cashier cashier = new Cashier(name);
+		Cashier cashier = new Cashier(name, delay);
+		
 		activeCashiers.put(name, cashier);
+		
+		setMessage(0, activeCashiers.size(), "cashierAdded");
 		return cashier;
 	}
 	
@@ -106,15 +114,16 @@ public class Employees {
 	 */
 	public void removeCashier(String name) {
 		activeCashiers.remove(name);
+		setMessage(0, activeCashiers.size(), "cashierRemoved");
 	}
 	
 	/**
 	 * Adds barista to barista list 
 	 * @return Barista added
 	 */
-	public FoodStaff addBarista() {
+	public FoodStaff addBarista(Long delay) {
 		String name = getRandomName(baristaNames, "barista");
-		FoodStaff barista = new FoodStaff(name, true);
+		FoodStaff barista = new FoodStaff(name, true, delay);
 		activeBaristas.put(name, barista);
 		return barista;
 	}
@@ -131,9 +140,9 @@ public class Employees {
 	 * Adds cook to cook list 
 	 * @return Cook added
 	 */
-	public FoodStaff addCook() {
+	public FoodStaff addCook(Long delay) {
 		String name = getRandomName(cookNames, "cook");
-		FoodStaff cook = new FoodStaff(name, false);
+		FoodStaff cook = new FoodStaff(name, false, delay);
 		activeCooks.put(name, cook);
 		return cook;
 	}
@@ -172,4 +181,22 @@ public class Employees {
 		   }
 		   return name;
      }
+	
+	
+	// Observer observable
+	public void addPropertyChangeListener(PropertyChangeListener pcl) {
+    	support.addPropertyChangeListener(pcl);
+    }
+    
+    public void removePropertyChangeListener(PropertyChangeListener pcl) {
+    	support.removePropertyChangeListener(pcl);
+    }
+    
+
+    
+    public void setMessage(int oldVal, int newVal, String message) {
+    	
+    	support.firePropertyChange(message, oldVal, newVal);
+    
+    }
 }

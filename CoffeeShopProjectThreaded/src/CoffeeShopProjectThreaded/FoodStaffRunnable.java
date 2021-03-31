@@ -25,18 +25,20 @@ public class FoodStaffRunnable implements Runnable{
 	private OrderQueue queue;
 	private Log log;
 	
-	private long delay;
+	//private long delay;
 	
 	private FoodStaff foodStaff;
+	
 	
 	/**
 	 * Constructor for Staff class
 	 * @param queue Queue of orders 
 	 */
-	public FoodStaffRunnable(FoodStaff foodStaff, OrderQueue queue, long delay) { 
+	public FoodStaffRunnable(FoodStaff foodStaff, OrderQueue queue) { 
 		this.foodStaff = foodStaff;
 		this.queue = queue;
-		this.delay = delay;
+		
+		//this.delay = delay;
 		
 		log = Log.getInstance();
 	}
@@ -107,7 +109,8 @@ public class FoodStaffRunnable implements Runnable{
 	 */
 	@Override
 	public void run() {
-		while (true) {	
+		boolean stop = false; 
+		while (!stop) {	
 			
 			// remove item from queue 
 			OrderQueueOutput out = queue.removeFromQueue();
@@ -137,11 +140,17 @@ public class FoodStaffRunnable implements Runnable{
 						+ ": " + instruction;
 					log.updateLog(status);
 					
+					foodStaff.setInstruction(instruction);
+					Long delay = foodStaff.getDelay();
+					
+					
 					// delay for visualisation purposes 
 					try {
 						Thread.sleep(delay);
 					} catch (InterruptedException e) {
+						stop = true;
 						e.printStackTrace();
+						
 					}
 				}
 				

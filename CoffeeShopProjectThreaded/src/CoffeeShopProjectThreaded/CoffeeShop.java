@@ -54,8 +54,8 @@ public class CoffeeShop {
 	
 	//ArrayList<Thread> cashierThreads = new ArrayList<Thread>(); 
 	public static HashMap<String, Thread> cashierThreads;
-	public static HashMap<String, Thread> baristaList;
-	public static HashMap<String, Thread> cookList;
+	public static HashMap<String, Thread> baristaThreads;
+	public static HashMap<String, Thread> cookThreads;
 	
 
 	String[] cashierNames={"Ron","Leslie", "April", "Donna","Andy","Ann","Ben", 
@@ -98,8 +98,8 @@ public class CoffeeShop {
 		
 		// Sub controllers, threads 
 		cashierThreads = new HashMap<String, Thread>();
-		baristaList = new HashMap<String, Thread>();
-		cookList = new HashMap<String, Thread>();
+		baristaThreads = new HashMap<String, Thread>();
+		cookThreads = new HashMap<String, Thread>();
 
 		
 		//activeCashiers = new HashMap<String, Cashier>();
@@ -260,15 +260,15 @@ public class CoffeeShop {
 	/**
 	 * Adds new cashier and creates a thread for it  
 	 */
-   public static Cashier addCashier() {
-	   Cashier cash = employees.addCashier(); // Add cashier to the employees model
-	   cash.addPropertyChangeListener(gui);
+   public static Cashier addCashier(Long delay) {
+	   Cashier cash = employees.addCashier(delay); // Add cashier to the employees model
+	   cash.addPropertyChangeListener(gui);  // Establish OBSERVER-OBSERVABLE channel 
 	   // Create runnable for cashier object
-	   Runnable cashier = new CashierRunnable(cash.getName(), 800L, onlineQueue, shopQueue, kitchenQueue, barQueue, inventory, books, cash); // or an anonymous class, or lambda...
+	   Runnable cashier = new CashierRunnable(cash.getName(), onlineQueue, shopQueue, kitchenQueue, barQueue, inventory, books, cash); // or an anonymous class, or lambda...
 	   Thread t = new Thread(cashier);
 	   t.setPriority(2);                      // Sets priority
 	   cashierThreads.put(cash.getName(), t);   // Holds active cashier threads
-	   t.start();                             // Starts the thread
+	   t.start(); 
 	   
 	   return cash;
    }
@@ -290,16 +290,16 @@ public class CoffeeShop {
 	 */
    //THIS METHOD WAS PUBLIC VOID ADDBARISTA()
    //CHANGED TO STATIC FOODSTAFF
-   public static FoodStaff addBarista() {
-	   FoodStaff barStaff = employees.addBarista(); // Add cashier to the employees model
+   public static FoodStaff addBarista(Long delay) {
+	   FoodStaff barStaff = employees.addBarista(delay); // Add cashier to the employees model
 	   barStaff.addPropertyChangeListener(gui);
 	   //String name = getRandomName( baristaNames, baristaList);
 	   //System.out.println("Cashier " + name + " has started their shift");
 	   
 	   // Create barista object which processes orders related to Drinks and Pastry	   
-	   Runnable barista = new FoodStaffRunnable(barStaff, barQueue, 2000L);
+	   Runnable barista = new FoodStaffRunnable(barStaff, barQueue);
 	   Thread s = new Thread(barista);
-	   baristaList.put(barStaff.getName(), s);
+	   baristaThreads.put(barStaff.getName(), s);
 	   s.start();
 	   
 	   return barStaff;
@@ -310,14 +310,15 @@ public class CoffeeShop {
 	 */
    //THIS METHOD WAS PUBLIC VOID ADDCOOK()
    //CHANGED TO STATIC FOODSTAFF
-   public static FoodStaff addCook() {
-	   FoodStaff kitchenStaff = employees.addCook(); // Add cashier to the employees model
+   public static FoodStaff addCook(Long delay) {
+	   FoodStaff kitchenStaff = employees.addCook(delay); // Add cashier to the employees model
 	   kitchenStaff.addPropertyChangeListener(gui);
 	   // Creates cook object which processes orders related to Food and Sides
-	   Runnable cook = new FoodStaffRunnable(kitchenStaff, kitchenQueue, 2000L);
+	   Runnable cook = new FoodStaffRunnable(kitchenStaff, kitchenQueue);
 	   Thread s2 = new Thread(cook);
-	   cookList.put(kitchenStaff.getName(), s2);
+	   cookThreads.put(kitchenStaff.getName(), s2);
 	   s2.start();
+	 
 	   
 	   return kitchenStaff;
    }
@@ -344,16 +345,6 @@ public class CoffeeShop {
 	   employees.removeCashier(name); // Remove active cashier from the model 
    }
    
-   /**
-	 * Kills the given barista thread and removes it from the active barista map
-	 * @param name of the barista to end their shift
-	 */
-   public static synchronized void removeBarista(String name) {
-	   System.out.println("Barista " + name + " has ended their shift");
-	   baristaList.get(name).interrupt();  // Interrupt the thread causing it to finalise their run 
-	   baristaList.remove(name);  // Remove the thread from the list
-	   employees.removeBarista(name); // Remove active barista from the model 
-   }
    
    /**
 	 * Kills the given cook thread and removes it from the active cook map
@@ -361,26 +352,40 @@ public class CoffeeShop {
 	 */
    public static synchronized void removeCook(String name) {
 	   System.out.println("Cook " + name + " has ended their shift");
-	   cookList.get(name).interrupt();  // Interrupt the thread causing it to finalise their run 
-	   cookList.remove(name);  // Remove the thread from the list
-	   employees.removeCook(name); // Remove active cook from the model 
+	   cookThreads.get(name).interrupt();  // Interrupt the thread causing it to finalise their run 
+	   cookThreads.remove(name);  // Remove the thread from the list
+	   employees.removeCook(name); // Remove active cashier from the model 
    }
+   
+   /**
+  	 * Kills the given barista thread and removes it from the active barista map
+  	 * @param name of the barista to end their shift
+  	 */
+   public static synchronized void removeBarista(String name) {
+	   System.out.println("Barista" + name + " has ended their shift");
+	   cashierThreads.get(name).interrupt();  // Interrupt the thread causing it to finalise their run 
+	   cashierThreads.remove(name);  // Remove the thread from the list
+	   employees.removeCashier(name); // Remove active cashier from the model 
+   }
+   
+
 
    // main method 
 	public static void main(String[] args) {
 		CoffeeShop shop = new CoffeeShop();
-		shop.createHandler(15);
+		shop.createHandler(21);
 		
 		//shop.addCashier();
 		//shop.addCashier();
 
-		gui = new NewGUI(shop.shopQueue, shop.cashierThreads, shop.cookList, shop.baristaList);
+		gui = new NewGUI(shop.shopQueue, shop.cashierThreads, shop.cookThreads, shop.baristaThreads);
 		//shopQueue.addPropertyChangeListener(gui);
 		//MyPropertyChange observer = new MyPropertyChange();
 
 		//observable.addPropertyChangeListener(observer);
 		CoffeeShop.shopQueue.addPropertyChangeListener(gui);
 		CoffeeShop.onlineQueue.addPropertyChangeListener(gui);
+		CoffeeShop.employees.addPropertyChangeListener(gui);
 		//CoffeeShop.cashierThreads.addPropertyChangeListener(gui);
 	
 		

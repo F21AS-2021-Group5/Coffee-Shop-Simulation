@@ -27,16 +27,38 @@ public class FoodStaff {
 	
 	public static Customer currentCustomer;
 	private OrderQueueItem currentItem; 
+	Long delay;
+	String instruction = "";
 	
 	/**
 	 * Constructor for Staff class
 	 * @param queue Queue of orders 
 	 */
-	public FoodStaff(String name, boolean isBarista) { 
+	public FoodStaff(String name, boolean isBarista, Long delay) { 
 		this.name = name;
 		support = new PropertyChangeSupport(this);
 		currentCustomer = null;
+		this.delay = delay;
 		type = (isBarista) ? "Barista" : "Cook";
+	}
+	
+	public void setInstruction(String instruction) {
+		this.instruction = instruction;
+		setMessage(null, name,  "instruction"+ getType());
+		
+	}
+	
+	public String getInstruction() {
+		return this.instruction;
+	}
+	
+	
+	public void setDelay(Long delay) {
+		this.delay = delay;
+	}
+	
+	public Long getDelay() {
+		return this.delay;
 	}
 	
 	/**
@@ -45,6 +67,7 @@ public class FoodStaff {
 	public String getName() {
 		return name;
 	}
+	
 	
 	/**
 	 * Set name of staff 
@@ -98,7 +121,7 @@ public class FoodStaff {
 	 */
 	public void setCurrentCustomer(Customer currentCustomer) {
 		this.currentCustomer = currentCustomer;
-		setMessage(null, currentCustomer,"newCustomer");
+		//setMessage(null, currentCustomer,"newCustomer");
 	}
 	
 	public void addPropertyChangeListener(PropertyChangeListener pcl) {
@@ -109,8 +132,10 @@ public class FoodStaff {
 		support.removePropertyChangeListener(pcl);
 	}
 	 
-	public void setMessage(Customer oldVal, Customer newVal,  String message) {
+	public void setMessage(String oldVal, String newVal,  String message) {
 		support.firePropertyChange(message, oldVal, newVal);
 	}
+	
+	
 
 }

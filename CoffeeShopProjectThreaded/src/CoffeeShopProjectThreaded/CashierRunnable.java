@@ -38,7 +38,7 @@ public class CashierRunnable implements Runnable{
 	
 	// constructor initialized variables 
 	String ID;
-	Long delay;	
+	//public Long delay;	
 	NewCustomerQueue onlineQueue;
 	NewCustomerQueue shopQueue;
 	OrderQueue kitchenQueue;
@@ -59,7 +59,7 @@ public class CashierRunnable implements Runnable{
 	 * @param books Storage for economically relevant values 
 	 * @param cashier Cashier object instance 
 	 */
-	public CashierRunnable(String name, Long delay, NewCustomerQueue onlineQueue,
+	public CashierRunnable(String name, NewCustomerQueue onlineQueue,
 			NewCustomerQueue shopQueue, OrderQueue kitchenQueue, 
 			OrderQueue barQueue, Inventory inventory, Bookkeeping books, Cashier cashier) {
 		
@@ -68,7 +68,7 @@ public class CashierRunnable implements Runnable{
 		this.name =name;
 		this.ID = ID;
 
-		this.delay = delay;
+		//this.delay = delay;
 		this.onlineQueue = onlineQueue;
 		this.shopQueue = shopQueue;
 		this.kitchenQueue = kitchenQueue;
@@ -89,7 +89,7 @@ public class CashierRunnable implements Runnable{
 			OrderQueue kitchenQueue, OrderQueue barQueue) {
 		this.currentCustomer = null;
 		this.name =name;
-		this.delay = delay;
+		//this.delay = delay;
 		this.shopQueue = shopQueue;
 		this.kitchenQueue = kitchenQueue;
 		this.barQueue = barQueue;
@@ -197,15 +197,23 @@ public class CashierRunnable implements Runnable{
 
 				}
 			}	
+			
+			Long delay = cashier.getSpeed();
+			//System.out.println("##################");
+			//System.out.println(delay);
 			//System.out.println(books.getCustomerNumber());
 			
 			// delays the thread for visualisation purposes 
 			try {
+				//Thread.sleep(delay);
 				Thread.sleep(delay);
+				
 			}catch(InterruptedException e) {
 				//Thread.currentThread().interrupt();
+				System.out.println("///////////////");
 				stop = true;  ///// KILLS THE THREAD //////
-				System.out.println(e.getMessage());				
+				System.out.println(e.getMessage());	
+				
 			}	
 		}
 	}

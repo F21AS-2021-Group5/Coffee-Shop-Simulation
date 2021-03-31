@@ -37,6 +37,7 @@ public class Cashier {
 	int discount1 = 0;
 	int discount2 = 0;
 	int discount3 = 0;
+	Long speed;
 	private PropertyChangeSupport support;
 	
 	String name;
@@ -45,10 +46,11 @@ public class Cashier {
 	 * Constructor for Cashier class
 	 * @param ID Cashier identifier
 	 */
-	public Cashier(String name) {
+	public Cashier(String name, Long speed) {
 		support = new PropertyChangeSupport(this);
 		currentCustomer = null;
 		this.name =name;
+		this.speed = speed;
 	}
 	
 	/**
@@ -192,6 +194,14 @@ public class Cashier {
 		getDiscount();
 		getCartTotalPrice();
 		
+	}
+	
+	public Long getSpeed() {
+		return this.speed;
+	}
+	
+	public void setSpeed(Long speed) {
+		this.speed = speed;
 	}
 	
 	 public void addPropertyChangeListener(PropertyChangeListener pcl) {

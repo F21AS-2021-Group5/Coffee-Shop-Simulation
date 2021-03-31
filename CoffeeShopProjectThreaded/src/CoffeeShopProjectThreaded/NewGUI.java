@@ -77,6 +77,11 @@ public class NewGUI implements PropertyChangeListener {
 	JList cashierlist = new JList(cashierModel);
 	JList cooklist = new JList(cookModel);
 	JList baristalist = new JList(baristaModel);
+	
+	//JScroll
+	JScrollPane cashierScroll = new JScrollPane(cashierlist);
+	JScrollPane cookScroll = new JScrollPane(cooklist);
+	JScrollPane baristaScroll = new JScrollPane(baristalist);
 
 	// Text Filed (Enter names)
 	JTextField cashierTime = new JTextField(3);
@@ -107,16 +112,34 @@ public class NewGUI implements PropertyChangeListener {
 
 		this.shopQueue = shopQueue;
 		
-		shopcustomerlist.setVisible(true);
-		onlinecustomerlist.setVisible(true);
-		cashierlist.setVisible(true);
+		//shopcustomerlist.setVisible(true);
+		//onlinecustomerlist.setVisible(true);
+		//cashierlist.setVisible(true);
+		
+		cashierScroll.setVisible(true);
+		cookScroll.setVisible(true);
+		baristaScroll.setVisible(true);
 
 		// CoffeeShop.shopQueue.addPropertyChangeListener(this);//(e ->
 		// System.out.println("HERE")); //setQueue((Deque<Customer>) e.getNewValue())
 		shopcustomerlist.setModel(shopModel);
 		onlinecustomerlist.setModel(onlineModel);
 		cashierlist.setModel(cashierModel);
-
+		cooklist.setModel(cookModel);
+		baristalist.setModel(baristaModel);
+		
+		//Set Scroll only vertical
+		cashierScroll.setViewportView(cashierlist);
+		cashierScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		cashierScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		cookScroll.setViewportView(cooklist);
+		cookScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		cookScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		baristaScroll.setViewportView(baristalist);
+		baristaScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		baristaScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		
+		
 		cashierFrames = new HashMap<String, JFrame>();
 		cookFrames = new HashMap<String, JFrame>();
 		baristaFrames = new HashMap<String, JFrame>();
@@ -162,9 +185,12 @@ public class NewGUI implements PropertyChangeListener {
 		// JList
 		shopcustomerlist.setBounds(10, 50, 375, 200);
 		onlinecustomerlist.setBounds(400, 50, 375, 200);
-		cashierlist.setBounds(10, 340, 250, 100);
-		cooklist.setBounds(270, 340, 250, 100);
-		baristalist.setBounds(530, 340, 250, 100);
+		//cashierlist.setBounds(10, 340, 250, 100);
+		//cooklist.setBounds(270, 340, 250, 100);
+		//baristalist.setBounds(530, 340, 250, 100);
+		cashierScroll.setBounds(10, 340, 250, 100);
+		cookScroll.setBounds(270, 340, 250, 100);
+		baristaScroll.setBounds(530, 340, 250, 100);
 
 		// Text fields
 		cashierTime.setBounds(20, 550, 150, 40);
@@ -202,9 +228,12 @@ public class NewGUI implements PropertyChangeListener {
 
 		frame.getContentPane().add(shopcustomerlist);
 		frame.getContentPane().add(onlinecustomerlist);
-		frame.getContentPane().add(cashierlist);
-		frame.getContentPane().add(cooklist);
-		frame.getContentPane().add(baristalist);
+		//frame.getContentPane().add(cashierlist);
+		//frame.getContentPane().add(cooklist);
+		//frame.getContentPane().add(baristalist);
+		frame.getContentPane().add(cashierScroll);
+		frame.getContentPane().add(cookScroll);
+		frame.getContentPane().add(baristaScroll);
 
 		frame.getContentPane().add(cashierTime);
 		frame.getContentPane().add(baristaTime);

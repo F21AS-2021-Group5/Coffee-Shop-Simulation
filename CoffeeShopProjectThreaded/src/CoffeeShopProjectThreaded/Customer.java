@@ -35,6 +35,8 @@ public class Customer {
 	
 	private String cashierServing;
 	
+	private String cookServing;
+	
 	HashMap<String, ArrayList<LocalDateTime>> cart;
 
 	/**
@@ -183,6 +185,14 @@ public class Customer {
 
 	public void setCashierServing(String cashierServing) {
 		this.cashierServing = cashierServing;
+	}
+	
+	public String getCookServing() {
+		return cookServing;
+	}
+
+	public void setCookServing(String cookServing) {
+		this.cookServing = cookServing;
 	}
 
 	/**

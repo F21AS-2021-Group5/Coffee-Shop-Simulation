@@ -93,8 +93,8 @@ public class NewGUI implements PropertyChangeListener {
 	NewCustomerQueue inshopqueue;
 
 	// For observer
-	Deque<Customer> shopQueueObserver;
-	private Deque<Customer> onlineQueueObserver;
+	//Deque<Customer> shopQueueObserver;
+	//private Deque<Customer> onlineQueueObserver;
 	private long delayObserver;
 
 	private static int observerIDTracker = 0; // Used as counter
@@ -102,23 +102,39 @@ public class NewGUI implements PropertyChangeListener {
 	private Subject subject; // Holds reference to NewGUI object
 	NewCustomerQueue shopQueue;
 	Deque<Customer> shopQueueObse;
+	Deque<Customer> onlineQueueObse;
+	
+	HashMap<String, Thread> cashierT;	//to iterate through
+	HashMap<String, Thread> baristaT;
+	HashMap<String, Thread> cookT;
 	
 	HashMap<String, JFrame> cashierFrames;
+	HashMap<String, JFrame> cookFrames;
+	HashMap<String, JFrame> baristaFrames;
 
 	// GUI constructor
-	public NewGUI(NewCustomerQueue shopQueue) { // CoffeeShop main,
+	public NewGUI(NewCustomerQueue shopQueue, HashMap<String, Thread> cashierT, HashMap<String, Thread> cookT, HashMap<String, Thread> baristaT) { // CoffeeShop main,
 		// this.coffeeshop = main;
 		// shopQueueObse = new
 		this.shopQueue = shopQueue;
+		
 		shopcustomerlist.setVisible(true);
-		shopQueueObserver = new LinkedList<Customer>();
-		onlineQueueObserver = new LinkedList<Customer>();
+		onlinecustomerlist.setVisible(true);
+		cashierlist.setVisible(true);
 
 		// CoffeeShop.shopQueue.addPropertyChangeListener(this);//(e ->
 		// System.out.println("HERE")); //setQueue((Deque<Customer>) e.getNewValue())
 		shopcustomerlist.setModel(shopModel);
+		onlinecustomerlist.setModel(onlineModel);
+		cashierlist.setModel(cashierModel);
 		
 		cashierFrames = new HashMap<String, JFrame>();
+		cookFrames = new HashMap<String, JFrame>();
+		baristaFrames = new HashMap<String, JFrame>();
+		
+		this.cashierT = cashierT;
+		this.cookT = cookT;
+		this.baristaT = baristaT;
 
 		// propertyChange();
 		// shopQueue.registerObserver(this);
@@ -141,7 +157,14 @@ public class NewGUI implements PropertyChangeListener {
 	public void setQueue(Deque<Customer> queue) {
 		System.out.println("GUI");
 		this.shopQueueObse = queue;
+		this.onlineQueueObse = queue;
 	}
+	
+//	public void setCash(HashMap<String, Thread> cash) {
+//		System.out.println("GUI");
+//		this.cashierT = cash;
+//	}
+	
 
 	// Create and show GUI
 	public void initializeGUI() {
@@ -165,7 +188,7 @@ public class NewGUI implements PropertyChangeListener {
 
 		// Labels
 		customerLabel.setBounds(10, 2, 350, 50);
-		onlinecustomerlabel.setBounds(400, 2, 150, 50);
+		onlinecustomerlabel.setBounds(400, 2, 350, 50);
 		activecashierLabel.setBounds(10, 310, 150, 40);
 		activecookLabel.setBounds(270, 310, 150, 40);
 		activebaristaLabel.setBounds(530, 310, 150, 40);
@@ -253,7 +276,6 @@ public class NewGUI implements PropertyChangeListener {
 
 		ActionListener Listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// newCustomerQueue.setQueue(shopQueueObserver); //Set queue
 				// Create new cashier
 				if (e.getSource() == addCashier) {
 					int cashierSize = CoffeeShop.cashierThreads.size(); // Store number of existent cashier
@@ -272,8 +294,8 @@ public class NewGUI implements PropertyChangeListener {
 						JOptionPane.showMessageDialog(null, "Error: you cannot create more than six cooks", "Error",
 								JOptionPane.ERROR_MESSAGE);
 					} else {
-						coffeeshop.addCook(); // Create new cook
-						newCookFrame(); // create new window with cook and orders handled and customer
+						FoodStaff cook = CoffeeShop.addCook(); // Create new cook
+						newCookFrame(cook); // create new window with cook and orders handled and customer
 					}
 
 				}
@@ -284,8 +306,8 @@ public class NewGUI implements PropertyChangeListener {
 						JOptionPane.showMessageDialog(null, "Error: you cannot create more than five baristas", "Error",
 								JOptionPane.ERROR_MESSAGE);
 					} else {
-						coffeeshop.addBarista(); // Create new Barista
-						newBaristaFrame(); // create new window with barista and orders handles and customer
+						FoodStaff barista = CoffeeShop.addBarista(); // Create new Barista
+						newBaristaFrame(barista); // create new window with barista and orders handles and customer
 					}
 
 				}
@@ -298,7 +320,10 @@ public class NewGUI implements PropertyChangeListener {
 						JOptionPane.showMessageDialog(null, "Error: you cannot have less than one cashier", "Error",
 								JOptionPane.ERROR_MESSAGE);
 					} else {
-						coffeeshop.removeCashier(selectedcashier);
+						CoffeeShop.cashierThreads.remove(selectedcashier);
+						System.out.println("I Remove THE cashier thread");
+						
+						//coffeeshop.removeCashier(selectedcashier);
 						// close window ??how
 					}
 
@@ -312,7 +337,7 @@ public class NewGUI implements PropertyChangeListener {
 						JOptionPane.showMessageDialog(null, "Error: you cannot have less than one cook", "Error",
 								JOptionPane.ERROR_MESSAGE);
 					} else {
-						coffeeshop.removeCook(selectedcook);
+						CoffeeShop.removeCook(selectedcook);
 						// close window
 					}
 				}
@@ -325,7 +350,7 @@ public class NewGUI implements PropertyChangeListener {
 						JOptionPane.showMessageDialog(null, "Error: you cannot have less than one barista", "Error",
 								JOptionPane.ERROR_MESSAGE);
 					} else {
-						coffeeshop.removeBarista(selectedbarista);
+						CoffeeShop.removeBarista(selectedbarista);
 						// close window
 					}
 				}
@@ -401,6 +426,12 @@ public class NewGUI implements PropertyChangeListener {
 					// If time is valid, change barista delay time
 					else {
 						String selectedbarista = (String) baristalist.getSelectedValue();
+//						try {
+//							CoffeeShop.baristaList.get(selectedbarista).sleep(itime);
+//						} catch (InterruptedException e1) {
+//							// TODO Auto-generated catch block
+//							e1.printStackTrace();
+//						}
 						// foodStaffRun.getFoodStaff().
 					}
 				}
@@ -422,21 +453,17 @@ public class NewGUI implements PropertyChangeListener {
 	public synchronized void update() {
 		// System.out.println("I AM HEREEEEEEEE HELLOO");
 		displayCustomer();
-		// paintScreen();
-//		displayOnlineCustomer();
-//		displayCashier();
-//		displayCook();
-//		displayBarista();
-
-		// observerIDTracker++; //Increment counter
-		// System.out.println("GUI has been updated " + observerIDTracker + " times.");
+		displayOnlineCustomer();
+		displayCashier();
+		displayCook();
+		displayBarista();
 	}
 
 	/**
 	 * Display the list of in shop customer queue
 	 */
 	private synchronized void displayCustomer() {
-		NewCustomerQueue q = CoffeeShop.shopQueue; // newCustomerQueue.getQueue(); //shopQueue.getShopQueue();
+		//NewCustomerQueue q = CoffeeShop.shopQueue; // newCustomerQueue.getQueue(); //shopQueue.getShopQueue();
 		// NewCustomerQueue q = (NewCustomerQueue) tes.clone();
 		// HERE
 
@@ -487,98 +514,111 @@ public class NewGUI implements PropertyChangeListener {
 	/**
 	 * Display the list of online customer queue
 	 */
-//    private void displayOnlineCustomer() {    	
-//    	Deque<Customer> q = shopQueue;
-//    	if(!(q.isEmpty())) {
-//    		String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", q.size(), " online customers waiting\n\n");
-//    		onlineModel.addElement(display1);
-//        	for(int i = 0; i<q.size(); i++) {
-//        		String display = String.format("%-10s\n", q.toString());
-//        		onlineModel.addElement(display);
-//        	}
-//    	}
-//		onlinecustomerlist.setModel(onlineModel);
-//		onlinecustomerlist.setVisible(true);
-//    }
+    private synchronized void displayOnlineCustomer() {    
+    	onlineModel.clear();
+
+		if (onlineQueueObse != null) {
+			String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", onlineQueueObse.size(),
+					" in shop customers waiting\n\n");
+
+			onlineModel.addElement(display1);
+
+			for (Customer customer : onlineQueueObse) {
+				String display = String.format("%-10s\n", customer.getName());
+				onlineModel.addElement(display);
+			}
+		}
+
+		String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", onlineQueueObse.size(),
+				" online customers waiting\n\n");
+
+		onlinecustomerlist.setModel(onlineModel);
+		onlinecustomerlist.setVisible(true);
+    }
 
 	/**
 	 * Display the list of existent cashiers
 	 */
-	private void displayCashier() {
-		HashMap<String, Cashier> q = employees.getActiveCashiers(); // Access List of cashiers
-		String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", q.size(), " active cashiers.");
-		cashierModel.addElement(display1); // Display number of active cashiers
-
-		for (Map.Entry m : q.entrySet()) { // For each cashiers
-			if (!(q.isEmpty())) {
-				String Cname = m.toString();
-				String display = String.format("%-10s\n", Cname); // Display their name
+	private synchronized void displayCashier() {
+		//HashMap<String, Cashier> q = employees.getActiveCashiers(); // Access List of cashiers
+		cashierModel.clear();
+		if (cashierT != null) {
+			String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", cashierT.size(), " active cashiers\n\n");
+			cashierModel.addElement(display1); // Display number of active cashiers
+	
+			for(Map.Entry<String, Thread> m : cashierT.entrySet()) {
+				//System.out.println("THEIR NAME IS  " + n);
+				String key = m.getKey();
+				String display = String.format("%-10s\n", key);
 				cashierModel.addElement(display);
 			}
 		}
 		cashierlist.setModel(cashierModel);
+		cashierlist.setVisible(true);
+
 	}
 
 	/**
 	 * Display the list of existent cooks
 	 */
-	private void displayCook() {
-		HashMap<String, FoodStaff> q = employees.getActiveCooks(); // Access List of cooks
-		String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", q.size(), " active cooks.");
-		cookModel.addElement(display1); // Display number of active cooks
-
-		for (Map.Entry m : q.entrySet()) { // For each cooks
-			String Cname = m.toString();
-			String display = String.format("%-40s %-4s", Cname); // Display their name
-			cookModel.addElement(display);
+	private synchronized void displayCook() {
+		cookModel.clear();
+		if (cookT != null) {
+			String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", cookT.size(), " active cooks\n\n");
+			cookModel.addElement(display1); // Display number of active cashiers
+	
+			//for(String n: CoffeeShop.cashierThreads.keySet()) {
+			for(Map.Entry<String, Thread> m : cookT.entrySet()) {
+				//System.out.println("THEIR NAME IS  " + n);
+				String key = m.getKey();
+				String display = String.format("%-10s\n", key);
+				cookModel.addElement(display);
+			}
 		}
 		cooklist.setModel(cookModel);
+		cooklist.setVisible(true);
 	}
 
 	/**
 	 * Display the list of existent baristas
 	 */
-	private void displayBarista() {
-		HashMap<String, FoodStaff> q = employees.getActiveBaristas(); // Access List of baristas
-		String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", q.size(), " active baristas.");
-		baristaModel.addElement(display1); // Display number of active baristas
-
-		for (Map.Entry m : q.entrySet()) { // For each baristas
-			String Bname = m.toString();
-			String display = String.format("%-40s %-4s", Bname); // Format the display
-			baristaModel.addElement(display);
+	private synchronized void displayBarista() {
+		baristaModel.clear();
+		if (cookT != null) {
+			String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", baristaT.size(), " active baristas\n\n");
+			baristaModel.addElement(display1); // Display number of active cashiers
+	
+			//for(String n: CoffeeShop.cashierThreads.keySet()) {
+			for(Map.Entry<String, Thread> m : cookT.entrySet()) {
+				//System.out.println("THEIR NAME IS  " + n);
+				String key = m.getKey();
+				String display = String.format("%-10s\n", key);
+				baristaModel.addElement(display);
+			}
 		}
 		baristalist.setModel(baristaModel);
+		baristalist.setVisible(true);
 	}
 
 	/**
 	 * Create New frame and Display cashier orders handled
 	 */
 	private void newCashierFrame(Cashier cashier) {
-		//if (cashier.currentCustomer != null) {
-			// Display their name + delay time
-			JFrame frame1 = new JFrame();
+		//Set Frame
+		JFrame frame1 = new JFrame();
+		frame1.setSize(350, 400);
+		frame1.setTitle("New Cashier");
+		frame1.setLayout(null);
+		frame1.setVisible(true); // Show GUI
+
+		// Display name of cashier
+		JLabel CashierName = new JLabel("Cashier: " + cashier.getName());
+		CashierName.setBounds(50, 5, 200, 20);
+		frame1.getContentPane().add(CashierName);
 		
-			frame1.setSize(400, 400);
-			frame1.setTitle("New Cashier");
-			frame1.setLayout(null);
-			frame1.setVisible(true); // Show GUI
-
-			// Display name of cashier
-			JLabel CashierName = new JLabel("Cashier: " + cashier.getName()); // + cashierRunnable.cashier.getName() //HOW DO I ACCESS NAME OF
-															// CREATED CASHIER???
-			CashierName.setBounds(50, 5, 200, 20);
-			frame1.getContentPane().add(CashierName);
-			
-
-			// Display name of customer
-			///
-		
-			if (cashier.currentCustomer != null) {
-
-			// Display customer orders + total price
+		if (cashier.currentCustomer != null) {
 			JTextArea custList = new JTextArea("");
-			custList.setBounds(10, 90, 300, 200);
+			custList.setBounds(10, 40, 250, 300);
 			frame1.getContentPane().add(custList);
 			String output = " ";
 			output += String.format("%-10s\n", "Customer: " + cashier.currentCustomer.getName());
@@ -592,19 +632,18 @@ public class NewGUI implements PropertyChangeListener {
 				out2 = String.format("%-10s %-10s %-10s\n", "Total price: ",
 						String.valueOf(cashier.currentCustomer.getCartTotalPrice()), "£");
 			}
-			custList.setText(output + out2);
-			
+			custList.setText(output + out2);		
 			cashierFrames.put(cashier.getName(), frame1);
-			
-			//System.out.println("adding cashier window " +name);
 		} else {
 			JOptionPane.showMessageDialog(null,
 					"Error: New cashiers cannot be added. Still waiting for customer.",
 					"Error", JOptionPane.ERROR_MESSAGE);
-		}
-		
+		}	
 	}
 	
+	/**
+	 * Update cashier frames with their orders handled
+	 */
 	public void updateCashierFrame(String name, Customer customer) {		
 		// get Jframe
 		JFrame frame = cashierFrames.get(name);
@@ -615,14 +654,10 @@ public class NewGUI implements PropertyChangeListener {
 		}
 		System.out.println(frame);
 	
-		
-		// Display name of customer
-		///
-	
 
 		// Display customer orders + total price
 		JTextArea custList = new JTextArea("");
-		custList.setBounds(10, 90, 300, 200);
+		custList.setBounds(10, 40, 250, 300);
 		frame.getContentPane().add(custList);
 		String output = " ";
 		output += String.format("%-10s\n", "Customer: " + customer.getName());
@@ -644,80 +679,156 @@ public class NewGUI implements PropertyChangeListener {
 	/**
 	 * Create New frame and Display cook orders handled
 	 */
-	private void newCookFrame() {
+	private void newCookFrame(FoodStaff cook) { //Employees cook
 		// Display their name + delay time
 		JFrame frame1 = new JFrame();
-		frame1.setSize(400, 400);
+		frame1.setSize(350, 400);
 		frame1.setTitle("New Cook");
 		frame1.setLayout(null);
 		frame1.setVisible(true); // Show GUI
 
 		// Display name of cook
-		JLabel CookName = new JLabel("Cook: "); // + foodStaffRun.getFoodStaff().getName() //HOW DO I ACCESS NAME OF
-												// CREATED COOK???
+		JLabel CookName = new JLabel("Cook: " + cook.getName()); // + getcooksNames. 
 		CookName.setBounds(50, 5, 200, 20);
 		frame1.getContentPane().add(CookName);
 
-		// Display name of customer
-		JLabel custName = new JLabel("Customer Processed: " + cashierRunnable.currentCustomer.getName());
-		custName.setBounds(10, 40, 250, 30);
-		frame1.getContentPane().add(custName);
-
-		// Display ordered Food and Pastry handled by cook for current customer
-		JTextArea custList = new JTextArea("");
-		custList.setBounds(10, 80, 300, 200);
-		frame1.getContentPane().add(custList);
-		String output = " ";
-		Set<String> customerCart = cashierRunnable.currentCustomer.cart.keySet();
-		for (String orderID : customerCart) {
-			String category = coffeeshop.menu.get(orderID).getCategory();
-			if (category.equals("Pastry") || category.equals("Food")) {
-				output += String.format("%-10s %-10s %-10s %10s\n",
-						String.valueOf(cashierRunnable.currentCustomer.cart.get(orderID).size()),
-						coffeeshop.menu.get(orderID).getName(), String.valueOf(coffeeshop.menu.get(orderID).getCost()),
-						"£");
-			}
+//		// Display name of customer
+//		JLabel custName = new JLabel("Customer Processed: " + cashierRunnable.currentCustomer.getName());
+//		custName.setBounds(10, 40, 250, 30);
+//		frame1.getContentPane().add(custName);
+		
+		if (cashierRunnable.currentCustomer != null) {
+			// Display ordered Food and Pastry handled by cook for current customer
+			JTextArea custList = new JTextArea("");
+			custList.setBounds(10, 40, 250, 300);
+			frame1.getContentPane().add(custList);
+			String output = " ";
+			output += String.format("%-10s\n", "Customer: " + cashierRunnable.currentCustomer.getName());
+			Set<String> customerCart = cashierRunnable.currentCustomer.cart.keySet();
+			for (String orderID : customerCart) {
+				String category = coffeeshop.menu.get(orderID).getCategory();
+				if (category.equals("Pastry") || category.equals("Food")) {
+					output += String.format("%-10s %-10s %-10s %10s\n",
+							String.valueOf(cashierRunnable.currentCustomer.cart.get(orderID).size()),
+							coffeeshop.menu.get(orderID).getName(), String.valueOf(coffeeshop.menu.get(orderID).getCost()),
+							"£");
+				}
 		}
 		custList.setText(output);
+		cookFrames.put(cook.getName(), frame1);
+		
+		}else {
+			JOptionPane.showMessageDialog(null,
+					"Error: New cashiers cannot be added. Still waiting for customer.",
+					"Error", JOptionPane.ERROR_MESSAGE);
+		}
+
+	}
+	
+	/**
+	 * Update cashier frames with their orders handled
+	 */
+	public void updateCookFrame(String name, Customer customer) {		
+		// get Jframe
+		JFrame frame = cookFrames.get(name);
+		if (frame == null)
+			return;
+		for(String n: cookFrames.keySet()) {
+			System.out.println(n);
+		}
+		System.out.println(frame);
+
+		// Display customer orders + total price
+		JTextArea custList = new JTextArea("");
+		custList.setBounds(10, 40, 250, 300);
+		frame.getContentPane().add(custList);
+		String output = " ";
+		output += String.format("%-10s\n", "Customer: " + customer.getName());
+		String out2 = " ";
+		Set<String> customerCart = customer.cart.keySet();
+		for (String orderID : customerCart) {
+			output += String.format("%-10s %-10s %-10s %-10s\n",
+					String.valueOf(customer.cart.get(orderID).size()),
+					coffeeshop.menu.get(orderID).getName(), String.valueOf(coffeeshop.menu.get(orderID).getCost()),
+					"£");
+			out2 = String.format("%-10s %-10s %-10s\n", "Total price: ",
+					String.valueOf(customer.getCartTotalPrice()), "£");
+		}
+		custList.setText(output + out2);		
 	}
 
 	/**
 	 * Create New frame and Display barista orders handled
 	 */
-	private void newBaristaFrame() {
+	private void newBaristaFrame(FoodStaff barista) {
 		// Display their name + delay time
 		JFrame frame1 = new JFrame();
-		frame1.setSize(400, 400);
+		frame1.setSize(350, 400);
 		frame1.setTitle("New Barista");
 		frame1.setLayout(null);
 		frame1.setVisible(true); // Show GUI
 
 		// Display name of barista
-		JLabel BaristaName = new JLabel("Barista: "); // HOW DO I ACCESS NAME OF CREATED BARISTA???
-		BaristaName.setBounds(50, 5, 200, 20);
+		JLabel BaristaName = new JLabel("Barista: " + barista.getName());
+		BaristaName.setBounds(50, 5, 250, 20);
 		frame1.getContentPane().add(BaristaName);
-
-		// Display name of customer
-		JLabel custName = new JLabel("Customer Processed: " + cashierRunnable.currentCustomer.getName());
-		custName.setBounds(10, 40, 250, 30);
-		frame1.getContentPane().add(custName);
-
-		// Display ordered Drink handled by barista for current customer
-		JTextArea custList = new JTextArea("");
-		custList.setBounds(10, 80, 300, 200);
-		frame1.getContentPane().add(custList);
-		String output = " ";
-		Set<String> customerCart = cashierRunnable.currentCustomer.cart.keySet();
-		for (String orderID : customerCart) {
-			String category = coffeeshop.menu.get(orderID).getCategory();
-			if (category.equals("Drink")) {
-				output += String.format("%-10s %-10s %-10s %10s\n",
+		
+		if (cashierRunnable.currentCustomer != null) {
+			// Display ordered Drink handled by barista for current customer
+			JTextArea custList = new JTextArea("");
+			custList.setBounds(10, 40, 250, 300);
+			frame1.getContentPane().add(custList);
+			String output = " ";
+			output += String.format("%-10s\n", "Customer: " + cashierRunnable.currentCustomer.getName());
+			Set<String> customerCart = cashierRunnable.currentCustomer.cart.keySet();
+			for (String orderID : customerCart) {
+				String category = coffeeshop.menu.get(orderID).getCategory();
+				if (category.equals("Drink")) {
+					output += String.format("%-10s %-10s %-10s %10s\n",
 						String.valueOf(cashierRunnable.currentCustomer.cart.get(orderID).size()),
 						coffeeshop.menu.get(orderID).getName(), String.valueOf(coffeeshop.menu.get(orderID).getCost()),
 						"£");
+				}
 			}
+			custList.setText(output);
+			baristaFrames.put(barista.getName(), frame1);
+		}else {
+			JOptionPane.showMessageDialog(null,
+					"Error: New cashiers cannot be added. Still waiting for customer.",
+					"Error", JOptionPane.ERROR_MESSAGE);
 		}
-		custList.setText(output);
+	}
+	
+	/**
+	 * Update cashier frames with their orders handled
+	 */
+	public void updateBaristaFrame(String name, Customer customer) {		
+		// get Jframe
+		JFrame frame = baristaFrames.get(name);
+		if (frame == null)
+			return;
+		for(String n: baristaFrames.keySet()) {
+			System.out.println(n);
+		}
+		System.out.println(frame);
+
+		// Display customer orders + total price
+		JTextArea custList = new JTextArea("");
+		custList.setBounds(10, 40, 250, 300);
+		frame.getContentPane().add(custList);
+		String output = " ";
+		output += String.format("%-10s\n", "Customer: " + customer.getName());
+		String out2 = " ";
+		Set<String> customerCart = customer.cart.keySet();
+		for (String orderID : customerCart) {
+			output += String.format("%-10s %-10s %-10s %-10s\n",
+					String.valueOf(customer.cart.get(orderID).size()),
+					coffeeshop.menu.get(orderID).getName(), String.valueOf(coffeeshop.menu.get(orderID).getCost()),
+					"£");
+			out2 = String.format("%-10s %-10s %-10s\n", "Total price: ",
+					String.valueOf(customer.getCartTotalPrice()), "£");
+		}
+		custList.setText(output + out2);		
 	}
 
 	// While GUI is running, keep updating
@@ -754,6 +865,8 @@ public class NewGUI implements PropertyChangeListener {
 				System.out.println("Cashier " + customer.getCashierServing() + "added customer " + customer.getName());
 				System.out.println("*******************************");
 				updateCashierFrame(customer.getCashierServing(), customer);
+				updateCookFrame(customer.getCookServing(), customer);	//Don't know how to access customer dealt with cook/barista
+				updateBaristaFrame(cashierRunnable.currentCustomer.getName(), customer);
 			}
 			
 			
@@ -787,7 +900,7 @@ public class NewGUI implements PropertyChangeListener {
 					Customer customer = (Customer) evt.getNewValue();
 					String display = String.format("%-10s %-5s %-10s %-5s %-5s\n", customer.getTimestamp(), " Name: ",
 							customer.getName(), "  Cart: ", customer.getCart().size());
-					shopModel.addElement(display);
+					onlineModel.addElement(display); //shopModel
 					
 				}
 
@@ -803,12 +916,17 @@ public class NewGUI implements PropertyChangeListener {
 				}
 				else
 				{
+					if (!onlineModel.isEmpty())
+						onlineModel.remove(0);
 					//
 				}
 
 			}
-			
+			displayCashier();
+			displayCook();
+			displayBarista();
 			customerLabel.setText("In shop Customer queue Number of Customers :" + shopModel.size()); 
+			onlinecustomerlabel.setText("Online Customer queue Number of Customers :" + onlineModel.size());
 
 			/*
 			 * System.out.println(shopQueueObserver.size()); for(Customer customer :
@@ -822,6 +940,8 @@ public class NewGUI implements PropertyChangeListener {
 			 */
 			// shopcustomerlist.setVisible(true);
 			shopcustomerlist.setModel(shopModel);
+			onlinecustomerlist.setModel(onlineModel);
+			cashierlist.setModel(cashierModel);
 		}
 
 	}

@@ -288,8 +288,11 @@ public class CoffeeShop {
    /**
 	 * Adds new barista and creates a thread for it  
 	 */
-   public void addBarista() {
+   //THIS METHOD WAS PUBLIC VOID ADDBARISTA()
+   //CHANGED TO STATIC FOODSTAFF
+   public static FoodStaff addBarista() {
 	   FoodStaff barStaff = employees.addBarista(); // Add cashier to the employees model
+	   barStaff.addPropertyChangeListener(gui);
 	   //String name = getRandomName( baristaNames, baristaList);
 	   //System.out.println("Cashier " + name + " has started their shift");
 	   
@@ -298,19 +301,25 @@ public class CoffeeShop {
 	   Thread s = new Thread(barista);
 	   baristaList.put(barStaff.getName(), s);
 	   s.start();
+	   
+	   return barStaff;
    }
    
    /**
 	 * Adds new cook and creates a thread for it  
 	 */
-   public static void addCook() {
+   //THIS METHOD WAS PUBLIC VOID ADDCOOK()
+   //CHANGED TO STATIC FOODSTAFF
+   public static FoodStaff addCook() {
 	   FoodStaff kitchenStaff = employees.addCook(); // Add cashier to the employees model
-	   
+	   kitchenStaff.addPropertyChangeListener(gui);
 	   // Creates cook object which processes orders related to Food and Sides
 	   Runnable cook = new FoodStaffRunnable(kitchenStaff, kitchenQueue, 2000L);
 	   Thread s2 = new Thread(cook);
 	   cookList.put(kitchenStaff.getName(), s2);
 	   s2.start();
+	   
+	   return kitchenStaff;
    }
    
    // DELETE
@@ -364,22 +373,15 @@ public class CoffeeShop {
 		
 		//shop.addCashier();
 		//shop.addCashier();
-		
-		//Subject subject = null;
-		
-//		Observer obj1 = new NewGUI(shop, subject);
-		//NewCustomerQueue q = new NewCustomerQueue(true);
-//		q.registerObserver(obj1);
-//		System.out.println();
-		
-		
-		
-		gui = new NewGUI(shop.shopQueue);
+
+		gui = new NewGUI(shop.shopQueue, shop.cashierThreads, shop.cookList, shop.baristaList);
 		//shopQueue.addPropertyChangeListener(gui);
 		//MyPropertyChange observer = new MyPropertyChange();
 
 		//observable.addPropertyChangeListener(observer);
 		CoffeeShop.shopQueue.addPropertyChangeListener(gui);
+		CoffeeShop.onlineQueue.addPropertyChangeListener(gui);
+		//CoffeeShop.cashierThreads.addPropertyChangeListener(gui);
 	
 		
 		gui.initializeGUI();

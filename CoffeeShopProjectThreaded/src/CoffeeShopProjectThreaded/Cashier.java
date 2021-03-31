@@ -195,20 +195,15 @@ public class Cashier {
 	}
 	
 	 public void addPropertyChangeListener(PropertyChangeListener pcl) {
-	    	support.addPropertyChangeListener(pcl);
-	    }
+		 support.addPropertyChangeListener(pcl);
+	 }
 	    
-	    public void removePropertyChangeListener(PropertyChangeListener pcl) {
-	    	support.removePropertyChangeListener(pcl);
-	    }
-	    
-
-	    
-	    public void setMessage(Customer oldVal, Customer newVal,  String message) {
-	    	
-	    		support.firePropertyChange(message, oldVal, newVal);
-	    	  
-	    }
-	
+	 public void removePropertyChangeListener(PropertyChangeListener pcl) {
+	    support.removePropertyChangeListener(pcl);
+	 }
+	 
+	 public void setMessage(Customer oldVal, Customer newVal,  String message) {
+	    support.firePropertyChange(message, oldVal, newVal);
+	 }
 
 }

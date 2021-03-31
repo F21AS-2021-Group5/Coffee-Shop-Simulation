@@ -13,6 +13,9 @@
 
 package CoffeeShopProjectThreaded;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 import CoffeeShopProjectThreaded.OrderQueue.OrderQueueItem;
 
 public class FoodStaff {
@@ -20,7 +23,9 @@ public class FoodStaff {
 	private String name;
 	private String type;
 	
-	private Customer currentCustomer;
+	private PropertyChangeSupport support;
+	
+	public static Customer currentCustomer;
 	private OrderQueueItem currentItem; 
 	
 	/**
@@ -29,7 +34,8 @@ public class FoodStaff {
 	 */
 	public FoodStaff(String name, boolean isBarista) { 
 		this.name = name;
-		
+		support = new PropertyChangeSupport(this);
+		currentCustomer = null;
 		type = (isBarista) ? "Barista" : "Cook";
 	}
 	
@@ -92,6 +98,19 @@ public class FoodStaff {
 	 */
 	public void setCurrentCustomer(Customer currentCustomer) {
 		this.currentCustomer = currentCustomer;
+		setMessage(null, currentCustomer,"newCustomer");
+	}
+	
+	public void addPropertyChangeListener(PropertyChangeListener pcl) {
+		support.addPropertyChangeListener(pcl);
+	}
+	    
+	public void removePropertyChangeListener(PropertyChangeListener pcl) {
+		support.removePropertyChangeListener(pcl);
+	}
+	 
+	public void setMessage(Customer oldVal, Customer newVal,  String message) {
+		support.firePropertyChange(message, oldVal, newVal);
 	}
 
 }

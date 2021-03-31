@@ -110,7 +110,6 @@ public class NewCustomerQueue{
 		 */
 		public void setUpdatedSize(int updatedSize) {
 			this.updatedSize = updatedSize;
-			//notifyObservers();
 		}
 	}	
 
@@ -128,8 +127,6 @@ public class NewCustomerQueue{
 	public void setQueue(Deque<Customer> queue) {
 		support.firePropertyChange("queue", this.queue, queue);
 		this.queue = queue;
-		
-		//notifyObservers();  //All observers will be notified
 	}
 
 	/**
@@ -145,7 +142,6 @@ public class NewCustomerQueue{
 	 */
 	public void setType(boolean isOnline) {
 		this.isOnline = isOnline;
-		//notifyObservers();	//All observers will be notified
 	}
 	
 	/**
@@ -201,7 +197,7 @@ public class NewCustomerQueue{
 	   		int oldSize = queue.size();
 	   		queue.add(customer);
 	   		Deque<Customer> queue1  =new LinkedList<Customer>();
-	   		//setMessage(queue, "test2");
+
 	   		setMessage(null, customer, isOnline, "added");
 	   		notifyAll();
 	   		
@@ -261,35 +257,5 @@ public class NewCustomerQueue{
     	else
     		support.firePropertyChange(message + " inshop", oldVal, newVal);    
     }
-    
-    
 
-//	@Override
-//	public void registerObserver(Observer newObserver) {
-//		observers.add(newObserver);
-//		System.out.println("New Observer added");
-//		
-//	}
-//
-//	@Override
-//	public void removeObserver(Observer deleteObserver) {
-//		int observerIndex = observers.indexOf(deleteObserver);
-//		System.out.println("Observer " + (observerIndex+1) + " has been deleted");
-//		
-//		observers.remove(observerIndex);  //Delete observers from Arraylist
-//		
-//	}
-//
-//	@Override
-//	public void notifyObservers() {
-//		for(Observer observer : observers) {	
-//		observer.update();
-//		}	
-//	}
-    
-    /*
-    public String endOfDayReport() {
-    	return "str";
-    }
-    */
 }

@@ -125,6 +125,8 @@ public class Employees {
 		String name = getRandomName(baristaNames, "barista");
 		FoodStaff barista = new FoodStaff(name, true, delay);
 		activeBaristas.put(name, barista);
+		
+		setMessage(0, activeBaristas.size(), "baristaAdded");
 		return barista;
 	}
 	
@@ -134,6 +136,7 @@ public class Employees {
 	 */
 	public void removeBarista(String name) {
 		activeBaristas.remove(name);
+		setMessage(0, activeBaristas.size(), "baristaRemoved");
 	}
 	
 	/**
@@ -144,6 +147,8 @@ public class Employees {
 		String name = getRandomName(cookNames, "cook");
 		FoodStaff cook = new FoodStaff(name, false, delay);
 		activeCooks.put(name, cook);
+		
+		setMessage(0, activeCooks.size(), "cookAdded");
 		return cook;
 	}
 	
@@ -153,6 +158,7 @@ public class Employees {
 	 */
 	public void removeCook(String name) {
 		activeCooks.remove(name);
+		setMessage(0, activeCooks.size(), "cookRemoved");
 	}
 	
 	/**
@@ -191,12 +197,8 @@ public class Employees {
     public void removePropertyChangeListener(PropertyChangeListener pcl) {
     	support.removePropertyChangeListener(pcl);
     }
-    
-
-    
+        
     public void setMessage(int oldVal, int newVal, String message) {
-    	
     	support.firePropertyChange(message, oldVal, newVal);
-    
     }
 }

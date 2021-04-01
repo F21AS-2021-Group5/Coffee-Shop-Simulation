@@ -32,7 +32,7 @@ public class Cashier {
 	public float discount;
 	public float total;
 	
-	public static Customer currentCustomer;
+	private Customer currentCustomer;
 	
 	int discount1 = 0;
 	int discount2 = 0;
@@ -44,7 +44,9 @@ public class Cashier {
 	
 	/**
 	 * Constructor for Cashier class
-	 * @param ID Cashier identifier
+	 * @param name Cashier name
+	 * @param speed Cashier runnable delay 
+	 * 
 	 */
 	public Cashier(String name, Long speed) {
 		support = new PropertyChangeSupport(this);
@@ -54,7 +56,7 @@ public class Cashier {
 	}
 	
 	/**
-	 * @return Cashier identifier 
+	 * @return Cashier name 
 	 */
 	public String getName() {
 		return name;
@@ -148,14 +150,39 @@ public class Cashier {
 		return discount;
 	}
 	
+
+	/**
+	 * @return Current customer
+	 */
+	public Customer getCurrentCustomer() {
+		return currentCustomer;
+	}
+	
+	/**
+	 * Set current customer 
+	 * @param currentCustomer Current customer 
+	 */
+	public void setCurrentCustomer(Customer currentCustomer) {
+		this.currentCustomer = currentCustomer;
+	}
+	
 	/**	
 	 * @param customer Customer object 
 	 */
 	public void setCustomer(Customer customer) {
+<<<<<<< HEAD
 		// For values that are initialised at the initialisation of coffeeShop
 		customer.setCashierServing(name);
 		currentCustomer = customer;
 		setMessage(null, customer,"newCustomer"); // Message to the observer               
+=======
+		System.out.println("inside cashier class");
+		
+		// For values that are initialised at the initialisation of coffeeShop
+		customer.setCashierServing(name);
+		currentCustomer = customer;
+		setMessage(null, customer,"newCustomer");
+>>>>>>> f05af13466b45a5942d4d870dd1f1fca4c2828a7
 	}
 	
 	/**
@@ -186,17 +213,24 @@ public class Cashier {
 		getCartSubtotalPrice();
 		getCartTax();
 		getDiscount();
-		getCartTotalPrice();
-		
+		getCartTotalPrice();		
 	}
 	
+	/**
+	 * @return Delay 
+	 */
 	public Long getSpeed() {
 		return this.speed;
 	}
 	
+	/**
+	 * Sets the delay 
+	 * @param speed Delay
+	 */
 	public void setSpeed(Long speed) {
 		this.speed = speed;
 	}
+<<<<<<< HEAD
 	 // Add connection to observer
 	 public void addPropertyChangeListener(PropertyChangeListener pcl) {
 		 support.addPropertyChangeListener(pcl);
@@ -206,8 +240,32 @@ public class Cashier {
 	    support.removePropertyChangeListener(pcl);
 	 }
 	 // Set a message
+=======
+	
+	 /**
+     * Adds listener 
+     * @param pcl Listener to add
+     */
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+    	support.addPropertyChangeListener(pcl);
+    }
+    
+    /**
+     * Removes listener 
+     * @param pcl Listener to remove
+     */
+    public void removePropertyChangeListener(PropertyChangeListener pcl) {
+    	support.removePropertyChangeListener(pcl);
+    }
+    
+    /**
+     * Fires a message to the listener 
+     * @param oldVal Old customer 
+     * @param newVal Updated customer 
+     * @param message Operation type 
+     */
+>>>>>>> f05af13466b45a5942d4d870dd1f1fca4c2828a7
 	 public void setMessage(Customer oldVal, Customer newVal,  String message) {
 	    support.firePropertyChange(message, oldVal, newVal);
 	 }
-
 }

@@ -13,11 +13,7 @@
 
 package CoffeeShopProjectThreaded;
 
-import java.util.Deque;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Queue;
-
 
 public class NewCashier implements Runnable{
 	
@@ -35,6 +31,10 @@ public class NewCashier implements Runnable{
 	
 	/**
 	 * Constructor for NewCashier class
+	 * @param name Cashier name
+	 * @param id Cashier identifier
+	 * @param queue 
+	 * @param gui
 	 */
 	public NewCashier(String name, String id, HashMap<Customer, String> queue, NewGUI gui) {
 		this.ID = id;

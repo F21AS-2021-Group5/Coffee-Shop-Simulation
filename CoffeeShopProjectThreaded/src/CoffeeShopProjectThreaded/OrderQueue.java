@@ -13,16 +13,8 @@
 
 package CoffeeShopProjectThreaded;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
 
 public class OrderQueue {
 	
@@ -219,15 +211,5 @@ public class OrderQueue {
 			return new OrderQueueOutput(item, false, queue.size());
 		else	
 			return new OrderQueueOutput(item, true, queue.size());
-	}
-	
-	public static void main(String[] args) {
-		
-		/*
-		System.out.println("\n");
-		for (String item: CoffeeShop.recipeBook.keySet()) {
-			System.out.println(item);
-			System.out.println(CoffeeShop.recipeBook.get(item).toString());
-		}*/
 	}
 }

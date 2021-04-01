@@ -134,8 +134,6 @@ public class FoodStaff {
 	 
 	public void setMessage(String oldVal, String newVal,  String message) {
 		support.firePropertyChange(message, oldVal, newVal);
-	}
-	
-	
+	}	
 
 }

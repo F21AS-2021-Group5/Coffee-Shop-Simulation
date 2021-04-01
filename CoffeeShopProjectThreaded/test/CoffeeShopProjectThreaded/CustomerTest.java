@@ -36,7 +36,7 @@ class CustomerTest {
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
 		//initialize main class
-		shop = new CoffeeShop("MenuItems");
+		shop = new CoffeeShop();
 		
 		// initialize customer 
 		LocalDateTime ldt = LocalDateTime.now();

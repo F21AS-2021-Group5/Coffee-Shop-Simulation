@@ -331,7 +331,7 @@ public class CoffeeShop {
 	 * @param name of the cashier to end their shift
 	 */
    public static synchronized void removeCashier(String name) {
-	   System.out.println("[MAIN] Cashier " + name + " has ended their shift");
+	   log.updateLog("[MAIN] Cashier " + name + " has ended their shift");
 	   cashierThreads.get(name).interrupt();  // Interrupt the thread causing it to finalise their run 
 	   cashierThreads.remove(name);  // Remove the thread from the list
 	   employees.removeCashier(name); // Remove active cashier from the model 
@@ -343,7 +343,7 @@ public class CoffeeShop {
 	 * @param name of the cook to end their shift
 	 */
    public static synchronized void removeCook(String name) {
-	   System.out.println("[MAIN] Cook " + name + " has ended their shift");
+	   log.updateLog("[MAIN] Cook " + name + " has ended their shift");
 	   cookThreads.get(name).interrupt();  // Interrupt the thread causing it to finalise their run 
 	   cookThreads.remove(name);  // Remove the thread from the list
 	   employees.removeCook(name); // Remove active cashier from the model 
@@ -354,7 +354,7 @@ public class CoffeeShop {
   	 * @param name of the barista to end their shift
   	 */
    public static synchronized void removeBarista(String name) {
-	   System.out.println("[MAIN] Barista" + name + " has ended their shift");
+	   log.updateLog("[MAIN] Barista" + name + " has ended their shift");
 	   baristaThreads.get(name).interrupt();  // Interrupt the thread causing it to finalise their run 
 	   baristaThreads.remove(name);  // Remove the thread from the list
 	   employees.removeBarista(name); // Remove active cashier from the model 

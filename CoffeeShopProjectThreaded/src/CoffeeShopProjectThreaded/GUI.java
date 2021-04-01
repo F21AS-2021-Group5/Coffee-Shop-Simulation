@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.swing.*;
 
 public class GUI implements PropertyChangeListener {
+	
 	// Frame
 	JFrame frame = new JFrame("Coffee Shop");
 
@@ -95,7 +96,9 @@ public class GUI implements PropertyChangeListener {
 	JTextField shopText = new JTextField(3);
 	JTextField onlineText = new JTextField(3);
 
-
+	/**
+	 * Constructor for GUI class 
+	 */
 	public GUI() {
 		shopcustomerlist.setModel(shopModel);
 		onlinecustomerlist.setModel(onlineModel);
@@ -103,7 +106,7 @@ public class GUI implements PropertyChangeListener {
 		cooklist.setModel(cookModel);
 		baristalist.setModel(baristaModel);
 		
-		//Set Scroll only vertical
+		// Set Scroll only vertical
 		cashierScroll.setViewportView(cashierlist);
 		cashierScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		cashierScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -114,13 +117,13 @@ public class GUI implements PropertyChangeListener {
 		baristaScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		baristaScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
-		
+		// create mappings from staff member names to JFrames 
 		cashierFrames = new HashMap<String, JFrame>();
 		cookFrames = new HashMap<String, JFrame>();
 		baristaFrames = new HashMap<String, JFrame>();
+		
 		initializeCustomerNr();
 		log = Log.getInstance();
-
 	}
 	
 	/**
@@ -133,8 +136,7 @@ public class GUI implements PropertyChangeListener {
 		frame1.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); // Close when Exit
 
 		shopLabel.setBounds(10, 10, 200, 50);
-		onlineLabel.setBounds(250,10, 200, 50);
-		
+		onlineLabel.setBounds(250,10, 200, 50);		
 		
 		shopText.setBounds(10, 60, 200, 50);
 		onlineText.setBounds(250, 60, 200, 50);
@@ -148,8 +150,6 @@ public class GUI implements PropertyChangeListener {
 		
 		setupListener();
 	}
-
-
 
 	/**
 	 * Create and show GUI
@@ -256,7 +256,7 @@ public class GUI implements PropertyChangeListener {
 								JOptionPane.ERROR_MESSAGE);
 					}
 					int itime = Integer.parseInt(time);
-					System.out.println(itime);
+					
 					if (itime < 1 || itime > 30) { // Check delay time valid
 						JOptionPane.showMessageDialog(null,
 								"Error: you did not enter a valid delay time, please enter a delay time between 200 and 8000.",
@@ -289,6 +289,7 @@ public class GUI implements PropertyChangeListener {
 						}
 					}
 				}
+				
 				/////////////// Creates employees ////////////////
 				// Create new cashier
 				if (e.getSource() == addCashier) {
@@ -307,6 +308,7 @@ public class GUI implements PropertyChangeListener {
 						}
 					}
 				}
+				
 				// Create new cook
 				if (e.getSource() == addCook) {
 					int cookSize = CoffeeShop.employees.getActiveCooks().size(); // Store number of existent cook
@@ -318,6 +320,7 @@ public class GUI implements PropertyChangeListener {
 						newCookFrame(cook); // create new window with cook and orders handled and customer
 					}
 				}
+				
 				// Create new barista
 				if (e.getSource() == addBarista) {
 					int baristaSize = CoffeeShop.employees.getActiveBaristas().size();
@@ -329,6 +332,7 @@ public class GUI implements PropertyChangeListener {
 						newBaristaFrame(barista); // create new window with barista and orders handles and customer
 					}
 				}
+				
 				/////////////// Removes employees ////////////////
 				// Remove selected cashier
 				if (e.getSource() == removecashiers) {
@@ -349,6 +353,7 @@ public class GUI implements PropertyChangeListener {
 						}
 					}
 				}
+				
 				// Remove selected cook
 				if (e.getSource() == removecooks) {
 					String selectedcook = (String) cooklist.getSelectedValue();
@@ -367,6 +372,7 @@ public class GUI implements PropertyChangeListener {
 						}
 					}
 				}
+				
 				// Remove selected barista
 				if (e.getSource() == removebaristas) {
 					String selectedbarista = (String) baristalist.getSelectedValue();
@@ -413,6 +419,7 @@ public class GUI implements PropertyChangeListener {
 					}
 
 				}
+				
 				// Set Delay Time for selected cook
 				if (e.getSource() == cookTimeOK) {
 					String time = cookTime.getText();
@@ -479,7 +486,6 @@ public class GUI implements PropertyChangeListener {
 		cashierTimeOK.addActionListener(Listener);
 		cookTimeOK.addActionListener(Listener);
 		baristaTimeOK.addActionListener(Listener);
-
 	}
 
 	/**
@@ -633,8 +639,7 @@ public class GUI implements PropertyChangeListener {
 			JOptionPane.showMessageDialog(null,
 					"Error: New cashiers cannot be added. Still waiting for customer.",
 					"Error", JOptionPane.ERROR_MESSAGE);
-		}	
-		
+		}			
 		cashierFrames.put(cashier.getName(), frame1);
 	}
 	
@@ -662,8 +667,7 @@ public class GUI implements PropertyChangeListener {
 			out2 = String.format("%-10s %-10s %-10s\n", "Total price: ",
 					String.valueOf(customer.getCartTotalPrice()), "£");
 		}
-		custList.setText(output + out2);
-		
+		custList.setText(output + out2);		
 	}
 	
 
@@ -682,8 +686,7 @@ public class GUI implements PropertyChangeListener {
 		JLabel CookName = new JLabel("Cook: " + cook.getName()); 
 		CookName.setBounds(10, 5, 200, 20);
 		frame1.getContentPane().add(CookName);
-		
-		
+				
 		if(cook.getCurrentCustomer() != null) {
 			JTextArea custList = new JTextArea("");
 			custList.setBounds(10, 40, 300, 100);
@@ -694,8 +697,7 @@ public class GUI implements PropertyChangeListener {
 			output += String.format("%-10s\n",  cook.getInstruction());  //Display actions taken
 			custList.setText(output);
 			cookFrames.put(cook.getName(), frame1);
-		}
-		
+		}		
 	}
 	
 	/**
@@ -856,10 +858,8 @@ public class GUI implements PropertyChangeListener {
 					frame.dispose();
 				}
 			}
-			
-			
+						
 			String[] split = type.split(" ");  //Used to distinguish customers from in shop/online queue
-
 			//If a customer is added...
 			if (split[0].equals("added")) {
 				//...to in shop queue
@@ -902,11 +902,6 @@ public class GUI implements PropertyChangeListener {
 			//Update customer lists display
 			shopcustomerlist.setModel(shopModel);
 			onlinecustomerlist.setModel(onlineModel);
-			
-
-
 		}
-
 	}
-
 }

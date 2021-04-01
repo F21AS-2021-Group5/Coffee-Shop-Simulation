@@ -32,9 +32,10 @@ public class OrderQueue {
 	}
 	
 	public class OrderQueueOutput {
-		OrderQueueItem item;
-		boolean success;
-		int updatedSize;
+		
+		private OrderQueueItem item;
+		private boolean success;
+		private int updatedSize;
 		
 		/**
 		 * Constructor for OrderQueueOutput class
@@ -168,7 +169,7 @@ public class OrderQueue {
 	 * Adds item to queue one thread at a time 
 	 * @param customerID Customer identifier
 	 * @param itemID Item identifier
-	 * @return Queue item added, if successful or not, updated queue size 
+	 * @return OrderQueueOutput item added, if successful or not, updated queue size 
 	 */
 	public synchronized OrderQueueOutput addToQueue(String customerID, String itemID) {
 		OrderQueueItem item = null;

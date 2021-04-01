@@ -17,11 +17,11 @@ import CoffeeShopProjectThreaded.CustomerQueue.CustomerQueueOutput;
 
 public class QueueHandler implements Runnable{
 
-	CustomerQueue shopQueue;
-	CustomerQueue onlineQueue;
-	long delay;
-	int maxCustomerNumOnline;
-	int maxCustomerNumShop;
+	private CustomerQueue shopQueue;
+	private CustomerQueue onlineQueue;
+	private long delay;
+	private int maxCustomerNumOnline;
+	private int maxCustomerNumShop;
 	
 	private Log log; // used for logging data 
 	
@@ -30,7 +30,6 @@ public class QueueHandler implements Runnable{
 	 * @param onlineQueue Online queue of customers
 	 * @param shopQueue In-shop queue of customers
 	 * @param delay Delay between each customer added to the queues 
-	 * @param maxCustomerNum Maximum number of customers per queue 
 	 */
 	public QueueHandler(CustomerQueue onlineQueue, 
 			CustomerQueue shopQueue, long delay) {
@@ -39,8 +38,7 @@ public class QueueHandler implements Runnable{
 		this.delay = delay;
 		
 		maxCustomerNumOnline = onlineQueue.getMaxCustomerNumber();
-		maxCustomerNumShop = shopQueue.getMaxCustomerNumber();
-		
+		maxCustomerNumShop = shopQueue.getMaxCustomerNumber();		
 		
 		log = Log.getInstance();
 	}
@@ -50,17 +48,7 @@ public class QueueHandler implements Runnable{
 	 */
 	@Override
 	public void run() {	
-		//String maxQueue = "";
-		int maxNum = 0;
-		
-		if (maxCustomerNumOnline > maxCustomerNumShop) {
-			//maxQueue = "online";
-			maxNum = maxCustomerNumOnline;
-		} else {
-			//maxQueue = "shop";
-			//minNum = maxCustomerNumOnline;
-			maxNum = maxCustomerNumShop;
-		}
+		int maxNum = (maxCustomerNumOnline > maxCustomerNumShop) ? maxCustomerNumOnline : maxCustomerNumShop;
 		
 		for(int i = 0; i < maxNum; i++) {
 			// every number of milliseconds, add customer to end of queue 

@@ -20,10 +20,11 @@ import CoffeeShopProjectThreaded.OrderQueue.OrderQueueItem;
 
 public class FoodStaff {
 	
+	// name and type of staff member 
 	private String name;
 	private String type;
 	
-	private PropertyChangeSupport support;
+	private PropertyChangeSupport support; // for observer-observable model 
 	
 	private Customer currentCustomer;
 	private OrderQueueItem currentItem; 
@@ -54,8 +55,6 @@ public class FoodStaff {
 		this.instruction = instruction;
 		setMessage(null, name,  "instruction"+ getType());
 		log.updateLog("[FoodStaff]: " +"FoodStaff " + name + " has started another task ");
-		
-		
 	}
 	
 	/**
@@ -177,5 +176,4 @@ public class FoodStaff {
 	public void setMessage(String oldVal, String newVal,  String message) {
 		support.firePropertyChange(message, oldVal, newVal);
 	}	
-
 }

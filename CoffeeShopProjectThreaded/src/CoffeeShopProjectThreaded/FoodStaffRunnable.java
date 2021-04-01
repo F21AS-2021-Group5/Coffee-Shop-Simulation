@@ -25,8 +25,7 @@ public class FoodStaffRunnable implements Runnable{
 	private OrderQueue queue;
 	private Log log;
 	
-	private FoodStaff foodStaff;
-	
+	private FoodStaff foodStaff;	
 	
 	/**
 	 * Constructor for Staff class
@@ -100,7 +99,6 @@ public class FoodStaffRunnable implements Runnable{
 		this.queue = queue;
 	}
 	
-
 	/**
 	 * While the queue is not empty, complete orders 
 	 */
@@ -152,7 +150,6 @@ public class FoodStaffRunnable implements Runnable{
 							stop = true;
 						}
 					}
-					
 					
 					// update status				
 					status = "[FoodStaffRunable]: "+" Finished: " + foodStaff.getType() + " " + foodStaff.getName() + ": " + currentItem + 

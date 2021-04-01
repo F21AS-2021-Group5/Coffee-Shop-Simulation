@@ -19,10 +19,17 @@ public class Log {
 	private static Log instance; //Volatile modifier
 	private String log;
 	
+	/**
+	 * Constructor for Log class
+	 */
 	private void Log() {
 		log ="Coffee Shop Log\n\n"; 
 	}
 	
+	/**
+	 * Retrieves the Log instance 
+	 * @return Log to be modified/accessed
+	 */
 	public static Log getInstance() {
 		//Using Double-checked locking
 		if(instance == null) { //Read
@@ -35,11 +42,18 @@ public class Log {
 		return instance;
 	}
 	
+	/**
+	 * 
+	 * @param info
+	 */
 	public void updateLog(String info) {
 		log += info + "\n";
-		//System.out.println(info);
+		System.out.println(info);
 	}
 	
+	/**
+	 * @return Log
+	 */
 	public String getLog() {
 		return log;
 	}

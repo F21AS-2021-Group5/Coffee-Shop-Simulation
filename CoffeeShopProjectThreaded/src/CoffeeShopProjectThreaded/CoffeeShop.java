@@ -132,8 +132,8 @@ public class CoffeeShop {
    public void fillMenu(String fileName) {
        BufferedReader br = null;                         // Reader
        try {
-    	   FileReader file = new FileReader(fileName);   // Read file
-    	   br = new BufferedReader(file);                // Create buffer reader for file
+    	   InputStream in = this.getClass().getResourceAsStream("/"+fileName + ".txt"); //WHY??
+    	   br = new BufferedReader(new InputStreamReader(in));
     	   String inputLine = br.readLine();             // Read first line
            while (inputLine != null) {                   // While its contains stuff
                String[] data = inputLine.split(";");     // Split by semicolon
@@ -208,12 +208,8 @@ public class CoffeeShop {
 	 */
    public void fillRecipeBook(String file) {
 		BufferedReader recipeReader = null;
-		try {	   		
-			// Create buffered reader 
-			recipeReader = new BufferedReader(new FileReader(file));		   		
-		} catch (FileNotFoundException e) {
-			e.printStackTrace(); 
-		}
+		InputStream in = this.getClass().getResourceAsStream("/"+file + ".txt");
+		recipeReader = new BufferedReader(new InputStreamReader(in));
 		
 		String line = null;
 		ArrayList<String> instructions = new ArrayList<String>();

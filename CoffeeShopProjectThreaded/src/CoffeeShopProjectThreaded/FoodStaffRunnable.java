@@ -30,6 +30,7 @@ public class FoodStaffRunnable implements Runnable{
 	
 	/**
 	 * Constructor for Staff class
+	 * @param foodStaff FoodStaff object 
 	 * @param queue Queue of orders 
 	 */
 	public FoodStaffRunnable(FoodStaff foodStaff, OrderQueue queue) { 
@@ -160,7 +161,7 @@ public class FoodStaffRunnable implements Runnable{
 					log.updateLog(status);
 					
 					
-					if(CoffeeShop.employees.activeCashiers.isEmpty()) {
+					if(CoffeeShop.employees.getActiveCashiers().isEmpty()) {
 						stop = true;
 						foodStaff.EndedShift(foodStaff.getName());
 					}

@@ -1,3 +1,16 @@
+/**
+ * Employees.java - class to implement all staff member information storage
+ * 
+ * @author Esther Rayssiguie 
+ * @author Jake Marrocco
+ * @author Karolina Judzentyte
+ * @author Valerio Franchi
+ * @version 0.1
+ * 
+ * Copyright (c) 2021 
+ * All rights reserved.
+ */
+
 package CoffeeShopProjectThreaded;
 
 import java.beans.PropertyChangeListener;
@@ -12,9 +25,9 @@ public class Employees {
 	private final String[] baristaNames={"Mac","Cahrlie", "Frank", "Deandra","Dennis"};  
 	private final String[] cookNames={"Dwight","Pam", "Jim", "Andy","Kelly", "Angela"};
 	
-	public static HashMap<String, Cashier> activeCashiers;
-	public static  HashMap<String, FoodStaff> activeBaristas;
-	public static  HashMap<String, FoodStaff> activeCooks;
+	private HashMap<String, Cashier> activeCashiers;
+	private HashMap<String, FoodStaff> activeBaristas;
+	private HashMap<String, FoodStaff> activeCooks;
 	private Log log;
 	
 	private PropertyChangeSupport support;
@@ -194,17 +207,29 @@ public class Employees {
 		   }
 		   return name;
      }
-	
-	
-	// Observer observable
-	public void addPropertyChangeListener(PropertyChangeListener pcl) {
+	 
+    /**
+     * Adds listener 
+     * @param pcl Listener to add
+     */
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
     	support.addPropertyChangeListener(pcl);
     }
     
+    /**
+     * Removes listener 
+     * @param pcl Listener to remove
+     */
     public void removePropertyChangeListener(PropertyChangeListener pcl) {
     	support.removePropertyChangeListener(pcl);
     }
-        
+    
+    /**
+     * Fires a message to the listener 
+     * @param oldVal Old staff size  
+     * @param newVal Updated staff size  
+     * @param message Operation type 
+     */
     public void setMessage(int oldVal, int newVal, String message) {
     	support.firePropertyChange(message, oldVal, newVal);
     }

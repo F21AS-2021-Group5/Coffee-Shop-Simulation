@@ -1,36 +1,37 @@
 End of the day report 
 
 Date:      01-04-2021
-Time:      18:29:47  
+Time:      20:31:36  
 ------------------------------------------------------
 FOOD                 
 
-      Vegetables                2x         
-      Mash                      2x         
-      Panini                    3x         
-      Toastie                   3x         
-      Salad                     2x         
+      Vegetables                4x         
+      Mash                      5x         
+      Panini                    5x         
+      Toastie                   6x         
 ------------------------------------------------------
 DRINKS               
 
-      Americano                 2x         
-      Mocha                     4x         
-      Cappuccino                4x         
-      Latte                     3x         
-      Tea                       2x         
+      Espresso                  1x         
+      Cappuccino                1x         
+      Americano                 5x         
+      Mocha                     3x         
+      Latte                     5x         
+      Tea                       3x         
 ------------------------------------------------------
 PASTRIES             
 
-      Brownies                  1x         
-      Muffin                    1x         
-      Cinnamon Swirl            1x         
+      Croissant                 1x         
+      Brownies                  5x         
+      Muffin                    6x         
+      Cinnamon Swirl            4x         
 ------------------------------------------------------
 
-Number of customers:           8.0       
-Sub total of day :                       87.2£     
-Taxes :                                  21.8£     
-Discount :                               2.8£      
-Type D1 :                                          1         
+Number of customers:           10.0      
+Sub total of day :                       160,1£    
+Taxes :                                  40,03£    
+Discount :                               29,84£    
+Type D1 :                                          9         
 Type D2 :                                          0         
-Type D3 :                                          0         
-Total of the day :                       106.2£    
+Type D3 :                                          1         
+Total of the day :                       170,29£   

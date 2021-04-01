@@ -25,7 +25,7 @@ public class FoodStaff {
 	
 	private PropertyChangeSupport support;
 	
-	public static Customer currentCustomer;
+	private Customer currentCustomer;
 	private OrderQueueItem currentItem; 
 	Long delay;
 	String instruction = "";
@@ -34,6 +34,8 @@ public class FoodStaff {
 	/**
 	 * Constructor for Staff class
 	 * @param queue Queue of orders 
+	 * @param isBarista True if staff is barista False if cook
+	 * @param delay Delay for FoodStaffRunnable  
 	 */
 	public FoodStaff(String name, boolean isBarista, Long delay) { 
 		this.name = name;
@@ -119,8 +121,12 @@ public class FoodStaff {
 		return currentItem;
 	}
 	
+	/**
+	 * Sends message to listener for shift end 
+	 * @param name Name of staff member 
+	 */
 	public void EndedShift(String name) {
-		setMessage(null, name,  "endedShift"+getType());
+		setMessage(null, name, "endedShift"+getType());
 	}
 	
 	/**
@@ -145,15 +151,29 @@ public class FoodStaff {
 	public void setCurrentCustomer(Customer currentCustomer) {
 		this.currentCustomer = currentCustomer;
 	}
-	
-	public void addPropertyChangeListener(PropertyChangeListener pcl) {
-		support.addPropertyChangeListener(pcl);
-	}
-	    
-	public void removePropertyChangeListener(PropertyChangeListener pcl) {
-		support.removePropertyChangeListener(pcl);
-	}
 	 
+    /**
+     * Adds listener 
+     * @param pcl Listener to add
+     */
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+    	support.addPropertyChangeListener(pcl);
+    }
+    
+    /**
+     * Removes listener 
+     * @param pcl Listener to remove
+     */
+    public void removePropertyChangeListener(PropertyChangeListener pcl) {
+    	support.removePropertyChangeListener(pcl);
+    }
+    
+    /**
+     * Fires a message to the listener 
+     * @param oldVal Old name 
+     * @param newVal Updated name 
+     * @param message Operation type 
+     */
 	public void setMessage(String oldVal, String newVal,  String message) {
 		support.firePropertyChange(message, oldVal, newVal);
 	}	

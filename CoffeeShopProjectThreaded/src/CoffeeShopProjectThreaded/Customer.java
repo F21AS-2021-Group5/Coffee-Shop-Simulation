@@ -14,9 +14,7 @@
 package CoffeeShopProjectThreaded;
 
 import java.time.DateTimeException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,8 +32,6 @@ public class Customer {
 	private float cartTotalPrice;
 	
 	private String cashierServing;
-	private String cookServing;
-
 	
 	HashMap<String, ArrayList<LocalDateTime>> cart;
 
@@ -194,15 +190,6 @@ public class Customer {
 	 */
 	public void setCashierServing(String cashierServing) {
 		this.cashierServing = cashierServing;
-	}
-	
-	////////DONT KNOW
-	public String getCookServing() {
-		return cookServing;
-	}
-
-	public void setCookServing(String cookServing) {
-		this.cookServing = cookServing;
 	}
 
 	/**

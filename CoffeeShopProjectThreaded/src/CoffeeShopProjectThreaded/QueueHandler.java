@@ -13,12 +13,12 @@
 
 package CoffeeShopProjectThreaded;
 
-import CoffeeShopProjectThreaded.NewCustomerQueue.CustomerQueueOutput;
+import CoffeeShopProjectThreaded.CustomerQueue.CustomerQueueOutput;
 
 public class QueueHandler implements Runnable{
 
-	NewCustomerQueue shopQueue;
-	NewCustomerQueue onlineQueue;
+	CustomerQueue shopQueue;
+	CustomerQueue onlineQueue;
 	long delay;
 	int maxCustomerNumOnline;
 	int maxCustomerNumShop;
@@ -32,8 +32,8 @@ public class QueueHandler implements Runnable{
 	 * @param delay Delay between each customer added to the queues 
 	 * @param maxCustomerNum Maximum number of customers per queue 
 	 */
-	public QueueHandler(NewCustomerQueue onlineQueue, 
-			NewCustomerQueue shopQueue, long delay) {
+	public QueueHandler(CustomerQueue onlineQueue, 
+			CustomerQueue shopQueue, long delay) {
 		this.onlineQueue = onlineQueue;
 		this.shopQueue = shopQueue;
 		this.delay = delay;

@@ -22,7 +22,7 @@ import java.util.Map.Entry;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-public class NewCustomerQueue{
+public class CustomerQueue{
 	
 	//List of observers
 	private PropertyChangeSupport support;
@@ -47,7 +47,7 @@ public class NewCustomerQueue{
 	 * Constructor for CustomerQueue class
 	 * @param isOnline Online or in-shop queue 
 	 */
-	public NewCustomerQueue(boolean isOnline, long delay, int maxCustomerNumber) {
+	public CustomerQueue(boolean isOnline, long delay, int maxCustomerNumber) {
 		this.isOnline = isOnline;
 		this.delay = delay;
 		this.maxCustomerNumber = maxCustomerNumber;

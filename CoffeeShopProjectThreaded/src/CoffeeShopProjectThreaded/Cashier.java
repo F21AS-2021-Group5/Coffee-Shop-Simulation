@@ -13,36 +13,31 @@
 
 package CoffeeShopProjectThreaded;
 
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*; 
 
 public class Cashier {
 	
-	public float subtotal;
-	public float tax;
-	public float discount;
-	public float total;
+	private float subtotal;
+	private float tax;
+	private float discount;
+	private float total;
 	
-	public static Customer currentCustomer;
+	private Customer currentCustomer;
 	
-	int discount1 = 0;
-	int discount2 = 0;
-	int discount3 = 0;
-	Long delay;
+	// different types of discounts applied 
+	private int discount1 = 0;
+	private int discount2 = 0;
+	private int discount3 = 0;
 	
-	private Log log;
-	private PropertyChangeSupport support;
+	private Long delay; // delay to apply to CashierRunnable 
 	
-	String name;
+	private Log log; // logs all information  
+	
+	private PropertyChangeSupport support; // observable model variable 
+	
+	private String name; // cashier name 
 	
 	/**
 	 * Constructor for Cashier class
@@ -91,16 +86,15 @@ public class Cashier {
 		List<Float> food = new ArrayList<Float>();
 		List<Float> drink = new ArrayList<Float>();
 		List<Float> pastry = new ArrayList<Float>();
-		
-		
-		// Go through the cart to find all the items but
+				
+		// Go through the cart 
 		Set<String> cartSet = currentCustomer.cart.keySet(); 
 		
 		for (String orderID: cartSet) {
 			
-			int quantity = currentCustomer.cart.get(orderID).size();
-		
+			int quantity = currentCustomer.cart.get(orderID).size();		
 			
+			// stores how many drinks, food and pastry were ordered and their prices 
 			if (CoffeeShop.menu.get(orderID).getCategory().equals("Drink")) {
 				for(int i = 1; i <= quantity; i++) {
 					drink.add(CoffeeShop.menu.get(orderID).getCost());
@@ -122,8 +116,8 @@ public class Cashier {
 		discount2 = 0;
 		discount3 = 0;
 		
+		// checks all possible discounts 
 		while(!noMoreDiscountsAvailable) {
-
 			
 			// First checks to see all the combinations
 			if (drink.size() >= 1 && food.size() >= 1 && pastry.size() >= 1) {
@@ -145,8 +139,7 @@ public class Cashier {
 			} else {
 				// No more discounts
 				noMoreDiscountsAvailable = true;
-			}	
-		
+			}			
 		}	
 		return discount;
 	}
@@ -160,9 +153,7 @@ public class Cashier {
 		customer.setCashierServing(name);
 		currentCustomer = customer;
 		setMessage(null, customer,"newCustomer"); // Message to the observer               
-	}
-	
-	
+	}		
 	
 	/**	
 	 * Return the current customer for this cashier
@@ -206,49 +197,62 @@ public class Cashier {
 	 * Gets the delay for the thread
 	 * @return long delay for thread
 	 */
-	public Long getSpeed() {
+	public Long getDelay() {
 		return this.delay;
 	}
 	
 	/**
 	 * Sets the delay for the thread
-	 * @return long delay for thread
+	 * @param delay long delay for thread
 	 */
-	public void setSpeed(Long speed) {
+	public void setDelay(Long delay) {
 		this.delay = delay;
-		log.updateLog("[Cashier]: " +"Delay of " + delay +"is set for Cashier " + name);
+		log.updateLog("[Cashier]: Delay of " + delay + " is set for Cashier " + name);
 	}
 	
+	/**
+	 * Sends the message to the listener (observer) about cashier ending its shift 
+	 * @param name Name of cashier 
+	 */
 	public void EndedShift(String name) {
 		setMessage(null, name,  "CashierEndedShift");
 	}
 	
-	/**
-	 *  Add connection to observer
-	 */
-	 public void addPropertyChangeListener(PropertyChangeListener pcl) {
-		 support.addPropertyChangeListener(pcl);
-	 }
-	 
-	 /**
-	  *  Remove connection to observer
-	  */
-	 public void removePropertyChangeListener(PropertyChangeListener pcl) {
-	    support.removePropertyChangeListener(pcl);
-	 }
-	 
-	 /**
-	  *  Set a message from the observable
-	  */
+	   /**
+     * Adds listener 
+     * @param pcl Listener to add
+     */
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+    	support.addPropertyChangeListener(pcl);
+    }
+    
+    /**
+     * Removes listener 
+     * @param pcl Listener to remove
+     */
+    public void removePropertyChangeListener(PropertyChangeListener pcl) {
+    	support.removePropertyChangeListener(pcl);
+    }
+    
+    /**
+     * Fires a message to the listener using customer objects
+     * @param oldVal Old customer 
+     * @param newVal Updated customer 
+     * @param message Operation type 
+     */
 	 public void setMessage(Customer oldVal, Customer newVal,  String message) {
 	    support.firePropertyChange(message, oldVal, newVal);
-	    log.updateLog("[Cashier]: " +"Change in current customer message is set");
+	    log.updateLog("[Cashier]: " + name + " Change in current customer message is set");
 	 }
 	 
+    /**
+     * Fires a message to the listener about a cashier using strings
+     * @param oldVal Old value 
+     * @param newVal Updated value 
+     * @param message Operation type 
+     */
 	 public void setMessage(String oldVal, String newVal,  String message) {
 		    support.firePropertyChange(message, oldVal, newVal);
-		    log.updateLog("[Cashier]: " +"Ended shift");
-		 }
-
-
+		    log.updateLog("[Cashier]: " + name + " Ended shift");
+	}
 }

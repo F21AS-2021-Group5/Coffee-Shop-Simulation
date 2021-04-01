@@ -27,7 +27,7 @@ import java.util.Set;
 
 import javax.swing.*;
 
-public class NewGUI implements PropertyChangeListener {
+public class GUI implements PropertyChangeListener {
 	// Frame
 	JFrame frame = new JFrame("Coffee Shop");
 
@@ -50,9 +50,10 @@ public class NewGUI implements PropertyChangeListener {
 	JLabel activecashierLabel = new JLabel("Active Cashiers:");
 	JLabel activecookLabel = new JLabel("Active Cooks:");
 	JLabel activebaristaLabel = new JLabel("Active Baristas:");
-	JLabel cashierTimeLabel = new JLabel("Set Cashier Delay:");
-	JLabel cookTimeLabel = new JLabel("Set Cook Delay:");
-	JLabel baristaTimeLabel = new JLabel("Set Barista Delay:");
+	
+	JLabel cashierTimeLabel = new JLabel("Set Cashier Delay: 200 < x < 8000");
+	JLabel cookTimeLabel = new JLabel("Set Cook Delay:  200 < x < 8000");
+	JLabel baristaTimeLabel = new JLabel("Set Barista Delay:  200 < x < 8000");
 
 	// Model
 	DefaultListModel shopModel = new DefaultListModel();
@@ -95,7 +96,7 @@ public class NewGUI implements PropertyChangeListener {
 	JTextField onlineText = new JTextField(3);
 
 
-	public NewGUI() {
+	public GUI() {
 		shopcustomerlist.setModel(shopModel);
 		onlinecustomerlist.setModel(onlineModel);
 		cashierlist.setModel(cashierModel);
@@ -291,7 +292,7 @@ public class NewGUI implements PropertyChangeListener {
 				/////////////// Creates employees ////////////////
 				// Create new cashier
 				if (e.getSource() == addCashier) {
-					int cashierSize = CoffeeShop.employees.activeCashiers.size(); // Store number of existent cashier
+					int cashierSize = CoffeeShop.employees.getActiveCashiers().size(); // Store number of existent cashier
 					if (cashierSize == 11 || cashierSize > 11) { // Cannot have more than 11 cashiers
 						JOptionPane.showMessageDialog(null, "Error: you cannot create more than eleven cashiers",
 								"Error", JOptionPane.ERROR_MESSAGE);
@@ -308,7 +309,7 @@ public class NewGUI implements PropertyChangeListener {
 				}
 				// Create new cook
 				if (e.getSource() == addCook) {
-					int cookSize = CoffeeShop.employees.activeCooks.size(); // Store number of existent cook
+					int cookSize = CoffeeShop.employees.getActiveCooks().size(); // Store number of existent cook
 					if (cookSize == 6) {
 						JOptionPane.showMessageDialog(null, "Error: you cannot create more than six cooks", "Error",
 								JOptionPane.ERROR_MESSAGE);
@@ -319,7 +320,7 @@ public class NewGUI implements PropertyChangeListener {
 				}
 				// Create new barista
 				if (e.getSource() == addBarista) {
-					int baristaSize = CoffeeShop.employees.activeBaristas.size();
+					int baristaSize = CoffeeShop.employees.getActiveBaristas().size();
 					if (baristaSize == 5) {
 						JOptionPane.showMessageDialog(null, "Error: you cannot create more than five baristas", "Error",
 								JOptionPane.ERROR_MESSAGE);
@@ -338,7 +339,7 @@ public class NewGUI implements PropertyChangeListener {
 								JOptionPane.ERROR_MESSAGE);
 					}else {
 						selectedcashier = selectedcashier.trim(); // remove string from list  
-						int cashierSize = CoffeeShop.employees.activeCashiers.size(); // Store number of existent cashier
+						int cashierSize = CoffeeShop.employees.getActiveCashiers().size(); // Store number of existent cashier
 						if (cashierSize == 0) { // Cannot remove cashier if size less than 1
 							JOptionPane.showMessageDialog(null, "Error: you cannot have less than one cashier", "Error",
 									JOptionPane.ERROR_MESSAGE);
@@ -356,7 +357,7 @@ public class NewGUI implements PropertyChangeListener {
 								JOptionPane.ERROR_MESSAGE);
 					}else {
 						selectedcook = selectedcook.trim(); // remove string from list
-						int cookSize = CoffeeShop.employees.activeCooks.size(); // Store number of existent barista
+						int cookSize = CoffeeShop.employees.getActiveCooks().size(); // Store number of existent barista
 						if (cookSize == 1) { // Cannot remove barista if size less than 1
 							JOptionPane.showMessageDialog(null, "Error: you cannot have less than one cook", "Error",
 									JOptionPane.ERROR_MESSAGE);
@@ -374,7 +375,7 @@ public class NewGUI implements PropertyChangeListener {
 								JOptionPane.ERROR_MESSAGE);
 					}else {
 						selectedbarista = selectedbarista.trim(); // remove string from list
-						int baristaSize = CoffeeShop.employees.activeBaristas.size(); // Store number of existent barista
+						int baristaSize = CoffeeShop.employees.getActiveBaristas().size(); // Store number of existent barista
 						if (baristaSize == 1) { // Cannot remove barista if size less than 1
 							JOptionPane.showMessageDialog(null, "Error: you cannot have less than one barista", "Error",
 									JOptionPane.ERROR_MESSAGE);
@@ -408,7 +409,7 @@ public class NewGUI implements PropertyChangeListener {
 						selectedcashier = selectedcashier.trim();
 				
 						Long l = Long.valueOf(itime);
-						CoffeeShop.employees.activeCashiers.get(selectedcashier).setSpeed(l);
+						CoffeeShop.employees.getActiveCashiers().get(selectedcashier).setDelay(l);
 					}
 
 				}
@@ -434,7 +435,7 @@ public class NewGUI implements PropertyChangeListener {
 						selectedcook = selectedcook.trim();
 						
 						Long l = Long.valueOf(itime);
-						CoffeeShop.employees.activeCooks.get(selectedcook).setDelay(l);
+						CoffeeShop.employees.getActiveCooks().get(selectedcook).setDelay(l);
 					}
 
 				}
@@ -462,7 +463,7 @@ public class NewGUI implements PropertyChangeListener {
 						String selectedbarista = (String) baristalist.getSelectedValue();
 						selectedbarista = selectedbarista.trim();
 						Long l = Long.valueOf(itime);
-						CoffeeShop.employees.activeBaristas.get(selectedbarista).setDelay(l);
+						CoffeeShop.employees.getActiveBaristas().get(selectedbarista).setDelay(l);
 					}
 				}
 			}
@@ -537,7 +538,7 @@ public class NewGUI implements PropertyChangeListener {
 	 */
 	private synchronized void displayCashier() {
 		cashierModel.clear();  //Clear Display
-		HashMap<String, Cashier> cashiers = CoffeeShop.employees.activeCashiers;
+		HashMap<String, Cashier> cashiers = CoffeeShop.employees.getActiveCashiers();
 		if (!cashiers.isEmpty()) {  
 			String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", cashiers.size(), " active cashiers\n\n");
 			cashierModel.addElement(display1); // Display number of active cashiers
@@ -558,7 +559,7 @@ public class NewGUI implements PropertyChangeListener {
 	 */
 	private synchronized void displayCook() {
 		cookModel.clear();
-		HashMap<String, FoodStaff> cooks = CoffeeShop.employees.activeCooks;
+		HashMap<String, FoodStaff> cooks = CoffeeShop.employees.getActiveCooks();
 		if (!cooks.isEmpty()) {
 			String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", cooks.size(), " active cooks\n\n");
 			cookModel.addElement(display1); // Display number of active cooks
@@ -578,7 +579,7 @@ public class NewGUI implements PropertyChangeListener {
 	 */
 	private synchronized void displayBarista() {
 		baristaModel.clear();
-		HashMap<String, FoodStaff>  baristas = CoffeeShop.employees.activeBaristas;
+		HashMap<String, FoodStaff>  baristas = CoffeeShop.employees.getActiveBaristas();
 		if (!baristas.isEmpty()) {
 			String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", baristas.size(), " active baristas\n\n");
 			baristaModel.addElement(display1); // Display number of active baristas
@@ -705,17 +706,19 @@ public class NewGUI implements PropertyChangeListener {
 		JFrame frame = cookFrames.get(name);
 		if (frame == null)
 			return;
-
-		// Display customer ordered Food handled
-		JTextArea custList = new JTextArea("");
-		custList.setBounds(10, 40, 300, 100);
-		frame.getContentPane().add(custList);
-		String output = " ";
-		output += String.format("%-10s\n", "Cook is preparing food for customer:  "  + cook.getCurrentCustomer().getName());
-		output += String.format("%-10s\n",  "Preparing item: " + cook.getCurrentItem().getName());
-		output += String.format("%-10s\n",  "Currently doing: ");
-		output += String.format("%-10s\n",  cook.getInstruction());  //Display current actions
-		custList.setText(output);
+		
+		if(cook.getCurrentCustomer() != null) {
+			// Display customer ordered Food handled
+			JTextArea custList = new JTextArea("");
+			custList.setBounds(10, 40, 300, 100);
+			frame.getContentPane().add(custList);
+			String output = " ";
+			output += String.format("%-10s\n", "Cook is preparing food for customer:  "  + cook.getCurrentCustomer().getName());
+			output += String.format("%-10s\n",  "Preparing item: " + cook.getCurrentItem().getName());
+			output += String.format("%-10s\n",  "Currently doing: ");
+			output += String.format("%-10s\n",  cook.getInstruction());  //Display current actions
+			custList.setText(output);
+		}
 	}
 
 	/**
@@ -733,15 +736,17 @@ public class NewGUI implements PropertyChangeListener {
 		BaristaName.setBounds(10, 5, 200, 20);
 		frame1.getContentPane().add(BaristaName);
 		
-		// Display ordered Drink handled by barista for current customer
-		JTextArea custList = new JTextArea("");
-		custList.setBounds(10, 40, 300, 100);
-		frame1.getContentPane().add(custList);
-		String output = " ";
-		output += String.format("%-10s\n", "Barista is preparing drink for customer : " + barista.getCurrentCustomer().getName());
-		output += String.format("%-10s\n",  barista.getInstruction());  //Display current actions
-		custList.setText(output);
-		baristaFrames.put(barista.getName(), frame1);
+		if(barista.getCurrentCustomer() != null) {
+			// Display ordered Drink handled by barista for current customer			
+			JTextArea custList = new JTextArea("");
+			custList.setBounds(10, 40, 300, 100);
+			frame1.getContentPane().add(custList);
+			String output = " ";
+			output += String.format("%-10s\n", "Barista is preparing drink for customer : " + barista.getCurrentCustomer().getName());
+			output += String.format("%-10s\n",  barista.getInstruction());  //Display current actions
+			custList.setText(output);
+			baristaFrames.put(barista.getName(), frame1);
+		}
 	}
 	
 	/**
@@ -752,18 +757,20 @@ public class NewGUI implements PropertyChangeListener {
 		JFrame frame = baristaFrames.get(name);
 		if (frame == null)
 			return;
-
-		// Display customer orders 
-		JTextArea custList = new JTextArea("");
-		custList.setBounds(10, 40, 300, 100);
-		frame.getContentPane().add(custList);
-		String output = " ";
-		//output += String.format("%-10s\n", "Customer: " + barista.getName());
-		output += String.format("%-10s\n", "Barista is preparing drink for customer:  "  + barista.getCurrentCustomer().getName());
-		output += String.format("%-10s\n",  "Preparing item: " + barista.getCurrentItem().getName());
-		output += String.format("%-10s\n",  "Currently doing: ");
-		output += String.format("%-10s\n",  barista.getInstruction());   //Display current actions
-		custList.setText(output);	
+		
+		if(barista.getCurrentCustomer() != null) {
+			// Display customer orders 
+			JTextArea custList = new JTextArea("");
+			custList.setBounds(10, 40, 300, 100);
+			frame.getContentPane().add(custList);
+			String output = " ";
+			//output += String.format("%-10s\n", "Customer: " + barista.getName());
+			output += String.format("%-10s\n", "Barista is preparing drink for customer:  "  + barista.getCurrentCustomer().getName());
+			output += String.format("%-10s\n",  "Preparing item: " + barista.getCurrentItem().getName());
+			output += String.format("%-10s\n",  "Currently doing: ");
+			output += String.format("%-10s\n",  barista.getInstruction());   //Display current actions
+			custList.setText(output);	
+		}
 	}
 
 	/**
@@ -799,14 +806,14 @@ public class NewGUI implements PropertyChangeListener {
 			//When a Cook is added, this is to display their actions
 			if(type.equals("instructionCook")) {
 					String cook = (String) evt.getNewValue();
-					FoodStaff Cook = CoffeeShop.employees.activeCooks.get(cook);
+					FoodStaff Cook = CoffeeShop.employees.getActiveCooks().get(cook);
 					if (Cook != null)
 						updateCookFrame(Cook.getName(), Cook);
 			}
 			//When a Barista is added, this is to display their actions
 			if(type.equals("instructionBarista")) {
 					String barista = (String) evt.getNewValue();
-					FoodStaff Barista = CoffeeShop.employees.activeBaristas.get(barista);
+					FoodStaff Barista = CoffeeShop.employees.getActiveBaristas().get(barista);
 					if (Barista != null)
 						updateBaristaFrame(Barista.getName(), Barista);
 			}
@@ -817,19 +824,22 @@ public class NewGUI implements PropertyChangeListener {
 				cashierFrames.get(name).dispose();  // CLOSE WINDOW 
 				CoffeeShop.removeCashier(name);
 				displayCashier();
-				System.out.println("Cashier size end of day: " + CoffeeShop.employees.activeCashiers.size());
+				System.out.println("Cashier size end of day: " + CoffeeShop.employees.getActiveCashiers().size());
 			}
 			if(type.equals("endedShiftCook")) {
 				String name = (String) evt.getNewValue();
 				cookFrames.get(name).dispose();  // CLOSE WINDOW 
 				CoffeeShop.removeCook(name);
-				System.out.println("Cook size end of day: " + CoffeeShop.employees.activeCooks.size());
+				System.out.println("Cook size end of day: " + CoffeeShop.employees.getActiveCooks().size());
 				
 				displayCook();
 				// When empty generate report
 				if(CoffeeShop.cookThreads.isEmpty() && CoffeeShop.baristaThreads.isEmpty()) {
 					CoffeeShop.generateFinalReport();
 					//frame.dispose();
+					System.exit(0);
+					frame.setVisible(false);
+					frame.dispose();
 				}	
 			}
 			if(type.equals("endedShiftBarista")) {
@@ -837,11 +847,13 @@ public class NewGUI implements PropertyChangeListener {
 				baristaFrames.get(name).dispose();  // CLOSE WINDOW 
 				CoffeeShop.removeBarista(name);
 				displayBarista();
-				System.out.println("Barista size end of day: " + CoffeeShop.employees.activeBaristas.size());
+				System.out.println("Barista size end of day: " + CoffeeShop.employees.getActiveBaristas().size());
 				// When empty generate report
 				if(CoffeeShop.cookThreads.isEmpty() && CoffeeShop.baristaThreads.isEmpty()) {
 					CoffeeShop.generateFinalReport();
-					//frame.dispose();
+					System.exit(0);
+					frame.setVisible(false);
+					frame.dispose();
 				}
 			}
 			

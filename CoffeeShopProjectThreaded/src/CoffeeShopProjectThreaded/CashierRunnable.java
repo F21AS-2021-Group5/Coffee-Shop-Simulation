@@ -1,5 +1,5 @@
 /**
- * CashierTrial.java - class to implement the thread cashier for the coffee shop simulation
+ * CashierRunnable.java - class to implement the thread cashier for the coffee shop simulation
  * 
  * @author Esther Rayssiguie 
  * @author Jake Marrocco
@@ -13,17 +13,7 @@
 
 package CoffeeShopProjectThreaded;
 
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-
-import CoffeeShopProjectThreaded.NewCustomerQueue.CustomerQueueOutput;
+import CoffeeShopProjectThreaded.CustomerQueue.CustomerQueueOutput;
 import CoffeeShopProjectThreaded.Inventory.InventoryOutput;
 import CoffeeShopProjectThreaded.Bookkeeping.BookkeepingOutput;
 
@@ -36,8 +26,8 @@ public class CashierRunnable implements Runnable{
 	private Log log;
 	
 	// constructor initialized variables 
-	private NewCustomerQueue onlineQueue;
-	private NewCustomerQueue shopQueue;
+	private CustomerQueue onlineQueue;
+	private CustomerQueue shopQueue;
 	private OrderQueue kitchenQueue;
 	private OrderQueue barQueue;
 	private Inventory inventory;
@@ -55,14 +45,12 @@ public class CashierRunnable implements Runnable{
 	 * @param books Storage for economically relevant values 
 	 * @param cashier Cashier object instance 
 	 */
-	public CashierRunnable(String name, NewCustomerQueue onlineQueue,
-			NewCustomerQueue shopQueue, OrderQueue kitchenQueue, 
+	public CashierRunnable(String name, CustomerQueue onlineQueue,
+			CustomerQueue shopQueue, OrderQueue kitchenQueue, 
 			OrderQueue barQueue, Inventory inventory, Bookkeeping books, Cashier cashier) {
 		
 		this.currentCustomer = null;
-		this.name =name;
-
-		//this.delay = delay;
+		this.name = name;
 		this.onlineQueue = onlineQueue;
 		this.shopQueue = shopQueue;
 		this.kitchenQueue = kitchenQueue;
@@ -72,7 +60,6 @@ public class CashierRunnable implements Runnable{
 		this.cashier = cashier;
 		
 		log = Log.getInstance();
-
 	}
 	
 	@Override
@@ -94,42 +81,38 @@ public class CashierRunnable implements Runnable{
 				if (!shopQueue.getQueue().isEmpty())
 				{
 					log.updateLog("[CashierRunnable]: " +"Cashier " + name + " checking in-shop queue -> current size: " + shopQueue.getQueue().size());
-					//try {
 					
-						out = shopQueue.removeFromQueue();
-						currentCustomer = out.getCustomer();
-						cashier.setCustomer(currentCustomer);
-					//}catch (Exception e) {
-						//System.out.println(shopQueue.getQueue().size());
-					//}
-					
+					out = shopQueue.removeFromQueue();
+					currentCustomer = out.getCustomer();
+					cashier.setCustomer(currentCustomer);					
 					
 				// both queues are empty 
 				} else {
-					if(!CoffeeShop.handlerThread.isAlive()) {
-						CoffeeShop.employees.activeCashiers.remove(name);
+					// if queue handler is not adding any more customers to queue, stop cashier 
+					if (!CoffeeShop.handlerThread.isAlive()) {
+						CoffeeShop.employees.getActiveCashiers().remove(name);
 		    			stop = true;
-		    			cashier.EndedShift(cashier.name);
+		    			cashier.EndedShift(cashier.getName());
 
-		    		}else {
+		    		} else {
 		    		
-					// if online queue is not locked by other thread, go wait in its queue
-					if (!onlineQueue.isLocked()) {
-						log.updateLog("[CashierRunnable]: " +"Cashier " + name + " entering waiting state in online queue -> current size: " + onlineQueue.getQueue().size());
-						out = onlineQueue.removeFromQueue();
-						currentCustomer = out.getCustomer();
-						cashier.setCustomer(currentCustomer);
-						whichQueue = "online";
-						
-					} else {
-						// if online is locked, and shop is not locked, go wait in its queue
-						if (!shopQueue.isLocked()) {
-							log.updateLog("[CashierRunnable]: " +"Cashier " + name + " entering waiting state in in-shop queue -> current size: " + onlineQueue.getQueue().size());
-							out = shopQueue.removeFromQueue();
+						// if online queue is not locked by other thread, go wait in its queue
+						if (!onlineQueue.isLocked()) {
+							log.updateLog("[CashierRunnable]: " +"Cashier " + name + " entering waiting state in online queue -> current size: " + onlineQueue.getQueue().size());
+							out = onlineQueue.removeFromQueue();
 							currentCustomer = out.getCustomer();
 							cashier.setCustomer(currentCustomer);
-						}
-					}	
+							whichQueue = "online";
+							
+						} else {
+							// if online is locked, and shop is not locked, go wait in its queue
+							if (!shopQueue.isLocked()) {
+								log.updateLog("[CashierRunnable]: " +"Cashier " + name + " entering waiting state in in-shop queue -> current size: " + onlineQueue.getQueue().size());
+								out = shopQueue.removeFromQueue();
+								currentCustomer = out.getCustomer();
+								cashier.setCustomer(currentCustomer);
+							}
+						}	
 		    		}
 				}
 			
@@ -155,8 +138,7 @@ public class CashierRunnable implements Runnable{
 						e.printStackTrace();
 					}
 				}
-			}
-			
+			}			
 			
 			// checks if output was successful 
 			if (out != null && out.isSuccess()) {
@@ -170,25 +152,26 @@ public class CashierRunnable implements Runnable{
 						out.getUpdatedSize());
 				
 				InventoryOutput out1 = inventory.addToInventory(currentCustomer);
+				if (out1.isSuccess()) {
+					log.updateLog("[CashierRunnable]: " +"Cashier " + name + " new inventory size: "+ out1.updatedSize);
+				}
 				
 				BookkeepingOutput out2 = books.upDateBooks(cashier.returnSums());
-				if(out2.isSuccess()) {	
-					log.updateLog("[CashierRunnable]: " +"Cashier " + name + " total of customers: "+ out2.numberOfCustomers);
+				if (out2.isSuccess()) {	
+					log.updateLog("[CashierRunnable]: " +"Cashier " + name + " total of customers: "+ out2.getNumberOfCustomers());
 				}
 			}	
 			
-			Long delay = cashier.getSpeed();
+			Long delay = cashier.getDelay();
 			
 			// delays the thread for visualisation purposes 
 			try {
 				Thread.sleep(delay);
 				
-			}catch(InterruptedException e) {
-				
-				
-				stop = true;  ///// KILLS THE THREAD //////
-				log.updateLog("[CashierRunnable]: " +"Cashier " + name + " has ended their shift ");
-				
+			} catch(InterruptedException e) {
+								
+				stop = true;  // KILLS THE THREAD 
+				log.updateLog("[CashierRunnable]: " +"Cashier " + name + " has ended their shift ");				
 			}	
 		}
 	}

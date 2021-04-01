@@ -13,90 +13,89 @@
 
 package CoffeeShopProjectThreaded;
 
-import java.time.DateTimeException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-// Import the File class
-// Import the IOException class to handle errors
 import java.io.*;
-import java.security.Timestamp;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 
 public class CoffeeShop {
+	
 	// Written data files 
 	public static HashMap<String, MenuItem> menu;                 // Stores menu items 
 	public static HashMap<String, ArrayList<String> > recipeBook; // Stores recipes
 	public static Map<String, HashSet<String> > foodMap;          // Map
 	
-	static NewGUI gui;
+	static GUI gui;
 	public static String report;
 	
+	private long addToQueueDelay;	
 
 	// Data MODELS 
-	NewCustomerQueue queue;
+	CustomerQueue queue;
 	
-	public static NewCustomerQueue shopQueue;
-	public static NewCustomerQueue onlineQueue;
-
+	// customer queues 
+	public static CustomerQueue shopQueue;
+	public static CustomerQueue onlineQueue;
+	
+	// item inventory and books (revenue)
 	public static Inventory inventory;
 	public static Bookkeeping books;
+	
+	// food orders queues 
 	public static OrderQueue kitchenQueue;
 	public static OrderQueue barQueue;
-	public static Employees employees;
+	
+	public static Employees employees; // staff member storage 
 	
 	public static boolean isFinished = false; 
 	
 	private static String line = String.format("%1$" + 55 + "s", "- \n").replace(' ', '-');
-	private static DecimalFormat df2 = new DecimalFormat("#.##");
+	private static DecimalFormat df2 = new DecimalFormat("#.##");	
 	
-	
-	//ArrayList<Thread> cashierThreads = new ArrayList<Thread>(); 
+	// hash maps mapping staff names to running threads
 	public static HashMap<String, Thread> cashierThreads;
 	public static HashMap<String, Thread> baristaThreads;
 	public static HashMap<String, Thread> cookThreads;
 	
-	public static Thread handlerThread;
-	
+	// queue handler thread 
+	public static Thread handlerThread;	
 
-	String[] cashierNames={"Ron","Leslie", "April", "Donna","Andy","Ann","Ben", 
+	// possible staff member names 
+	String[] cashierNames={"Ron","Leslie","April", "Donna","Andy","Ann","Ben", 
 			"Tom", "Jerry", "Gerry", "Lerry"};   // -
-	String[] baristaNames={"Mac","Cahrlie", "Frank", "Deandra","Dennis"};   // -
-	String[] cookNames={"Dwight","Pam", "Jim", "Andy","Kelly", "Angela"};   // - 
+	String[] baristaNames={"Mac","Charlie", "Frank", "Deandra","Dennis"};   
+	String[] cookNames={"Dwight","Pam", "Jim", "Andy","Kelly", "Angela"};    
 	
-	//public static HashMap<String, Cashier> acctiveCashiers;  // - 
-	public static HashMap<String, Customer> customerList;   // -
+	// hashmap mapping customer name to customer object 
+	public static HashMap<String, Customer> customerList;  
 	
-	
+	// logs all information from all classes 
 	private static Log log;
 
-
-	
 	/**
 	 * Constructor for CoffeeShop class
-	 * @param name Name of cashier 
+	 * @param addToQueueDelay Delay for queue handler 
 	 */
-	public CoffeeShop()
+	public CoffeeShop(long addToQueueDelay)
 	{
-		menu = new HashMap<>(); 
+		this.addToQueueDelay = addToQueueDelay;
+
 		customerList = new HashMap<>();
 		
-		log = Log.getInstance();
+		log = Log.getInstance();		
 		
-		
-		fillMenu("MenuItems");                      // Fills the menu with all the items 
-		
+
+		// Fills the menu with all the items 
+		menu = new HashMap<>(); 
+		fillMenu("MenuItems");  
 
 		// Model, all the data used by different components
-		//queue = new NewCustomerQueue(false);        // Customer queue
 		inventory = new Inventory();                // Inventory of ordered items
 
-		shopQueue = new NewCustomerQueue(false, 1000L, 10);   // In-shop Customer queue
-		onlineQueue = new NewCustomerQueue(true, 1000L, 10);  // Online Customer queue
+		shopQueue = new CustomerQueue(false, addToQueueDelay, 10);   // In-shop Customer queue
+		onlineQueue = new CustomerQueue(true, addToQueueDelay, 10);  // Online Customer queue
 		inventory = new Inventory();                  // Inventory of ordered items
 		books = new Bookkeeping();                  // Bookkeeping of earnings and other finances
 		employees = new Employees();                // Currently working employees 
@@ -108,21 +107,20 @@ public class CoffeeShop {
 		cashierThreads = new HashMap<String, Thread>();
 		baristaThreads = new HashMap<String, Thread>();
 		cookThreads = new HashMap<String, Thread>();
-		
-				
+						
 		// Fill recipe book 
 		recipeBook = new HashMap<String, ArrayList<String> >();
 		fillRecipeBook("RecipeBook");	
+		
 		// Fill food map 
 		foodMap = new HashMap<String, HashSet<String> >();
-		fillFoodMap();
+		fillFoodMap(); 
 		
-	
-		
-		//acctiveCashiers = new HashMap<String, Cashier>();  // -
-		//fillCustomerList("CustomerList");	  // -
 	}
 	
+	/**
+	 * Sets the isFinished variable to true 
+	 */
 	public static void setIsFinished() {
 		isFinished = true;
 	}
@@ -197,12 +195,11 @@ public class CoffeeShop {
 		{
 			String itemId = menu.get(name).getIdentifier();             // Get ID of the menu item 
 			String onlyChars = itemId.replaceAll("[^A-Za-z]+", "");     // Find what type it is 
-			if (onlyChars.equals("FOOD") || onlyChars.equals("SIDE"))   // If it is FOOD or SISE 
+			if (onlyChars.equals("FOOD") || onlyChars.equals("SIDE"))   // If it is FOOD or SIDE 
 				foodMap.get("Kitchen").add(name);                       // Add to kitchen staff
 			else if (onlyChars.equals("PASTRY") || onlyChars.equals("DRINK")) 
 				foodMap.get("Bar").add(name);                           // Add to bar staff
-		}
-		
+		}		
    }
    
 	/**
@@ -265,11 +262,11 @@ public class CoffeeShop {
 		}		
 	}
    
-//Working on this 	
 	/**
 	 * Adds new cashier and creates a thread for it  
 	 */
    public static Cashier addCashier(Long delay) {
+	   // create cashier object 
 	   Cashier cash = employees.addCashier(delay); 
 	   cash.addPropertyChangeListener(gui);  // Establish OBSERVER-OBSERVABLE channel 
 	   
@@ -278,6 +275,8 @@ public class CoffeeShop {
 	   Thread t = new Thread(cashier);
 	   t.setPriority(2);                      // Sets priority
 	   cashierThreads.put(cash.getName(), t);   // Holds active cashier threads
+	   
+	   // start thread 
 	   t.start(); 
 	   
 	   return cash;
@@ -290,24 +289,23 @@ public class CoffeeShop {
 	    // Create handler which adds to the customer queue
 	    Runnable handler = new QueueHandler(onlineQueue, shopQueue, 1000L);
 	    handlerThread = new Thread(handler);
+	    
 	    // High priority since customers are the once who are deciding when they will arrive
 	    handlerThread.setPriority(8);                
-	    handlerThread.start(); 
+	    handlerThread.start(); // start thread
    }
    
    /**
 	 * Adds new barista and creates a thread for it  
 	 */
-   //THIS METHOD WAS PUBLIC VOID ADDBARISTA()
-   //CHANGED TO STATIC FOODSTAFF
    public static FoodStaff addBarista(Long delay) {
-	   FoodStaff barStaff = employees.addBarista(delay); // Add cashier to the employees model
+	   FoodStaff barStaff = employees.addBarista(delay); // Add barista to the employees model
 	   barStaff.addPropertyChangeListener(gui); // Establish OBSERVER-OBSERVABLE channel 
 	    
 	   Runnable barista = new FoodStaffRunnable(barStaff, barQueue);
 	   Thread s = new Thread(barista);
 	   baristaThreads.put(barStaff.getName(), s);
-	   s.start();
+	   s.start(); // start thread 
 	   
 	   return barStaff;
    }
@@ -315,33 +313,17 @@ public class CoffeeShop {
    /**
 	 * Adds new cook and creates a thread for it  
 	 */
-   //THIS METHOD WAS PUBLIC VOID ADDCOOK()
-   //CHANGED TO STATIC FOODSTAFF
    public static FoodStaff addCook(Long delay) {
 	   FoodStaff kitchenStaff = employees.addCook(delay); // Add cashier to the employees model
 	   kitchenStaff.addPropertyChangeListener(gui); // Establish OBSERVER-OBSERVABLE channel 
-	   
-	   
-	   
+	   	   	   
 	   // Creates cook object which processes orders related to Food and Sides
 	   Runnable cook = new FoodStaffRunnable(kitchenStaff, kitchenQueue);
 	   Thread s2 = new Thread(cook);
 	   cookThreads.put(kitchenStaff.getName(), s2);
-	   s2.start();
-	 
+	   s2.start(); // start thread 	 
 	   
 	   return kitchenStaff;
-   }
-   
-   // DELETE
-   private String getRandomName(String[] list, HashMap<String, Thread> map) {
-	   Random rn = new Random();
-	   String name = list[rn.nextInt(list.length)]; // Given the length of name list
-	   while(map.containsKey(name)) {
-		   name = list[rn.nextInt(list.length)];
-	   }
-	   return name;
-
    }
 	
    /**
@@ -349,7 +331,7 @@ public class CoffeeShop {
 	 * @param name of the cashier to end their shift
 	 */
    public static synchronized void removeCashier(String name) {
-	   System.out.println("Cashier " + name + " has ended their shift");
+	   System.out.println("[MAIN] Cashier " + name + " has ended their shift");
 	   cashierThreads.get(name).interrupt();  // Interrupt the thread causing it to finalise their run 
 	   cashierThreads.remove(name);  // Remove the thread from the list
 	   employees.removeCashier(name); // Remove active cashier from the model 
@@ -361,7 +343,7 @@ public class CoffeeShop {
 	 * @param name of the cook to end their shift
 	 */
    public static synchronized void removeCook(String name) {
-	   System.out.println("Cook " + name + " has ended their shift");
+	   System.out.println("[MAIN] Cook " + name + " has ended their shift");
 	   cookThreads.get(name).interrupt();  // Interrupt the thread causing it to finalise their run 
 	   cookThreads.remove(name);  // Remove the thread from the list
 	   employees.removeCook(name); // Remove active cashier from the model 
@@ -372,13 +354,15 @@ public class CoffeeShop {
   	 * @param name of the barista to end their shift
   	 */
    public static synchronized void removeBarista(String name) {
-	   System.out.println("Barista" + name + " has ended their shift");
+	   System.out.println("[MAIN] Barista" + name + " has ended their shift");
 	   baristaThreads.get(name).interrupt();  // Interrupt the thread causing it to finalise their run 
 	   baristaThreads.remove(name);  // Remove the thread from the list
 	   employees.removeBarista(name); // Remove active cashier from the model 
-   }
+   }   
    
-   
+   /**
+    * Generates end of day report 
+    */
    public static void generateEndOfDayReport() {
 	   Hashtable<String,Integer> in = inventory.getInventory();
 	   // Format the date time string
@@ -415,18 +399,21 @@ public class CoffeeShop {
 			     String.format("%-20s \n\n", "PASTRIES") + pastry + line + "\n" ;
 	   
 	   
-	   output += String.format("%-30s %-10s\n", "Number of customers: ", books.allValues.get(7)) + 
-	             String.format("%-40s %-10s\n", "Sub total of day : ", df2.format(books.allValues.get(0)) + "£") + 
-	             String.format("%-40s %-10s\n", "Taxes : ", df2.format(books.allValues.get(1)) + "£")+ 
-	             String.format("%-40s %-10s\n", "Discount : ", df2.format(books.allValues.get(2)) + "£")+ 
-	             String.format("%-50s %-10s\n", "Type D1 : ", df2.format(books.allValues.get(4)) ) + 
-	             String.format("%-50s %-10s\n", "Type D2 : ", df2.format(books.allValues.get(5)) ) + 
-	             String.format("%-50s %-10s\n", "Type D3 : ", df2.format(books.allValues.get(6)) ) + 
-	             String.format("%-40s %-10s\n", "Total of the day : ", df2.format(books.allValues.get(3)) + "£");
+	   output += String.format("%-30s %-10s\n", "Number of customers: ", books.getAllValues().get(7)) + 
+	             String.format("%-40s %-10s\n", "Sub total of day : ", df2.format(books.getAllValues().get(0)) + "£") + 
+	             String.format("%-40s %-10s\n", "Taxes : ", df2.format(books.getAllValues().get(1)) + "£")+ 
+	             String.format("%-40s %-10s\n", "Discount : ", df2.format(books.getAllValues().get(2)) + "£")+ 
+	             String.format("%-50s %-10s\n", "Type D1 : ", df2.format(books.getAllValues().get(4)) ) + 
+	             String.format("%-50s %-10s\n", "Type D2 : ", df2.format(books.getAllValues().get(5)) ) + 
+	             String.format("%-50s %-10s\n", "Type D3 : ", df2.format(books.getAllValues().get(6)) ) + 
+	             String.format("%-40s %-10s\n", "Total of the day : ", df2.format(books.getAllValues().get(3)) + "£");
 	   
 	   report = output;
    }
    
+   /**
+    * Writes end of day report to text file 
+    */
    public static void generateFinalReport() {
 	   try {
 		   // creates a text file and writes the report to it 
@@ -439,6 +426,7 @@ public class CoffeeShop {
 		   System.out.println("An error occurred.");
 		   e.printStackTrace();
 	   }
+	   
 	   try {
 		   // creates a text file and writes the report to it 
 		   System.out.println(log.getLog());
@@ -449,28 +437,16 @@ public class CoffeeShop {
 	   } catch (IOException e) {
 		   System.out.println("An error occurred.");
 		   e.printStackTrace();
-	   }
-	   
+	   }	   
   }
    
-   
-
-
    // main method 
 	public static void main(String[] args) {
-		CoffeeShop shop = new CoffeeShop();
-		//shop.createHandler(8); //23
-		gui = new NewGUI();
+		CoffeeShop shop = new CoffeeShop(1000L);
+		
+		gui = new GUI();
 		CoffeeShop.shopQueue.addPropertyChangeListener(gui);
 		CoffeeShop.onlineQueue.addPropertyChangeListener(gui);
 		CoffeeShop.employees.addPropertyChangeListener(gui);
-		
-		
-		//gui.initializeGUI();
-		//gui.paintScreen();
-		//gui.run();
-
-		
 	}
-
 }

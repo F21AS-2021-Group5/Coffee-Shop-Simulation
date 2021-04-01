@@ -29,6 +29,7 @@ public class FoodStaff {
 	private OrderQueueItem currentItem; 
 	Long delay;
 	String instruction = "";
+	private Log log;
 	
 	/**
 	 * Constructor for Staff class
@@ -40,23 +41,41 @@ public class FoodStaff {
 		currentCustomer = null;
 		this.delay = delay;
 		type = (isBarista) ? "Barista" : "Cook";
+		this.log = Log.getInstance();
 	}
 	
+	/**
+	 * Set the current instruction the staff is executing
+	 * @param string instruction
+	 **/
 	public void setInstruction(String instruction) {
 		this.instruction = instruction;
 		setMessage(null, name,  "instruction"+ getType());
+		log.updateLog("[FoodStaff]: " +"FoodStaff " + name + " has started another task ");
+		
 		
 	}
 	
+	/**
+	 * Get the current instruction the staff is executing
+	 * @return string instruction
+	 **/
 	public String getInstruction() {
 		return this.instruction;
 	}
 	
-	
+	/**
+	 * Set the delay for the staffs thread 
+	 * @param Long value of delay
+	 **/
 	public void setDelay(Long delay) {
 		this.delay = delay;
 	}
 	
+	/**
+	 * Get the delay for the staffs thread 
+	 * @return Long value of delay
+	 **/
 	public Long getDelay() {
 		return this.delay;
 	}
@@ -121,7 +140,6 @@ public class FoodStaff {
 	 */
 	public void setCurrentCustomer(Customer currentCustomer) {
 		this.currentCustomer = currentCustomer;
-		//setMessage(null, currentCustomer,"newCustomer");
 	}
 	
 	public void addPropertyChangeListener(PropertyChangeListener pcl) {

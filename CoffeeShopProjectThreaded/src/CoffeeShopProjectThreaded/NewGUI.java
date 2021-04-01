@@ -100,14 +100,14 @@ public class NewGUI implements PropertyChangeListener {
 	HashMap<String, JFrame> baristaFrames;
 
 	// GUI constructor
-<<<<<<< HEAD
-	public NewGUI() { // CoffeeShop main,
+
+	// CoffeeShop main,
 		// this.coffeeshop = main;
 		// shopQueueObse = new
-=======
-	public NewGUI(NewCustomerQueue shopQueue, HashMap<String, Thread> cashierT, HashMap<String, Thread> cookT, HashMap<String, Thread> baristaT) {
 
->>>>>>> f05af13466b45a5942d4d870dd1f1fca4c2828a7
+	public NewGUI() {
+
+
 		this.shopQueue = shopQueue;
 		
 		//shopcustomerlist.setVisible(true);

@@ -29,7 +29,6 @@ public class NewCustomerQueue{
 	
 	private Deque<Customer> queue; // customer queue
 	private boolean isOnline; // states whether queue is online or in-shop
-	private Log log; // used for logging data 
 	
 	private boolean locked;
 	
@@ -50,7 +49,6 @@ public class NewCustomerQueue{
 		
 		support = new PropertyChangeSupport(this);
 		queue = new LinkedList<Customer>();		
-		log = Log.getInstance();
 		menuList = new HashMap<Integer, String>();
 		fillMenuList();	
 		locked = false;

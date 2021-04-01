@@ -86,11 +86,6 @@ public class CashierRunnable implements Runnable{
 			
 			String whichQueue = "in-shop";
 			CustomerQueueOutput out = null;
-					
-			
-			// check if online queue exists 
-			//if (onlineQueue != null) {
-			
 			
 			// if online queue empty, go to in-shop queue 
 			if (onlineQueue.getQueue().isEmpty()) {
@@ -98,7 +93,7 @@ public class CashierRunnable implements Runnable{
 				// shop queue is not empty, online is empty
 				if (!shopQueue.getQueue().isEmpty())
 				{
-					log.updateLog("Cashier " + name + " checking in-shop queue -> current size: " + shopQueue.getQueue().size());
+					log.updateLog("[CashierRunnable]: " +"Cashier " + name + " checking in-shop queue -> current size: " + shopQueue.getQueue().size());
 					out = shopQueue.removeFromQueue();
 					currentCustomer = out.getCustomer();
 					cashier.setCustomer(currentCustomer);
@@ -107,7 +102,7 @@ public class CashierRunnable implements Runnable{
 				} else {
 					// if online queue is not locked by other thread, go wait in its queue
 					if (!onlineQueue.isLocked()) {
-						log.updateLog("Cashier " + name + " entering waiting state in online queue -> current size: " + onlineQueue.getQueue().size());
+						log.updateLog("[CashierRunnable]: " +"Cashier " + name + " entering waiting state in online queue -> current size: " + onlineQueue.getQueue().size());
 						out = onlineQueue.removeFromQueue();
 						currentCustomer = out.getCustomer();
 						cashier.setCustomer(currentCustomer);
@@ -116,7 +111,7 @@ public class CashierRunnable implements Runnable{
 					} else {
 						// if online is locked, and shop is not locked, go wait in its queue
 						if (!shopQueue.isLocked()) {
-							log.updateLog("Cashier " + name + " entering waiting state in in-shop queue -> current size: " + onlineQueue.getQueue().size());
+							log.updateLog("[CashierRunnable]: " +"Cashier " + name + " entering waiting state in in-shop queue -> current size: " + onlineQueue.getQueue().size());
 							out = shopQueue.removeFromQueue();
 							currentCustomer = out.getCustomer();
 							cashier.setCustomer(currentCustomer);
@@ -126,21 +121,13 @@ public class CashierRunnable implements Runnable{
 			
 				// if online queue not empty, go to it 
 				} else {
-					log.updateLog("Cashier " + name + " checking online queue -> current size: " + shopQueue.getQueue().size());
+					log.updateLog("[CashierRunnable]: " +"Cashier " + name + " checking online queue -> current size: " + shopQueue.getQueue().size());
 					out = onlineQueue.removeFromQueue();
 					currentCustomer = out.getCustomer();
 					cashier.setCustomer(currentCustomer);
 					whichQueue = "online";							
 				}
-				
-			/*}
-			else {
-				// if no online queue, just process in-shop queue 
-				out = shopQueue.removeFromQueue();
-				currentCustomer = out.getCustomer();
-				cashier.setCustomer(currentCustomer);				
-			}			
-			*/
+					
 			/* Adds the removed customer's processed orders to queues for food preparation */
 			if (currentCustomer != null) {
 				for (String item: currentCustomer.getCart().keySet()) {
@@ -150,6 +137,7 @@ public class CashierRunnable implements Runnable{
 						else 
 							kitchenQueue.addToQueue(currentCustomer.getId(), item);
 					} catch (NoMatchingMenuItemIDException e) {
+						log.updateLog("[CashierRunnable]: " +"Cashier " + name + " NoMatchingMenuItemIDException ");
 						e.printStackTrace();
 					}
 				}
@@ -163,35 +151,27 @@ public class CashierRunnable implements Runnable{
 				cashier.runCashier();
 				
 				//logs information and adds it to books and inventory 
-				log.updateLog("Cashier " + name + " removed customer " + currentCustomer.getName() + " (ID: " +
+				log.updateLog("[CashierRunnable]: " +"Cashier " + name + " removed customer " + currentCustomer.getName() + " (ID: " +
 						currentCustomer.getId() + ") from " + whichQueue + " queue -> updated size: " + 
 						out.getUpdatedSize());
 				
 				InventoryOutput out1 = inventory.addToInventory(currentCustomer);
-				//if(out1.isSuccess()) {
-					//System.out.println("Cashier " + ID + " -> inventory size: "+ out1.updatedSize);
-				//}
+				
 				BookkeepingOutput out2 = books.upDateBooks(cashier.returnSums());
 				if(out2.isSuccess()) {	
-					log.updateLog("Cashier " + name + " -> total# of customers: "+ out2.numberOfCustomers);
+					log.updateLog("[CashierRunnable]: " +"Cashier " + name + " -> total of customers: "+ out2.numberOfCustomers);
 				}
 			}	
 			
 			Long delay = cashier.getSpeed();
-			//System.out.println("##################");
-			//System.out.println(delay);
-			//System.out.println(books.getCustomerNumber());
 			
 			// delays the thread for visualisation purposes 
 			try {
-				//Thread.sleep(delay);
 				Thread.sleep(delay);
 				
 			}catch(InterruptedException e) {
-				//Thread.currentThread().interrupt();
-				System.out.println("///////////////");
 				stop = true;  ///// KILLS THE THREAD //////
-				System.out.println(e.getMessage());	
+				log.updateLog("[CashierRunnable]: " +"Cashier " + name + " has ended their shift ");
 				
 			}	
 		}

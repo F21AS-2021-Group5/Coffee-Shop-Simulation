@@ -25,8 +25,6 @@ public class FoodStaffRunnable implements Runnable{
 	private OrderQueue queue;
 	private Log log;
 	
-	//private long delay;
-	
 	private FoodStaff foodStaff;
 	
 	
@@ -37,8 +35,6 @@ public class FoodStaffRunnable implements Runnable{
 	public FoodStaffRunnable(FoodStaff foodStaff, OrderQueue queue) { 
 		this.foodStaff = foodStaff;
 		this.queue = queue;
-		
-		//this.delay = delay;
 		
 		log = Log.getInstance();
 	}
@@ -137,7 +133,7 @@ public class FoodStaffRunnable implements Runnable{
 					for (String instruction: recipe) {
 						
 						// update status 
-						status = "[PREPARATION] " + foodStaff.getType() + " " + foodStaff.getName() 
+						status = "[FoodStaffRunable]: "+" Preparation: " + foodStaff.getType() + " " + foodStaff.getName() 
 							+ ": " + instruction;
 						log.updateLog(status);
 						
@@ -148,15 +144,15 @@ public class FoodStaffRunnable implements Runnable{
 						// delay for visualisation purposes 
 						try {
 							Thread.sleep(delay);
-						} catch (InterruptedException e) {
+						} catch (InterruptedException e) {	
+							status = "[FoodStaffRunable]: "+foodStaff.getType()+" "+ foodStaff.getName()+ " has finished their shift";
+							log.updateLog(status);
 							stop = true;
-							//e.printStackTrace();
-							
 						}
 					}
 					
 					// update status				
-					status = "[FINISHED] " + foodStaff.getType() + " " + foodStaff.getName() + ": " + currentItem + 
+					status = "[FoodStaffRunable]: "+" Finished: " + foodStaff.getType() + " " + foodStaff.getName() + ": " + currentItem + 
 							" for customer " + foodStaff.getCurrentCustomer().getName() + 
 							" (ID: " + currentCustomer + ") prepared.";			
 					log.updateLog(status);

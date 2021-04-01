@@ -34,8 +34,8 @@ public class Customer {
 	private float cartTotalPrice;
 	
 	private String cashierServing;
-	
 	private String cookServing;
+
 	
 	HashMap<String, ArrayList<LocalDateTime>> cart;
 
@@ -62,6 +62,7 @@ public class Customer {
 		// initialize total price and cart 
 		cartTotalPrice = 0;
 		cart = new HashMap<String, ArrayList<LocalDateTime>>();
+		
 	}
 	
 	/**
@@ -179,14 +180,23 @@ public class Customer {
 		return calendar.getActualMaximum(Calendar.DAY_OF_MONTH); 
 	}
 	
+	/**
+	 * Gets the cashier who is serving this customer 
+	 * @return cashier who is serving this customer 
+	 */
 	public String getCashierServing() {
 		return cashierServing;
 	}
-
+	
+	/**
+	 * Sets the cashier who is serving this customer 
+	 * @param cashier who is serving this customer 
+	 */
 	public void setCashierServing(String cashierServing) {
 		this.cashierServing = cashierServing;
 	}
 	
+	////////DONT KNOW
 	public String getCookServing() {
 		return cookServing;
 	}
@@ -411,8 +421,4 @@ public class Customer {
 	}
 	
 	
-	// MAIN METHOD 
-	public static void main(String[] args) {
-	
-	}
 }

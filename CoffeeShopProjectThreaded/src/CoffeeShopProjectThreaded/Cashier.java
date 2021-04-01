@@ -32,31 +32,32 @@ public class Cashier {
 	public float discount;
 	public float total;
 	
-	private Customer currentCustomer;
+	public static Customer currentCustomer;
 	
 	int discount1 = 0;
 	int discount2 = 0;
 	int discount3 = 0;
-	Long speed;
+	Long delay;
+	
+	private Log log;
 	private PropertyChangeSupport support;
 	
 	String name;
 	
 	/**
 	 * Constructor for Cashier class
-	 * @param name Cashier name
-	 * @param speed Cashier runnable delay 
-	 * 
+	 * @param ID Cashier identifier
 	 */
-	public Cashier(String name, Long speed) {
+	public Cashier(String name, Long delay) {
 		support = new PropertyChangeSupport(this);
 		currentCustomer = null;
 		this.name =name;
-		this.speed = speed;
+		this.delay = delay;
+		log = Log.getInstance();
 	}
 	
 	/**
-	 * @return Cashier name 
+	 * @return Cashier identifier 
 	 */
 	public String getName() {
 		return name;
@@ -150,39 +151,23 @@ public class Cashier {
 		return discount;
 	}
 	
-
-	/**
-	 * @return Current customer
-	 */
-	public Customer getCurrentCustomer() {
-		return currentCustomer;
-	}
-	
-	/**
-	 * Set current customer 
-	 * @param currentCustomer Current customer 
-	 */
-	public void setCurrentCustomer(Customer currentCustomer) {
-		this.currentCustomer = currentCustomer;
-	}
-	
 	/**	
+	 * Sets the current customer for this cashier
 	 * @param customer Customer object 
 	 */
 	public void setCustomer(Customer customer) {
-<<<<<<< HEAD
 		// For values that are initialised at the initialisation of coffeeShop
 		customer.setCashierServing(name);
 		currentCustomer = customer;
 		setMessage(null, customer,"newCustomer"); // Message to the observer               
-=======
-		System.out.println("inside cashier class");
-		
-		// For values that are initialised at the initialisation of coffeeShop
-		customer.setCashierServing(name);
-		currentCustomer = customer;
-		setMessage(null, customer,"newCustomer");
->>>>>>> f05af13466b45a5942d4d870dd1f1fca4c2828a7
+	}
+	
+	/**	
+	 * Return the current customer for this cashier
+	 * @return customer Customer object 
+	 */
+	public Customer getCurrentCustomer() {
+		return this.currentCustomer;
 	}
 	
 	/**
@@ -209,63 +194,49 @@ public class Cashier {
 		tax = 0;
 		discount = 0;
 		total = 0;
-		
 		getCartSubtotalPrice();
 		getCartTax();
 		getDiscount();
-		getCartTotalPrice();		
+		getCartTotalPrice();
 	}
 	
 	/**
-	 * @return Delay 
+	 * Gets the delay for the thread
+	 * @return long delay for thread
 	 */
 	public Long getSpeed() {
-		return this.speed;
+		return this.delay;
 	}
 	
 	/**
-	 * Sets the delay 
-	 * @param speed Delay
+	 * Sets the delay for the thread
+	 * @return long delay for thread
 	 */
 	public void setSpeed(Long speed) {
-		this.speed = speed;
+		this.delay = delay;
+		log.updateLog("[Cashier]: " +"Delay of " + delay +"is set for Cashier " + name);
 	}
-<<<<<<< HEAD
-	 // Add connection to observer
+	
+	/**
+	 *  Add connection to observer
+	 */
 	 public void addPropertyChangeListener(PropertyChangeListener pcl) {
 		 support.addPropertyChangeListener(pcl);
 	 }
-	 // Remove connection to observer
+	 
+	 /**
+	  *  Remove connection to observer
+	  */
 	 public void removePropertyChangeListener(PropertyChangeListener pcl) {
 	    support.removePropertyChangeListener(pcl);
 	 }
-	 // Set a message
-=======
-	
+	 
 	 /**
-     * Adds listener 
-     * @param pcl Listener to add
-     */
-    public void addPropertyChangeListener(PropertyChangeListener pcl) {
-    	support.addPropertyChangeListener(pcl);
-    }
-    
-    /**
-     * Removes listener 
-     * @param pcl Listener to remove
-     */
-    public void removePropertyChangeListener(PropertyChangeListener pcl) {
-    	support.removePropertyChangeListener(pcl);
-    }
-    
-    /**
-     * Fires a message to the listener 
-     * @param oldVal Old customer 
-     * @param newVal Updated customer 
-     * @param message Operation type 
-     */
->>>>>>> f05af13466b45a5942d4d870dd1f1fca4c2828a7
+	  *  Set a message from the observable
+	  */
 	 public void setMessage(Customer oldVal, Customer newVal,  String message) {
 	    support.firePropertyChange(message, oldVal, newVal);
+	    log.updateLog("[Cashier]: " +"Change in current customer message is set");
 	 }
+
 }

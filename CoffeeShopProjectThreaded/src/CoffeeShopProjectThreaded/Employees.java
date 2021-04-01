@@ -15,6 +15,7 @@ public class Employees {
 	public static HashMap<String, Cashier> activeCashiers;
 	public static  HashMap<String, FoodStaff> activeBaristas;
 	public static  HashMap<String, FoodStaff> activeCooks;
+	private Log log;
 	
 	private PropertyChangeSupport support;
 	
@@ -26,6 +27,7 @@ public class Employees {
 		activeBaristas = new HashMap<String, FoodStaff>();
 		activeCooks = new HashMap<String, FoodStaff>();
 		support = new PropertyChangeSupport(this);
+		log = Log.getInstance();
 	}
 	
 	/**
@@ -103,7 +105,7 @@ public class Employees {
 		Cashier cashier = new Cashier(name, delay);
 		
 		activeCashiers.put(name, cashier);
-		
+		log.updateLog("[Employees]: " +"Cashier " + name + " has started their shift ");
 		setMessage(0, activeCashiers.size(), "cashierAdded");
 		return cashier;
 	}
@@ -115,6 +117,7 @@ public class Employees {
 	public void removeCashier(String name) {
 		activeCashiers.remove(name);
 		setMessage(0, activeCashiers.size(), "cashierRemoved");
+		log.updateLog("[Employees]: " +"Cashier " + name + " has ended their shift ");
 	}
 	
 	/**
@@ -127,6 +130,7 @@ public class Employees {
 		activeBaristas.put(name, barista);
 		
 		setMessage(0, activeBaristas.size(), "baristaAdded");
+		log.updateLog("[Employees]: " +"Barista " + name + " has started their shift ");
 		return barista;
 	}
 	
@@ -137,6 +141,7 @@ public class Employees {
 	public void removeBarista(String name) {
 		activeBaristas.remove(name);
 		setMessage(0, activeBaristas.size(), "baristaRemoved");
+		log.updateLog("[Employees]: " +"Barista " + name + " has ended their shift ");
 	}
 	
 	/**
@@ -149,6 +154,7 @@ public class Employees {
 		activeCooks.put(name, cook);
 		
 		setMessage(0, activeCooks.size(), "cookAdded");
+		log.updateLog("[Employees]: " +"Cook " + name + " has started their shift ");
 		return cook;
 	}
 	
@@ -159,6 +165,7 @@ public class Employees {
 	public void removeCook(String name) {
 		activeCooks.remove(name);
 		setMessage(0, activeCooks.size(), "cookRemoved");
+		log.updateLog("[Employees]: " +"Cook " + name + " has ended their shift ");
 	}
 	
 	/**

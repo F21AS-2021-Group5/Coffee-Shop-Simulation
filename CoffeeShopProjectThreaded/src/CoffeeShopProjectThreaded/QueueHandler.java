@@ -56,7 +56,7 @@ public class QueueHandler implements Runnable{
 					CustomerQueueOutput out = onlineQueue.addToQueue();
 					CoffeeShop.customerList.put(out.getCustomer().getId(), out.getCustomer());
 					
-					log.updateLog("Queue Handler added customer " + out.getCustomer().getName() + 
+					log.updateLog("[QueueHandler]: "+ "Queue Handler added customer " + out.getCustomer().getName() + 
 							" (ID: " + out.getCustomer().getId() + ") to online queue -> updated size: " 
 							+ out.getUpdatedSize());
 				}									
@@ -65,7 +65,7 @@ public class QueueHandler implements Runnable{
 				CustomerQueueOutput out = shopQueue.addToQueue();
 				CoffeeShop.customerList.put(out.getCustomer().getId(), out.getCustomer());
 				
-				log.updateLog("Queue Handler added customer " + out.getCustomer().getName() + 
+				log.updateLog("[QueueHandler]: "+ "Queue Handler added customer " + out.getCustomer().getName() + 
 						" (ID: " + out.getCustomer().getId() + ") to in-shop queue -> updated size: " 
 						+ out.getUpdatedSize());
 
@@ -74,6 +74,7 @@ public class QueueHandler implements Runnable{
 				
 			// catch exception for calling sleep() function
 			} catch (InterruptedException e) {
+				log.updateLog("[QueueHandler]: "+ "Interuption in queueHandler");
 				System.out.println(e.getMessage());
 			}
 		}		

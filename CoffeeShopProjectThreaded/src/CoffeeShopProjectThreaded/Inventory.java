@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 
 public class Inventory {
 	
-	private Log log;
 	
 	private Hashtable<String,Integer> inventory;
 	
@@ -47,7 +46,6 @@ public class Inventory {
   					inventory.put(orderID, inventory.get(orderID) + curentCustomer.getCart().get(orderID).size());
   				}
   			}
-	   		
 	   		notifyAll();
 	   		
 		} catch (Exception e) {

@@ -94,12 +94,25 @@ public class CashierRunnable implements Runnable{
 				if (!shopQueue.getQueue().isEmpty())
 				{
 					log.updateLog("[CashierRunnable]: " +"Cashier " + name + " checking in-shop queue -> current size: " + shopQueue.getQueue().size());
-					out = shopQueue.removeFromQueue();
-					currentCustomer = out.getCustomer();
-					cashier.setCustomer(currentCustomer);
+					//try {
+					
+						out = shopQueue.removeFromQueue();
+						currentCustomer = out.getCustomer();
+						cashier.setCustomer(currentCustomer);
+					//}catch (Exception e) {
+						//System.out.println(shopQueue.getQueue().size());
+					//}
+					
 					
 				// both queues are empty 
 				} else {
+					if(!CoffeeShop.handlerThread.isAlive()) {
+						CoffeeShop.employees.activeCashiers.remove(name);
+		    			stop = true;
+		    			cashier.EndedShift(cashier.name);
+
+		    		}else {
+		    		
 					// if online queue is not locked by other thread, go wait in its queue
 					if (!onlineQueue.isLocked()) {
 						log.updateLog("[CashierRunnable]: " +"Cashier " + name + " entering waiting state in online queue -> current size: " + onlineQueue.getQueue().size());
@@ -116,7 +129,8 @@ public class CashierRunnable implements Runnable{
 							currentCustomer = out.getCustomer();
 							cashier.setCustomer(currentCustomer);
 						}
-					}		
+					}	
+		    		}
 				}
 			
 				// if online queue not empty, go to it 
@@ -159,7 +173,7 @@ public class CashierRunnable implements Runnable{
 				
 				BookkeepingOutput out2 = books.upDateBooks(cashier.returnSums());
 				if(out2.isSuccess()) {	
-					log.updateLog("[CashierRunnable]: " +"Cashier " + name + " -> total of customers: "+ out2.numberOfCustomers);
+					log.updateLog("[CashierRunnable]: " +"Cashier " + name + " total of customers: "+ out2.numberOfCustomers);
 				}
 			}	
 			
@@ -170,6 +184,8 @@ public class CashierRunnable implements Runnable{
 				Thread.sleep(delay);
 				
 			}catch(InterruptedException e) {
+				
+				
 				stop = true;  ///// KILLS THE THREAD //////
 				log.updateLog("[CashierRunnable]: " +"Cashier " + name + " has ended their shift ");
 				

@@ -18,6 +18,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
+import java.util.ConcurrentModificationException;
 import java.util.Deque;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -288,6 +289,7 @@ public class NewGUI implements PropertyChangeListener {
 				/////////////// Removes employees ////////////////
 				// Remove selected cashier
 				if (e.getSource() == removecashiers) {
+					
 					String selectedcashier = (String) cashierlist.getSelectedValue();
 					if(selectedcashier == null) {
 						JOptionPane.showMessageDialog(null, "Error: please select a cashier to remove", "Error",
@@ -295,7 +297,7 @@ public class NewGUI implements PropertyChangeListener {
 					}else {
 						selectedcashier = selectedcashier.trim(); // remove string from list  
 						int cashierSize = CoffeeShop.employees.activeCashiers.size(); // Store number of existent cashier
-						if (cashierSize == 1) { // Cannot remove cashier if size less than 1
+						if (cashierSize == 0) { // Cannot remove cashier if size less than 1
 							JOptionPane.showMessageDialog(null, "Error: you cannot have less than one cashier", "Error",
 									JOptionPane.ERROR_MESSAGE);
 						}else{
@@ -383,7 +385,7 @@ public class NewGUI implements PropertyChangeListener {
 						JOptionPane.showMessageDialog(null,
 								"Error: you did not enter a valid delay time, please enter a delay time between 200 and 8000.",
 								"Error", JOptionPane.ERROR_MESSAGE);
-						cookTime.setText(""); // empty text box
+						//cookTime.setText(""); // empty text box
 					} else {
 						// change delay time for selected cook
 						String selectedcook = (String) cooklist.getSelectedValue();
@@ -496,13 +498,14 @@ public class NewGUI implements PropertyChangeListener {
 		if (!cashiers.isEmpty()) {  
 			String display1 = String.format("%-10s %-10s %-10s\n", "There are currently ", cashiers.size(), " active cashiers\n\n");
 			cashierModel.addElement(display1); // Display number of active cashiers
-		
+
 			for(Entry<String, Cashier> m : cashiers.entrySet()) {  //iterate through existent cashiers stored in hash map
 				String key = m.getKey();
 				String display = String.format("%-10s\n", key);  //Display their name
 				cashierModel.addElement(display);
 			}	
 		}
+	
 		cashierlist.setModel(cashierModel);
 		cashierlist.setVisible(true);
 	}
@@ -637,13 +640,17 @@ public class NewGUI implements PropertyChangeListener {
 		frame1.getContentPane().add(CookName);
 		
 		JTextArea custList = new JTextArea("");
-		custList.setBounds(10, 40, 300, 100);
-		frame1.getContentPane().add(custList);
-		String output = " ";
-		output += String.format("%-10s\n", "Cooks is preparing food for customer:  "  + cook.getCurrentCustomer().getName());
-		output += String.format("%-10s\n",  cook.getInstruction());  //Display actions taken
-		custList.setText(output);
-		cookFrames.put(cook.getName(), frame1);
+		if(cook.getCurrentCustomer() != null) {
+			custList.setBounds(10, 40, 300, 100);
+			frame1.getContentPane().add(custList);
+			String output = " ";
+			
+			output += String.format("%-10s\n", "Cooks is preparing food for customer:  "  + cook.getCurrentCustomer().getName());
+			output += String.format("%-10s\n",  cook.getInstruction());  //Display actions taken
+			custList.setText(output);
+			cookFrames.put(cook.getName(), frame1);
+		}
+		
 	}
 	
 	/**
@@ -743,6 +750,7 @@ public class NewGUI implements PropertyChangeListener {
 			}
 			//When a Cashier is added or removed, update the display
 			if(type == "cashierAdded" || type == "cashierRemoved") {
+				System.out.println("made it here");
 				displayCashier();
 			}
 			//When a Cook is added or removed, update the display
@@ -767,7 +775,24 @@ public class NewGUI implements PropertyChangeListener {
 					if (Barista != null)
 						updateBaristaFrame(Barista.getName(), Barista);
 			}
-			
+
+	//////WORKING PLACE
+			if(type.equals("CashierEndedShift")) {
+				String name = (String) evt.getNewValue();
+				cashierFrames.get(name).dispose();  // CLOSE WINDOW 
+				CoffeeShop.removeCashier(name);
+			}
+			if(type.equals("endedShiftCook")) {
+				String name = (String) evt.getNewValue();
+				cookFrames.get(name).dispose();  // CLOSE WINDOW 
+				CoffeeShop.removeCook(name);
+			}
+			if(type.equals("endedShiftBarista")) {
+				String name = (String) evt.getNewValue();
+				baristaFrames.get(name).dispose();  // CLOSE WINDOW 
+				CoffeeShop.removeBarista(name);
+			}
+
 			
 			String[] split = type.split(" ");  //Used to distinguish customers from in shop/online queue
 
@@ -795,10 +820,10 @@ public class NewGUI implements PropertyChangeListener {
 			else if (split[0].equals("removed")) {
 				//...from the in shop queue
 				if (split[1].equals("inshop")){
-					System.out.println("trying to remove");
+					//System.out.println("trying to remove");
 					if (!shopModel.isEmpty())
 						shopModel.remove(0); //Remove customer from display
-					System.out.println("successfully removed");
+					//System.out.println("successfully removed");
 				}
 				else{
 					//...from the online queue
@@ -813,6 +838,8 @@ public class NewGUI implements PropertyChangeListener {
 			//Update customer lists display
 			shopcustomerlist.setModel(shopModel);
 			onlinecustomerlist.setModel(onlineModel);
+			
+			
 
 			
 			/*

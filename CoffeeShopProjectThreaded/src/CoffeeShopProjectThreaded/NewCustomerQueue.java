@@ -32,6 +32,8 @@ public class NewCustomerQueue{
 	
 	private boolean locked;
 	
+	private long delay;
+	
 	// stores all items in the menu in the form of a hashmap 
 	private HashMap<Integer, String> menuList;
 	
@@ -44,8 +46,9 @@ public class NewCustomerQueue{
 	 * Constructor for CustomerQueue class
 	 * @param isOnline Online or in-shop queue 
 	 */
-	public NewCustomerQueue(boolean isOnline) {
+	public NewCustomerQueue(boolean isOnline, long delay) {
 		this.isOnline = isOnline;
+		this.delay = delay;
 		
 		support = new PropertyChangeSupport(this);
 		queue = new LinkedList<Customer>();		
@@ -164,6 +167,14 @@ public class NewCustomerQueue{
 		this.locked = locked;
 	}
 
+	public long getDelay() {
+		return delay;
+	}
+
+	public void setDelay(long delay) {
+		this.delay = delay;
+	}
+
 	/**
 	 * Fills a list made of all the menu items 
 	 */
@@ -218,11 +229,17 @@ public class NewCustomerQueue{
     	Customer customer = null;
     	
     	// thread waits until queue is not empty anymore
-    	while(queue.isEmpty()) { 
+    	boolean stop = false;
+    	while(queue.isEmpty() && !stop) { 
+
+    		
+    		
+    		
     		try { 
     			wait(); 
     		} 
     		catch (InterruptedException e) {}  
+    		
     	}
     	
     	// removes customer and notify all threads that resource can be accessed again
@@ -231,6 +248,9 @@ public class NewCustomerQueue{
 		locked = false;
 		notifyAll(); 
 		
+		if(CoffeeShop.onlineQueue.queue.isEmpty() && CoffeeShop.shopQueue.queue.isEmpty()) {
+			setMessage(1, queue.size(), "noMoreOrders");
+		}
 		// accordingly returns the output
 		if (customer == null)
 			return new CustomerQueueOutput(customer, false, queue.size());
@@ -266,6 +286,12 @@ public class NewCustomerQueue{
     		support.firePropertyChange(message + " online", oldVal, newVal);
     	else
     		support.firePropertyChange(message + " inshop", oldVal, newVal);    
+    }
+    
+    public void setMessage(int oldVal, int newVal, String message) {
+    	
+    	support.firePropertyChange(message, oldVal, newVal);
+    
     }
 
 }

@@ -142,6 +142,7 @@ public class FoodStaffRunnable implements Runnable{
 						
 						
 						// delay for visualisation purposes 
+						
 						try {
 							Thread.sleep(delay);
 						} catch (InterruptedException e) {	
@@ -151,11 +152,20 @@ public class FoodStaffRunnable implements Runnable{
 						}
 					}
 					
+					
 					// update status				
 					status = "[FoodStaffRunable]: "+" Finished: " + foodStaff.getType() + " " + foodStaff.getName() + ": " + currentItem + 
 							" for customer " + foodStaff.getCurrentCustomer().getName() + 
 							" (ID: " + currentCustomer + ") prepared.";			
 					log.updateLog(status);
+					
+					
+					if(CoffeeShop.employees.activeCashiers.isEmpty()) {
+						stop = true;
+						foodStaff.EndedShift(foodStaff.getName());
+					}
+					// Close the baristas and cooks
+					
 				}
 			} catch (NullPointerException e) {
 				e.printStackTrace();

@@ -119,6 +119,10 @@ public class FoodStaff {
 		return currentItem;
 	}
 	
+	public void EndedShift(String name) {
+		setMessage(null, name,  "endedShift"+getType());
+	}
+	
 	/**
 	 * Sets the current item identifier
 	 * @param currentItem Current item identifier

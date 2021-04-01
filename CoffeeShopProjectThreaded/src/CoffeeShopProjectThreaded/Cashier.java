@@ -162,6 +162,8 @@ public class Cashier {
 		setMessage(null, customer,"newCustomer"); // Message to the observer               
 	}
 	
+	
+	
 	/**	
 	 * Return the current customer for this cashier
 	 * @return customer Customer object 
@@ -217,6 +219,10 @@ public class Cashier {
 		log.updateLog("[Cashier]: " +"Delay of " + delay +"is set for Cashier " + name);
 	}
 	
+	public void EndedShift(String name) {
+		setMessage(null, name,  "CashierEndedShift");
+	}
+	
 	/**
 	 *  Add connection to observer
 	 */
@@ -238,5 +244,11 @@ public class Cashier {
 	    support.firePropertyChange(message, oldVal, newVal);
 	    log.updateLog("[Cashier]: " +"Change in current customer message is set");
 	 }
+	 
+	 public void setMessage(String oldVal, String newVal,  String message) {
+		    support.firePropertyChange(message, oldVal, newVal);
+		    log.updateLog("[Cashier]: " +"Ended shift");
+		 }
+
 
 }

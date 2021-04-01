@@ -70,7 +70,7 @@ public class QueueHandler implements Runnable{
 						+ out.getUpdatedSize());
 
 				// delay for visualization purposes 
-				Thread.sleep(delay);
+				Thread.sleep(onlineQueue.getDelay());
 				
 			// catch exception for calling sleep() function
 			} catch (InterruptedException e) {

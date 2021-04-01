@@ -20,7 +20,8 @@ public class QueueHandler implements Runnable{
 	NewCustomerQueue shopQueue;
 	NewCustomerQueue onlineQueue;
 	long delay;
-	int maxCustomerNum;
+	int maxCustomerNumOnline;
+	int maxCustomerNumShop;
 	
 	private Log log; // used for logging data 
 	
@@ -32,11 +33,14 @@ public class QueueHandler implements Runnable{
 	 * @param maxCustomerNum Maximum number of customers per queue 
 	 */
 	public QueueHandler(NewCustomerQueue onlineQueue, 
-			NewCustomerQueue shopQueue, long delay, int maxCustomerNum) {
+			NewCustomerQueue shopQueue, long delay) {
 		this.onlineQueue = onlineQueue;
 		this.shopQueue = shopQueue;
 		this.delay = delay;
-		this.maxCustomerNum = maxCustomerNum;
+		
+		maxCustomerNumOnline = onlineQueue.getMaxCustomerNumber();
+		maxCustomerNumShop = shopQueue.getMaxCustomerNumber();
+		
 		
 		log = Log.getInstance();
 	}
@@ -46,28 +50,40 @@ public class QueueHandler implements Runnable{
 	 */
 	@Override
 	public void run() {	
-		for(int i =0; i<maxCustomerNum; i++) {
-		//while (true) {
+		//String maxQueue = "";
+		int maxNum = 0;
+		
+		if (maxCustomerNumOnline > maxCustomerNumShop) {
+			//maxQueue = "online";
+			maxNum = maxCustomerNumOnline;
+		} else {
+			//maxQueue = "shop";
+			//minNum = maxCustomerNumOnline;
+			maxNum = maxCustomerNumShop;
+		}
+		
+		for(int i = 0; i < maxNum; i++) {
 			// every number of milliseconds, add customer to end of queue 
 			try {			
 				// if online queue exists add to it 
-				if (onlineQueue != null)
-				{
+				if (i < maxCustomerNumOnline) {
 					CustomerQueueOutput out = onlineQueue.addToQueue();
 					CoffeeShop.customerList.put(out.getCustomer().getId(), out.getCustomer());
 					
 					log.updateLog("[QueueHandler]: "+ "Queue Handler added customer " + out.getCustomer().getName() + 
 							" (ID: " + out.getCustomer().getId() + ") to online queue -> updated size: " 
 							+ out.getUpdatedSize());
-				}									
-				
-				// add to in-shop queue 
-				CustomerQueueOutput out = shopQueue.addToQueue();
-				CoffeeShop.customerList.put(out.getCustomer().getId(), out.getCustomer());
-				
-				log.updateLog("[QueueHandler]: "+ "Queue Handler added customer " + out.getCustomer().getName() + 
-						" (ID: " + out.getCustomer().getId() + ") to in-shop queue -> updated size: " 
-						+ out.getUpdatedSize());
+				}
+
+				if (i < maxCustomerNumShop) {
+					// add to in-shop queue 
+					CustomerQueueOutput out = shopQueue.addToQueue();
+					CoffeeShop.customerList.put(out.getCustomer().getId(), out.getCustomer());
+					
+					log.updateLog("[QueueHandler]: "+ "Queue Handler added customer " + out.getCustomer().getName() + 
+							" (ID: " + out.getCustomer().getId() + ") to in-shop queue -> updated size: " 
+							+ out.getUpdatedSize());
+				}						
 
 				// delay for visualization purposes 
 				Thread.sleep(onlineQueue.getDelay());

@@ -53,4 +53,8 @@ public class Inventory {
 		}
 		return new InventoryOutput(true,inventory.size());
 	}
+	
+	public Hashtable<String,Integer> getInventory(){
+		return inventory;
+	}
 }

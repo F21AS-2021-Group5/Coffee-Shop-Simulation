@@ -7,7 +7,7 @@ import CoffeeShopProjectThreaded.Inventory.InventoryOutput;
 
 public class Bookkeeping {
 	// Holds subtotal, tax, discount, total, discount1, discount2, discount3, customerAmount
-	private ArrayList<Float> allValues; 
+	public ArrayList<Float> allValues; 
 	private Log log;
 	
 	// * Class to validate thread interaction on the Bookkeeping object *
@@ -65,5 +65,6 @@ public class Bookkeeping {
 	public float getCustomerNumber() {
 		return allValues.get(7);
 	}
+	
 
 }

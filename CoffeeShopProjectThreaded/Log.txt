@@ -1,0 +1,194 @@
+null[NewGUI]: Getting message Name = added online
+[QueueHandler]: Queue Handler added customer Adam (ID: 1616161161682930) to online queue -> updated size: 1
+[NewGUI]: Getting message Name = added inshop
+[QueueHandler]: Queue Handler added customer Adam (ID: 1616161161682930) to in-shop queue -> updated size: 1
+[NewGUI]: Getting message Name = added online
+[QueueHandler]: Queue Handler added customer Ben (ID: 217222282931) to online queue -> updated size: 2
+[NewGUI]: Getting message Name = added inshop
+[QueueHandler]: Queue Handler added customer Ben (ID: 217222282931) to in-shop queue -> updated size: 2
+[Employees]: Cashier April has started their shift 
+[NewGUI]: Getting message Name = cashierAdded
+[CashierRunnable]: Cashier April checking online queue -> current size: 2
+[NewGUI]: Getting message Name = removed online
+[NewGUI]: Getting message Name = newCustomer
+[Cashier]: Change in current customer message is set
+[CashierRunnable]: Cashier April removed customer Adam (ID: 1616161161682930) from online queue -> updated size: 1
+[CashierRunnable]: Cashier April total of customers: 1.0
+[NewGUI]: Getting message Name = baristaAdded
+[Employees]: Barista Mac has started their shift 
+[FoodStaffRunable]:  Preparation: Barista Mac: Boiling water 
+[NewGUI]: Getting message Name = instructionBarista
+[FoodStaff]: FoodStaff Mac has started another task 
+[NewGUI]: Getting message Name = cookAdded
+[Employees]: Cook Pam has started their shift 
+[FoodStaffRunable]:  Preparation: Cook Pam: Baking french fries in oven
+[NewGUI]: Getting message Name = instructionCook
+[FoodStaff]: FoodStaff Pam has started another task 
+[NewGUI]: Getting message Name = added online
+[QueueHandler]: Queue Handler added customer Lena (ID: 29229282932) to online queue -> updated size: 2
+[NewGUI]: Getting message Name = added inshop
+[QueueHandler]: Queue Handler added customer Steve (ID: 277810282932) to in-shop queue -> updated size: 3
+[NewGUI]: Getting message Name = added online
+[QueueHandler]: Queue Handler added customer Adam (ID: 1616161161682933) to online queue -> updated size: 3
+[CashierRunnable]: Cashier April checking online queue -> current size: 3
+[NewGUI]: Getting message Name = removed online
+[NewGUI]: Getting message Name = newCustomer
+[Cashier]: Change in current customer message is set
+[CashierRunnable]: Cashier April removed customer Ben (ID: 217222282931) from online queue -> updated size: 2
+[CashierRunnable]: Cashier April total of customers: 2.0
+[FoodStaffRunable]:  Preparation: Barista Mac: Inserting tea bag inside boiled water 
+[NewGUI]: Getting message Name = instructionBarista
+[FoodStaff]: FoodStaff Mac has started another task 
+[FoodStaffRunable]:  Preparation: Cook Pam: Adding garlic seasoning to french fries
+[NewGUI]: Getting message Name = instructionCook
+[FoodStaff]: FoodStaff Pam has started another task 
+[NewGUI]: Getting message Name = added online
+[QueueHandler]: Queue Handler added customer Greg (ID: 24264282934) to online queue -> updated size: 3
+[CashierRunnable]: Cashier April checking online queue -> current size: 3
+[NewGUI]: Getting message Name = removed online
+[NewGUI]: Getting message Name = newCustomer
+[Cashier]: Change in current customer message is set
+[CashierRunnable]: Cashier April removed customer Lena (ID: 29229282932) from online queue -> updated size: 2
+[CashierRunnable]: Cashier April total of customers: 3.0
+[FoodStaffRunable]:  Finished: Barista Mac: Tea for customer Adam (ID: 1616161161682930) prepared.
+[FoodStaffRunable]:  Preparation: Barista Mac: Preparing espresso
+[NewGUI]: Getting message Name = instructionBarista
+[FoodStaff]: FoodStaff Mac has started another task 
+[FoodStaffRunable]:  Finished: Cook Pam: Fries for customer Adam (ID: 1616161161682930) prepared.
+[FoodStaffRunable]:  Preparation: Cook Pam: Cutting loaf of bread
+[NewGUI]: Getting message Name = instructionCook
+[FoodStaff]: FoodStaff Pam has started another task 
+[Employees]: Cashier Lerry has started their shift 
+[NewGUI]: Getting message Name = cashierAdded
+[CashierRunnable]: Cashier Lerry checking online queue -> current size: 3
+[NewGUI]: Getting message Name = removed online
+[NewGUI]: Getting message Name = newCustomer
+[Cashier]: Change in current customer message is set
+[CashierRunnable]: Cashier Lerry removed customer Adam (ID: 1616161161682933) from online queue -> updated size: 1
+[CashierRunnable]: Cashier Lerry total of customers: 4.0
+[CashierRunnable]: Cashier April checking online queue -> current size: 3
+[NewGUI]: Getting message Name = removed online
+[NewGUI]: Getting message Name = newCustomer
+[Cashier]: Change in current customer message is set
+[CashierRunnable]: Cashier April removed customer Greg (ID: 24264282934) from online queue -> updated size: 0
+[CashierRunnable]: Cashier April total of customers: 5.0
+[FoodStaffRunable]:  Preparation: Barista Mac: Adding hot chocolate to espresso
+[NewGUI]: Getting message Name = instructionBarista
+[FoodStaff]: FoodStaff Mac has started another task 
+[FoodStaffRunable]:  Preparation: Cook Pam: Adding different cheese slices on bread
+[NewGUI]: Getting message Name = instructionCook
+[FoodStaff]: FoodStaff Pam has started another task 
+[CashierRunnable]: Cashier Lerry checking in-shop queue -> current size: 3
+[NewGUI]: Getting message Name = removed inshop
+[NewGUI]: Getting message Name = newCustomer
+[Cashier]: Change in current customer message is set
+[CashierRunnable]: Cashier Lerry removed customer Adam (ID: 1616161161682930) from in-shop queue -> updated size: 2
+[CashierRunnable]: Cashier Lerry total of customers: 6.0
+[NewGUI]: Getting message Name = cookAdded
+[Employees]: Cook Jim has started their shift 
+[FoodStaffRunable]:  Preparation: Cook Jim: Roasting vegetables 
+[NewGUI]: Getting message Name = instructionCook
+[FoodStaff]: FoodStaff Jim has started another task 
+[NewGUI]: Getting message Name = cookAdded
+[Employees]: Cook Andy has started their shift 
+[FoodStaffRunable]:  Preparation: Cook Andy: Cutting loaf of bread
+[NewGUI]: Getting message Name = instructionCook
+[FoodStaff]: FoodStaff Andy has started another task 
+[NewGUI]: Getting message Name = baristaAdded
+[Employees]: Barista Deandra has started their shift 
+[FoodStaffRunable]:  Preparation: Barista Deandra: Grabbing cinnamon swirl from counter
+[NewGUI]: Getting message Name = instructionBarista
+[FoodStaff]: FoodStaff Deandra has started another task 
+[CashierRunnable]: Cashier April checking in-shop queue -> current size: 2
+[NewGUI]: Getting message Name = removed inshop
+[NewGUI]: Getting message Name = newCustomer
+[Cashier]: Change in current customer message is set
+[CashierRunnable]: Cashier April removed customer Ben (ID: 217222282931) from in-shop queue -> updated size: 1
+[CashierRunnable]: Cashier April total of customers: 7.0
+[NewGUI]: Getting message Name = baristaAdded
+[Employees]: Barista Frank has started their shift 
+[FoodStaffRunable]:  Preparation: Barista Frank: Frothing milk
+[NewGUI]: Getting message Name = instructionBarista
+[FoodStaff]: FoodStaff Frank has started another task 
+[FoodStaffRunable]:  Preparation: Barista Mac: Frothing milk
+[NewGUI]: Getting message Name = instructionBarista
+[FoodStaff]: FoodStaff Mac has started another task 
+[FoodStaffRunable]:  Preparation: Cook Pam: Heating up toastie 
+[NewGUI]: Getting message Name = instructionCook
+[FoodStaff]: FoodStaff Pam has started another task 
+[CashierRunnable]: Cashier Lerry checking in-shop queue -> current size: 1
+[NewGUI]: Getting message Name = removed inshop
+[NewGUI]: Getting message Name = noMoreOrders
+[NewGUI]: Getting message Name = newCustomer
+[Cashier]: Change in current customer message is set
+[CashierRunnable]: Cashier Lerry removed customer Steve (ID: 277810282932) from in-shop queue -> updated size: 0
+[CashierRunnable]: Cashier Lerry total of customers: 8.0
+[FoodStaffRunable]:  Preparation: Cook Jim: Adding honey and thyme to roasted vegetables 
+[NewGUI]: Getting message Name = instructionCook
+[FoodStaff]: FoodStaff Jim has started another task 
+[FoodStaffRunable]:  Preparation: Cook Andy: Putting meat and cheese on bread
+[NewGUI]: Getting message Name = instructionCook
+[FoodStaff]: FoodStaff Andy has started another task 
+[FoodStaffRunable]:  Finished: Barista Deandra: Cinnamon Swirl for customer Adam (ID: 1616161161682930) prepared.
+[FoodStaffRunable]:  Preparation: Barista Deandra: Boiling water 
+[NewGUI]: Getting message Name = instructionBarista
+[FoodStaff]: FoodStaff Deandra has started another task 
+[NewGUI]: Getting message Name = CashierEndedShift
+[FoodStaffRunable]:  Preparation: Barista Frank: Preparing espresso
+[NewGUI]: Getting message Name = instructionBarista
+[FoodStaff]: FoodStaff Frank has started another task 
+[FoodStaffRunable]:  Preparation: Barista Mac: Gently adding the frothed milk to the espresso
+[NewGUI]: Getting message Name = instructionBarista
+[NewGUI]: Getting message Name = cashierRemoved
+[Employees]: Cashier April has ended their shift 
+[Cashier]: Ended shift
+[CashierRunnable]: Cashier April has ended their shift 
+[FoodStaff]: FoodStaff Mac has started another task 
+[FoodStaffRunable]:  Finished: Cook Pam: Toastie for customer Ben (ID: 217222282931) prepared.
+[FoodStaffRunable]:  Preparation: Cook Pam: Mixing different leaf salads
+[NewGUI]: Getting message Name = instructionCook
+[FoodStaff]: FoodStaff Pam has started another task 
+[NewGUI]: Getting message Name = CashierEndedShift
+[Employees]: Cashier Lerry has ended their shift 
+[Cashier]: Ended shift
+[CashierRunnable]: Cashier Lerry has ended their shift 
+[FoodStaffRunable]:  Finished: Cook Jim: Vegetables for customer Lena (ID: 217222282931) prepared.
+[NewGUI]: Getting message Name = endedShiftCook
+[NewGUI]: Getting message Name = cookRemoved
+[Employees]: Cook Jim has ended their shift 
+[FoodStaffRunable]:  Preparation: Cook Andy: Grilling panini 
+[NewGUI]: Getting message Name = instructionCook
+[FoodStaff]: FoodStaff Andy has started another task 
+[FoodStaffRunable]:  Preparation: Barista Deandra: Preparing espresso 
+[NewGUI]: Getting message Name = instructionBarista
+[FoodStaff]: FoodStaff Deandra has started another task 
+[FoodStaffRunable]:  Preparation: Barista Frank: Gently adding the frothed milk to the espresso 
+[NewGUI]: Getting message Name = instructionBarista
+[FoodStaff]: FoodStaff Frank has started another task 
+[FoodStaffRunable]:  Preparation: Barista Mac: Putting whipped cream on top of latte
+[NewGUI]: Getting message Name = instructionBarista
+[FoodStaff]: FoodStaff Mac has started another task 
+[FoodStaffRunable]:  Preparation: Cook Pam: Adding balsamic dressing to salad
+[NewGUI]: Getting message Name = instructionCook
+[FoodStaff]: FoodStaff Pam has started another task 
+[FoodStaffRunable]:  Finished: Cook Andy: Panini for customer Lena (ID: 217222282931) prepared.
+[NewGUI]: Getting message Name = endedShiftCook
+[NewGUI]: Getting message Name = cookRemoved
+[Employees]: Cook Andy has ended their shift 
+[FoodStaffRunable]:  Preparation: Barista Deandra: Adding water to espresso 
+[NewGUI]: Getting message Name = instructionBarista
+[FoodStaff]: FoodStaff Deandra has started another task 
+[FoodStaffRunable]:  Finished: Barista Frank: Cappuccino for customer Lena (ID: 1616161161682930) prepared.
+[NewGUI]: Getting message Name = endedShiftBarista
+[NewGUI]: Getting message Name = baristaRemoved
+[Employees]: Barista Frank has ended their shift 
+[FoodStaffRunable]:  Finished: Barista Mac: Mocha for customer Lena (ID: 1616161161682930) prepared.
+[NewGUI]: Getting message Name = endedShiftBarista
+[NewGUI]: Getting message Name = baristaRemoved
+[Employees]: Barista Mac has ended their shift 
+[FoodStaffRunable]:  Finished: Cook Pam: Salad for customer Lena (ID: 29229282932) prepared.
+[NewGUI]: Getting message Name = endedShiftCook
+[Employees]: Cook Pam has ended their shift 
+[FoodStaffRunable]:  Finished: Barista Deandra: Americano for customer Lena (ID: 217222282931) prepared.
+[NewGUI]: Getting message Name = endedShiftBarista
+[Employees]: Barista Deandra has ended their shift 

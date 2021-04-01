@@ -25,7 +25,6 @@ import java.security.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.Random;
 
 
 public class CoffeeShop {
@@ -35,6 +34,7 @@ public class CoffeeShop {
 	public static Map<String, HashSet<String> > foodMap;          // Map
 	
 	static NewGUI gui;
+	public static String report;
 	
 
 	// Data MODELS 
@@ -49,6 +49,10 @@ public class CoffeeShop {
 	public static OrderQueue barQueue;
 	public static Employees employees;
 	
+	public static boolean isFinished = false; 
+	
+	private static String line = String.format("%1$" + 55 + "s", "- \n").replace(' ', '-');
+	private static DecimalFormat df2 = new DecimalFormat("#.##");
 	
 	
 	//ArrayList<Thread> cashierThreads = new ArrayList<Thread>(); 
@@ -66,8 +70,9 @@ public class CoffeeShop {
 	
 	//public static HashMap<String, Cashier> acctiveCashiers;  // - 
 	public static HashMap<String, Customer> customerList;   // -
-	//public static NewCustomerQueue inshopQueue;
-
+	
+	
+	private static Log log;
 
 
 	
@@ -79,7 +84,9 @@ public class CoffeeShop {
 	{
 		menu = new HashMap<>(); 
 		customerList = new HashMap<>();
-		//inshopQueue = new NewCustomerQueue(false);
+		
+		log = Log.getInstance();
+		
 		
 		fillMenu("MenuItems");                      // Fills the menu with all the items 
 		
@@ -88,8 +95,8 @@ public class CoffeeShop {
 		//queue = new NewCustomerQueue(false);        // Customer queue
 		inventory = new Inventory();                // Inventory of ordered items
 
-		shopQueue = new NewCustomerQueue(false, 2000L);   // In-shop Customer queue
-		onlineQueue = new NewCustomerQueue(true, 2000L);  // Online Customer queue
+		shopQueue = new NewCustomerQueue(false, 1000L, 10);   // In-shop Customer queue
+		onlineQueue = new NewCustomerQueue(true, 1000L, 10);  // Online Customer queue
 		inventory = new Inventory();                  // Inventory of ordered items
 		books = new Bookkeeping();                  // Bookkeeping of earnings and other finances
 		employees = new Employees();                // Currently working employees 
@@ -102,13 +109,6 @@ public class CoffeeShop {
 		baristaThreads = new HashMap<String, Thread>();
 		cookThreads = new HashMap<String, Thread>();
 		
-		
-
-		
-		//activeCashiers = new HashMap<String, Cashier>();
-		
-		//fillCustomerList("CustomerList");	
-
 				
 		// Fill recipe book 
 		recipeBook = new HashMap<String, ArrayList<String> >();
@@ -117,8 +117,14 @@ public class CoffeeShop {
 		foodMap = new HashMap<String, HashSet<String> >();
 		fillFoodMap();
 		
+	
+		
 		//acctiveCashiers = new HashMap<String, Cashier>();  // -
 		//fillCustomerList("CustomerList");	  // -
+	}
+	
+	public static void setIsFinished() {
+		isFinished = true;
 	}
 	
 	/**
@@ -280,9 +286,9 @@ public class CoffeeShop {
 	 * Creates customer queue handler which adds customers to the queue  
 	 * @param integer for the amount of customers we wish to accept to the store
 	 */
-   private void createHandler(int number) {
+   public static void createHandler() {
 	    // Create handler which adds to the customer queue
-	    Runnable handler = new QueueHandler(onlineQueue, shopQueue, 1000L, number);
+	    Runnable handler = new QueueHandler(onlineQueue, shopQueue, 1000L);
 	    handlerThread = new Thread(handler);
 	    // High priority since customers are the once who are deciding when they will arrive
 	    handlerThread.setPriority(8);                
@@ -297,12 +303,7 @@ public class CoffeeShop {
    public static FoodStaff addBarista(Long delay) {
 	   FoodStaff barStaff = employees.addBarista(delay); // Add cashier to the employees model
 	   barStaff.addPropertyChangeListener(gui); // Establish OBSERVER-OBSERVABLE channel 
-	   
-	   
-	   //String name = getRandomName( baristaNames, baristaList);
-	   //System.out.println("Cashier " + name + " has started their shift");
-	   
-	   // Create barista object which processes orders related to Drinks and Pastry	   
+	    
 	   Runnable barista = new FoodStaffRunnable(barStaff, barQueue);
 	   Thread s = new Thread(barista);
 	   baristaThreads.put(barStaff.getName(), s);
@@ -377,20 +378,96 @@ public class CoffeeShop {
 	   employees.removeBarista(name); // Remove active cashier from the model 
    }
    
+   
+   public static void generateEndOfDayReport() {
+	   Hashtable<String,Integer> in = inventory.getInventory();
+	   // Format the date time string
+	   DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+	   String datetime = LocalDateTime.now().format(formatter);
+	   String[] datetimeSplit = datetime.split(" ");
+	   
+	   // Initialise end of day report string 
+	   String output = String.format("%-20s \n\n", "End of the day report") + 
+					   String.format("%-10s %-10s\n", "Date:", datetimeSplit[0]) +
+					   String.format("%-10s %-10s\n", "Time:",datetimeSplit[1]) +
+					   line;
+	   
+	   // Strings to hold category informations
+	   String drink = ""; String food = "" ; String pastry = ""; 
+	   // Goes trough inventory
+	   for (Map.Entry m: in.entrySet()) { 
+		   String category = CoffeeShop.menu.get(m.getKey()).getCategory();
+		   if (category.equals("Drink")) {
+			  drink += String.format("%-5s %-25s %-10s \n", " ",m.getKey(), 
+						String.valueOf(m.getValue() + "x"));
+	      }if (category.equals("Food")) {
+	    	  food += String.format("%-5s %-25s %-10s \n", " ",m.getKey(), 
+						String.valueOf(m.getValue() + "x"));
+		  }if (category.equals("Pastry")) {
+			  pastry += String.format("%-5s %-25s %-10s \n", " ",m.getKey(), 
+						String.valueOf(m.getValue() + "x"));
+		  }
+       }
+	   
+	   // creates final report by concatenating strings 
+	   output += String.format("%-20s \n\n", "FOOD") + food + line +
+			     String.format("%-20s \n\n", "DRINKS") + drink + line +
+			     String.format("%-20s \n\n", "PASTRIES") + pastry + line + "\n" ;
+	   
+	   
+	   output += String.format("%-30s %-10s\n", "Number of customers: ", books.allValues.get(7)) + 
+	             String.format("%-40s %-10s\n", "Sub total of day : ", df2.format(books.allValues.get(0)) + "£") + 
+	             String.format("%-40s %-10s\n", "Taxes : ", df2.format(books.allValues.get(1)) + "£")+ 
+	             String.format("%-40s %-10s\n", "Discount : ", df2.format(books.allValues.get(2)) + "£")+ 
+	             String.format("%-50s %-10s\n", "Type D1 : ", df2.format(books.allValues.get(4)) ) + 
+	             String.format("%-50s %-10s\n", "Type D2 : ", df2.format(books.allValues.get(5)) ) + 
+	             String.format("%-50s %-10s\n", "Type D3 : ", df2.format(books.allValues.get(6)) ) + 
+	             String.format("%-40s %-10s\n", "Total of the day : ", df2.format(books.allValues.get(3)) + "£");
+	   
+	   report = output;
+   }
+   
+   public static void generateFinalReport() {
+	   try {
+		   // creates a text file and writes the report to it 
+		   generateEndOfDayReport();
+		   FileWriter finalWriter = new FileWriter("FinalReport.txt");
+		   finalWriter.write(report);
+		   finalWriter.close();
+		   
+	   } catch (IOException e) {
+		   System.out.println("An error occurred.");
+		   e.printStackTrace();
+	   }
+	   try {
+		   // creates a text file and writes the report to it 
+		   System.out.println(log.getLog());
+		   FileWriter finalW = new FileWriter("Log.txt");
+		   finalW.write(log.getLog());
+		   finalW.close();
+		   
+	   } catch (IOException e) {
+		   System.out.println("An error occurred.");
+		   e.printStackTrace();
+	   }
+	   
+  }
+   
+   
 
 
    // main method 
 	public static void main(String[] args) {
 		CoffeeShop shop = new CoffeeShop();
-		shop.createHandler(8); //23
+		//shop.createHandler(8); //23
 		gui = new NewGUI();
 		CoffeeShop.shopQueue.addPropertyChangeListener(gui);
 		CoffeeShop.onlineQueue.addPropertyChangeListener(gui);
 		CoffeeShop.employees.addPropertyChangeListener(gui);
 		
 		
-		gui.initializeGUI();
-		gui.paintScreen();
+		//gui.initializeGUI();
+		//gui.paintScreen();
 		//gui.run();
 
 		

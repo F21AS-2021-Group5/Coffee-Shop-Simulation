@@ -33,6 +33,7 @@ public class NewCustomerQueue{
 	private boolean locked;
 	
 	private long delay;
+	private int maxCustomerNumber;
 	
 	// stores all items in the menu in the form of a hashmap 
 	private HashMap<Integer, String> menuList;
@@ -46,9 +47,10 @@ public class NewCustomerQueue{
 	 * Constructor for CustomerQueue class
 	 * @param isOnline Online or in-shop queue 
 	 */
-	public NewCustomerQueue(boolean isOnline, long delay) {
+	public NewCustomerQueue(boolean isOnline, long delay, int maxCustomerNumber) {
 		this.isOnline = isOnline;
 		this.delay = delay;
+		this.maxCustomerNumber = maxCustomerNumber;
 		
 		support = new PropertyChangeSupport(this);
 		queue = new LinkedList<Customer>();		
@@ -56,6 +58,8 @@ public class NewCustomerQueue{
 		fillMenuList();	
 		locked = false;
 	}
+	
+	
 	
 	public class CustomerQueueOutput {
 		private Customer customer;
@@ -173,6 +177,14 @@ public class NewCustomerQueue{
 
 	public void setDelay(long delay) {
 		this.delay = delay;
+	}
+
+	public int getMaxCustomerNumber() {
+		return maxCustomerNumber;
+	}
+
+	public void setMaxCustomerNumber(int maxCustomerNumber) {
+		this.maxCustomerNumber = maxCustomerNumber;
 	}
 
 	/**

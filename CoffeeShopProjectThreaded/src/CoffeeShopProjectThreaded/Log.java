@@ -37,7 +37,7 @@ public class Log {
 	
 	public void updateLog(String info) {
 		log += info + "\n";
-		System.out.println(info);
+		//System.out.println(info);
 	}
 	
 	public String getLog() {

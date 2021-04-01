@@ -1,27 +1,36 @@
 End of the day report 
 
-Date:      11-03-2021
-Time:      15:54:29  
+Date:      01-04-2021
+Time:      18:29:47  
 ------------------------------------------------------
 FOOD                 
 
-      Toastie                   2x         
+      Vegetables                2x         
+      Mash                      2x         
+      Panini                    3x         
+      Toastie                   3x         
+      Salad                     2x         
 ------------------------------------------------------
 DRINKS               
 
-      Tea                       1x         
-      Mocha                     1x         
+      Americano                 2x         
+      Mocha                     4x         
+      Cappuccino                4x         
+      Latte                     3x         
+      Tea                       2x         
 ------------------------------------------------------
 PASTRIES             
 
-      Croissant                 2x         
+      Brownies                  1x         
+      Muffin                    1x         
+      Cinnamon Swirl            1x         
 ------------------------------------------------------
 
-Number of customers:           3         
-Sub total of day :                       15,25£    
-Taxes :                                  3,81£     
-Discount :                               0£        
-Type D1 :                                          0         
+Number of customers:           8.0       
+Sub total of day :                       87.2£     
+Taxes :                                  21.8£     
+Discount :                               2.8£      
+Type D1 :                                          1         
 Type D2 :                                          0         
 Type D3 :                                          0         
-Total of the day :                       19,06£    
+Total of the day :                       106.2£    

@@ -43,7 +43,7 @@ class CashierTest {
 		System.out.println("Begin Cashier Test");
 		
 		//initialize main class
-		shop = new CoffeeShop("MenuItems");	
+		shop = new CoffeeShop();	
 	}
 	
 	@AfterEach
@@ -76,6 +76,7 @@ class CashierTest {
 		assertTrue(cashier.ID == "Beth");
 		
 	}
+	
 		
 	@Test
 	void testgetCartTax() {
@@ -101,8 +102,7 @@ class CashierTest {
 		
 		// test for decimal price //
 		cashier.subtotal = (float) 2.99;
-		assertEquals(0.7475, cashier.getCartTax(), delta);
-		
+		assertEquals(0.7475, cashier.getCartTax(), delta);		
 
 	}
 	

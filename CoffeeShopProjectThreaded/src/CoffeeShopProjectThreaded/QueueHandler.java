@@ -1,3 +1,16 @@
+/**
+ * QueueHandler.java - class to implement thread that adds customers to queues 
+ * 
+ * @author Esther Rayssiguie 
+ * @author Jake Marrocco
+ * @author Karolina Judzentyte
+ * @author Valerio Franchi
+ * @version 0.1
+ * 
+ * Copyright (c) 2021 
+ * All rights reserved.
+ */
+
 package CoffeeShopProjectThreaded;
 
 import CoffeeShopProjectThreaded.NewCustomerQueue.CustomerQueueOutput;
@@ -65,7 +78,4 @@ public class QueueHandler implements Runnable{
 			}
 		}		
 	}	
-	
-
-
 }

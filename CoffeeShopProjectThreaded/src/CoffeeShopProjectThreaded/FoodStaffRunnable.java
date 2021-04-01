@@ -112,54 +112,58 @@ public class FoodStaffRunnable implements Runnable{
 		boolean stop = false; 
 		while (!stop) {	
 			
-			// remove item from queue 
-			OrderQueueOutput out = queue.removeFromQueue();
-			
-			String status = "";
-			
-			// check if operation successful
-			if (out.isSuccess())
-			{
-				currentItem = out.getItem().getName();
-				currentCustomer = out.getItem().getCustomerID();		
+			try {
+				// remove item from queue 
+				OrderQueueOutput out = queue.removeFromQueue();
 				
-				foodStaff.setCurrentCustomer(CoffeeShop.customerList.get(currentCustomer));
-				foodStaff.setCurrentItem(out.getItem());
+				String status = "";
 				
-				// get recipe of current item 
-				ArrayList<String> recipe = CoffeeShop.recipeBook.get(currentItem);
-				
-				if (recipe == null)
-					System.out.println("Item does not exist in the menu.");
-				
-				// go through recipe instructions 
-				for (String instruction: recipe) {
+				// check if operation successful
+				if (out.isSuccess())
+				{
+					currentItem = out.getItem().getName();
+					currentCustomer = out.getItem().getCustomerID();		
 					
-					// update status 
-					status = "[PREPARATION] " + foodStaff.getType() + " " + foodStaff.getName() 
-						+ ": " + instruction;
-					log.updateLog(status);
+					foodStaff.setCurrentCustomer(CoffeeShop.customerList.get(currentCustomer));
+					foodStaff.setCurrentItem(out.getItem());
 					
-					foodStaff.setInstruction(instruction);
-					Long delay = foodStaff.getDelay();
+					// get recipe of current item 
+					ArrayList<String> recipe = CoffeeShop.recipeBook.get(currentItem);
 					
+					if (recipe == null)
+						System.out.println("Item does not exist in the menu.");
 					
-					// delay for visualisation purposes 
-					try {
-						Thread.sleep(delay);
-					} catch (InterruptedException e) {
-						stop = true;
-						e.printStackTrace();
+					// go through recipe instructions 
+					for (String instruction: recipe) {
 						
+						// update status 
+						status = "[PREPARATION] " + foodStaff.getType() + " " + foodStaff.getName() 
+							+ ": " + instruction;
+						log.updateLog(status);
+						
+						foodStaff.setInstruction(instruction);
+						Long delay = foodStaff.getDelay();
+						
+						
+						// delay for visualisation purposes 
+						try {
+							Thread.sleep(delay);
+						} catch (InterruptedException e) {
+							stop = true;
+							//e.printStackTrace();
+							
+						}
 					}
+					
+					// update status				
+					status = "[FINISHED] " + foodStaff.getType() + " " + foodStaff.getName() + ": " + currentItem + 
+							" for customer " + foodStaff.getCurrentCustomer().getName() + 
+							" (ID: " + currentCustomer + ") prepared.";			
+					log.updateLog(status);
 				}
-				
-				// update status				
-				status = "[FINISHED] " + foodStaff.getType() + " " + foodStaff.getName() + ": " + currentItem + 
-						" for customer " + foodStaff.getCurrentCustomer().getName() + 
-						" (ID: " + currentCustomer + ") prepared.";			
-				log.updateLog(status);				
-			}		
+			} catch (NullPointerException e) {
+				e.printStackTrace();
+			}				
 		}
 	}
 }

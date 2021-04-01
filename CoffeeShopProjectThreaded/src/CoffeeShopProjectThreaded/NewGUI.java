@@ -1,5 +1,5 @@
 /**
- * NewGUI.java - class to create and display GUI 
+ * GUI.java - class to create and display GUI 
  * 
  * @author Esther Rayssiguie 
  * @author Jake Marrocco
@@ -13,28 +13,18 @@
 
 package CoffeeShopProjectThreaded;
 
-//import org.omg.PortableServer.THREAD_POLICY_ID;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.awt.event.ActionEvent;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.util.ArrayList;
 import java.util.Deque;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.HashMap;
-import java.util.Queue;
 import java.util.Set;
 
 import javax.swing.*;
-
-
 
 public class NewGUI implements PropertyChangeListener {
 	// Frame
@@ -87,17 +77,19 @@ public class NewGUI implements PropertyChangeListener {
 	JTextField cashierTime = new JTextField(3);
 	JTextField baristaTime = new JTextField(3);
 	JTextField cookTime = new JTextField(3);
-
+	
 	Customer currentCustomer;
-	CoffeeShop coffeeshop;
 	Employees employees;
 	NewCustomerQueue newCustomerQueue; // Subject class
-	CustomerQueue onlineQueue;
-
+	NewCustomerQueue onlineQueue;
+	
+	// threads 
 	CashierRunnable cashierRunnable;
 	FoodStaffRunnable foodStaffRun;
+	
+	// log 
 	Log log;
-
+	
 	NewCustomerQueue inshopqueue;
 	NewCustomerQueue shopQueue;
 	Deque<Customer> shopQueueObse;
@@ -566,21 +558,21 @@ public class NewGUI implements PropertyChangeListener {
 		frame1.getContentPane().add(CashierName);
 		
 		//Display customer receipt
-		if (cashier.currentCustomer != null ) {
+		if (cashier.getCurrentCustomer() != null ) {
 			JTextArea custList = new JTextArea("");
 			custList.setBounds(10, 40, 250, 300);
 			frame1.getContentPane().add(custList);
 			String output = " ";
-			output += String.format("%-10s\n", "Customer: " + cashier.currentCustomer.getName());
+			output += String.format("%-10s\n", "Customer: " + cashier.getCurrentCustomer().getName());
 			String out2 = " ";
-			Set<String> customerCart = cashier.currentCustomer.cart.keySet();
+			Set<String> customerCart = cashier.getCurrentCustomer().cart.keySet();
 			for (String orderID : customerCart) {
 				output += String.format("%-10s %-10s %-10s %-10s\n",
-						String.valueOf(cashier.currentCustomer.cart.get(orderID).size()),
-						coffeeshop.menu.get(orderID).getName(), String.valueOf(coffeeshop.menu.get(orderID).getCost()),
+						String.valueOf(cashier.getCurrentCustomer().cart.get(orderID).size()),
+						CoffeeShop.menu.get(orderID).getName(), String.valueOf(CoffeeShop.menu.get(orderID).getCost()),
 						"£");
 				out2 = String.format("%-10s %-10s %-10s\n", "Total price: ",
-						String.valueOf(cashier.currentCustomer.getCartTotalPrice()), "£");
+						String.valueOf(cashier.getCurrentCustomer().getCartTotalPrice()), "£");
 			}
 			custList.setText(output + out2);		
 			
@@ -612,7 +604,7 @@ public class NewGUI implements PropertyChangeListener {
 		for (String orderID : customerCart) {
 			output += String.format("%-10s %-10s %-10s %-10s\n",
 					String.valueOf(customer.cart.get(orderID).size()),
-					coffeeshop.menu.get(orderID).getName(), String.valueOf(coffeeshop.menu.get(orderID).getCost()),
+					CoffeeShop.menu.get(orderID).getName(), String.valueOf(CoffeeShop.menu.get(orderID).getCost()),
 					"£");
 			out2 = String.format("%-10s %-10s %-10s\n", "Total price: ",
 					String.valueOf(customer.getCartTotalPrice()), "£");
@@ -756,15 +748,17 @@ public class NewGUI implements PropertyChangeListener {
 			}
 			//When a Cook is added, this is to display their actions
 			if(type.equals("instructionCook")) {
-				String cook = (String) evt.getNewValue();
-				FoodStaff Cook = CoffeeShop.employees.activeCooks.get(cook);
-				updateCookFrame(Cook.getName(), Cook);
+					String cook = (String) evt.getNewValue();
+					FoodStaff Cook = CoffeeShop.employees.activeCooks.get(cook);
+					if (Cook != null)
+						updateCookFrame(Cook.getName(), Cook);
 			}
 			//When a Barista is added, this is to display their actions
 			if(type.equals("instructionBarista")) {
-				String barista = (String) evt.getNewValue();
-				FoodStaff Barista = CoffeeShop.employees.activeBaristas.get(barista);
-				updateBaristaFrame(Barista.getName(), Barista);
+					String barista = (String) evt.getNewValue();
+					FoodStaff Barista = CoffeeShop.employees.activeBaristas.get(barista);
+					if (Barista != null)
+						updateBaristaFrame(Barista.getName(), Barista);
 			}
 			
 			

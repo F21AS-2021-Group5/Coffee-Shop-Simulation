@@ -1,21 +1,30 @@
+/**
+ * CustomerQueue.java - class to implement the queues for the customers 
+ * 
+ * @author Esther Rayssiguie 
+ * @author Jake Marrocco
+ * @author Karolina Judzentyte
+ * @author Valerio Franchi
+ * @version 0.1
+ * 
+ * Copyright (c) 2021 
+ * All rights reserved.
+ */
+
 package CoffeeShopProjectThreaded;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 import java.util.Map.Entry;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 public class NewCustomerQueue{
 	
 	//List of observers
-	private List<Observer> observers;
 	private PropertyChangeSupport support;
 	
 	private Deque<Customer> queue; // customer queue
@@ -40,7 +49,6 @@ public class NewCustomerQueue{
 		this.isOnline = isOnline;
 		
 		support = new PropertyChangeSupport(this);
-		observers = new ArrayList<Observer>();
 		queue = new LinkedList<Customer>();		
 		log = Log.getInstance();
 		menuList = new HashMap<Integer, String>();
@@ -62,8 +70,7 @@ public class NewCustomerQueue{
 		public CustomerQueueOutput(Customer customer, boolean success, int updatedSize) {
 			this.customer = customer;
 			this.success = success;
-			this.updatedSize = updatedSize;
-			
+			this.updatedSize = updatedSize;			
 		}
 		
 		/**
@@ -145,16 +152,15 @@ public class NewCustomerQueue{
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * @return Locked state of current class object 
 	 */
 	public boolean isLocked() {
 		return locked;
 	}
 
 	/**
-	 * 
-	 * @param locked
+	 * Set locked state 
+	 * @param locked Locked state of current class object 
 	 */
 	public void setLocked(boolean locked) {
 		this.locked = locked;
@@ -183,7 +189,7 @@ public class NewCustomerQueue{
 		    Random rn = new Random();
 		    LocalDateTime lt = LocalDateTime.now(); 
 		    String name = customerNames[rn.nextInt(customerNames.length)];
-	   		customer = new Customer(name, lt); // find a way to generate random name or remove name all together 
+	   		customer = new Customer(name, lt); 
 	   		
 	   		// create random items inside cart
 	   		int amount = rn.nextInt(10);	   		
@@ -194,10 +200,7 @@ public class NewCustomerQueue{
 	   		}
 	   		
 	   		// add customer and notify all threads that resource can be accessed again
-	   		int oldSize = queue.size();
 	   		queue.add(customer);
-	   		Deque<Customer> queue1  =new LinkedList<Customer>();
-
 	   		setMessage(null, customer, isOnline, "added");
 	   		notifyAll();
 	   		
@@ -225,11 +228,7 @@ public class NewCustomerQueue{
     	}
     	
     	// removes customer and notify all threads that resource can be accessed again
-    	int oldSize = queue.size();
 		customer = queue.pop();
-		//setMessage(queue, "test");
-		System.out.println(customer);
-		System.out.println(isOnline);
 		setMessage(null, customer, isOnline, "removed");
 		locked = false;
 		notifyAll(); 
@@ -241,16 +240,29 @@ public class NewCustomerQueue{
 			return new CustomerQueueOutput(customer, true, queue.size());
     }
     
+    /**
+     * Adds listener 
+     * @param pcl Listener to add
+     */
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
     	support.addPropertyChangeListener(pcl);
     }
     
+    /**
+     * Removes listener 
+     * @param pcl Listener to remove
+     */
     public void removePropertyChangeListener(PropertyChangeListener pcl) {
     	support.removePropertyChangeListener(pcl);
     }
     
-
-    
+    /**
+     * Fires a message to the listener 
+     * @param oldVal Old customer 
+     * @param newVal Updated customer 
+     * @param online Online or in-shop queue
+     * @param message Operation type 
+     */
     public void setMessage(Customer oldVal, Customer newVal, boolean online, String message) {
     	if (online)
     		support.firePropertyChange(message + " online", oldVal, newVal);

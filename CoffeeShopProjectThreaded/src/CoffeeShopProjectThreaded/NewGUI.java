@@ -116,7 +116,7 @@ public class NewGUI implements PropertyChangeListener {
 	HashMap<String, JFrame> baristaFrames;
 
 	// GUI constructor
-	public NewGUI(NewCustomerQueue shopQueue, HashMap<String, Thread> cashierT, HashMap<String, Thread> cookT, HashMap<String, Thread> baristaT) { // CoffeeShop main,
+	public NewGUI() { // CoffeeShop main,
 		// this.coffeeshop = main;
 		// shopQueueObse = new
 		this.shopQueue = shopQueue;
@@ -819,6 +819,7 @@ public class NewGUI implements PropertyChangeListener {
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
+		evt.getPropertyName(); // The message property
 
 		// System.out.println("Old Value = " + ((Customer)
 		// evt.getOldValue()).getName());

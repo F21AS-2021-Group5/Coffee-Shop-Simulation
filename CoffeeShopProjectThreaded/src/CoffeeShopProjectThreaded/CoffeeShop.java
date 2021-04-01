@@ -374,18 +374,13 @@ public class CoffeeShop {
 	public static void main(String[] args) {
 		CoffeeShop shop = new CoffeeShop();
 		shop.createHandler(21);
-		
-		//shop.addCashier();
-		//shop.addCashier();
-
-		gui = new NewGUI(shop.shopQueue, shop.cashierThreads, shop.cookThreads, shop.baristaThreads);
-		//shopQueue.addPropertyChangeListener(gui);
-		//MyPropertyChange observer = new MyPropertyChange();
-
-		//observable.addPropertyChangeListener(observer);
+		gui = new NewGUI();
 		CoffeeShop.shopQueue.addPropertyChangeListener(gui);
 		CoffeeShop.onlineQueue.addPropertyChangeListener(gui);
 		CoffeeShop.employees.addPropertyChangeListener(gui);
+		
+		
+		
 		//CoffeeShop.cashierThreads.addPropertyChangeListener(gui);
 	
 		

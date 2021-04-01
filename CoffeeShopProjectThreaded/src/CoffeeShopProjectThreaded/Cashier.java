@@ -152,16 +152,10 @@ public class Cashier {
 	 * @param customer Customer object 
 	 */
 	public void setCustomer(Customer customer) {
-		System.out.println("inside cashier class");
-		
-		
 		// For values that are initialised at the initialisation of coffeeShop
 		customer.setCashierServing(name);
-		System.out.println(customer.getCashierServing());
-		System.out.println(customer.getName());
 		currentCustomer = customer;
-		setMessage(null, customer,"newCustomer");
-
+		setMessage(null, customer,"newCustomer"); // Message to the observer               
 	}
 	
 	/**
@@ -203,15 +197,15 @@ public class Cashier {
 	public void setSpeed(Long speed) {
 		this.speed = speed;
 	}
-	
+	 // Add connection to observer
 	 public void addPropertyChangeListener(PropertyChangeListener pcl) {
 		 support.addPropertyChangeListener(pcl);
 	 }
-	    
+	 // Remove connection to observer
 	 public void removePropertyChangeListener(PropertyChangeListener pcl) {
 	    support.removePropertyChangeListener(pcl);
 	 }
-	 
+	 // Set a message
 	 public void setMessage(Customer oldVal, Customer newVal,  String message) {
 	    support.firePropertyChange(message, oldVal, newVal);
 	 }
